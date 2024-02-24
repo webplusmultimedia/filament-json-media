@@ -9,7 +9,7 @@ class GalleryJsonMediaPlugin implements Plugin
 {
     public function getId(): string
     {
-        return 'filament-json-media';
+        return 'gallery-json-media';
     }
 
     public function register(Panel $panel): void

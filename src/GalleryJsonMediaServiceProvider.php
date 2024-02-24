@@ -56,9 +56,7 @@ class GalleryJsonMediaServiceProvider extends PackageServiceProvider
         }
     }
 
-    public function packageRegistered(): void
-    {
-    }
+    public function packageRegistered(): void {}
 
     public function packageBooted(): void
     {
@@ -145,8 +143,6 @@ class GalleryJsonMediaServiceProvider extends PackageServiceProvider
      */
     protected function getMigrations(): array
     {
-        return [
-            'create_filament-json-media_table',
-        ];
+        return [];
     }
 }
