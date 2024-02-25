@@ -1,10 +1,11 @@
 <?php
 /**
  * Created by PhpStorm.
- * @package     HasCustomProperties.php
- * @subpackage  Subpackage
+ *
  * @category    Category
+ *
  * @author      daniel
+ *
  * @link        http://webplusm.net
  * Date: 14/02/2024 11:05
  */
@@ -18,21 +19,21 @@ use Filament\Forms\Form;
 use Filament\Support\Enums\Alignment;
 use WebplusMultimedia\GalleryJsonMedia\Form\GalleryJsonMedia;
 
-
 trait HasCustomProperties
 {
     protected string $customPropertiesActionName = 'edit-custom-properties';
-    protected null | array | Closure $customPropertiesSchema = NULL;
+
+    protected null | array | Closure $customPropertiesSchema = null;
 
     protected bool | Closure $editCustomPropertiesOnSlideOver = false;
+
     protected null | string | Closure $editCustomPropertiesTitle = null;
 
     public function withCustomProperties(
         array | Closure $customPropertiesSchema,
-        bool | Closure  $editCustomPropertiesOnSlideOver = false,
+        bool | Closure $editCustomPropertiesOnSlideOver = false,
         null | string | Closure $editCustomPropertiesTitle = null
-    ): static
-    {
+    ): static {
         $this->customPropertiesSchema = $customPropertiesSchema;
         $this->editCustomPropertiesOnSlideOver = $editCustomPropertiesOnSlideOver;
         $this->editCustomPropertiesTitle = $editCustomPropertiesTitle;
@@ -44,7 +45,6 @@ trait HasCustomProperties
     {
         return $this->evaluate($this->customPropertiesSchema);
     }
-
 
     public function customPropertiesActionName(string $customPropertiesActionName): static
     {
@@ -60,7 +60,7 @@ trait HasCustomProperties
 
     public function hasCustomPropertiesAction(): bool
     {
-        return $this->getCustomPropertiesSchema() !== NULL;
+        return $this->getCustomPropertiesSchema() !== null;
     }
 
     public function customPropertiesAction(): ?Action
@@ -77,7 +77,7 @@ trait HasCustomProperties
                     return $state[$key]['customProperties'];
                 })
                 ->label('Edition des propriétés')
-                ->form(fn(array $arguments) => $this->getMinimumFieldForCustomEditField($arguments,$this->getState()))
+                ->form(fn (array $arguments) => $this->getMinimumFieldForCustomEditField($arguments, $this->getState()))
                 ->action(function (array $arguments, array $data, Form $form, GalleryJsonMedia $component) {
                     $key = $arguments['key'];
                     $state = $component->getState();
@@ -96,13 +96,12 @@ trait HasCustomProperties
             }
 
             return $action;
-        };
+        }
 
-
-        return NULL;
+        return null;
     }
 
-    private function getMinimumFieldForCustomEditField(array $arguments,array $state): array
+    private function getMinimumFieldForCustomEditField(array $arguments, array $state): array
     {
         return array_merge([TextInput::make('alt')->required()->helperText('Alternative text image')], $this->getCustomPropertiesSchema());
     }

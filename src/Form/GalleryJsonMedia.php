@@ -70,6 +70,7 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
                 return;
             }
 
+            /** @var array<string,mixed>|array<int,mixed> $keys */
             $keys = array_keys($state);
 
             if (is_string(array_key_first($keys))) {

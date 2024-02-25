@@ -1,10 +1,11 @@
 <?php
 /**
  * Created by PhpStorm.
- * @package     HasImageSize.php
- * @subpackage  Subpackage
+ *
  * @category    Category
+ *
  * @author      daniel
+ *
  * @link        http://webplusm.net
  * Date: 19/02/2024 22:51
  */
@@ -42,6 +43,4 @@ trait HasThumbProperties
     {
         return $this->evaluate($this->thumbHeight);
     }
-
-
 }

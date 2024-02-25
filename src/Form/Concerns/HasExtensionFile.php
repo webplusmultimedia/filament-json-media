@@ -20,7 +20,7 @@ trait HasExtensionFile
 
     public static function isSvgFile(string $file): bool
     {
-        return 'svg' === static::getExtension($file);
+        return static::getExtension($file) === 'svg';
     }
 
     protected static function getExtension(string $file): string
