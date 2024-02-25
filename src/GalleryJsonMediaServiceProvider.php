@@ -75,13 +75,13 @@ class GalleryJsonMediaServiceProvider extends PackageServiceProvider
         FilamentIcon::register($this->getIcons());
 
         // Handle Stubs
-        if (app()->runningInConsole()) {
+        /*if (app()->runningInConsole()) {
             foreach (app(Filesystem::class)->files(__DIR__ . '/../stubs/') as $file) {
                 $this->publishes([
                     $file->getRealPath() => base_path("stubs/filament-json-media/{$file->getFilename()}"),
                 ], 'filament-json-media-stubs');
             }
-        }
+        }*/
 
         // Testing
         Testable::mixin(new TestsFilamentJsonMedia());
@@ -98,8 +98,8 @@ class GalleryJsonMediaServiceProvider extends PackageServiceProvider
     protected function getAssets(): array
     {
         return [
+            Css::make('gallery-json-media-styles', __DIR__ . '/../resources/dist/gallery-json-media.css')->loadedOnRequest(),
             AlpineComponent::make('gallery-json-media', __DIR__ . '/../resources/dist/components/gallery-json-media.js'),
-            Css::make('gallery-json-media-styles', __DIR__ . '/../resources/dist/gallery-json-media.css'),
             //Js::make('gallery-json-media-scripts', __DIR__ . '/../resources/dist/gallery-json-media.js'),
         ];
     }

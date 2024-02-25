@@ -15,8 +15,8 @@
         @else
             ax-load
         @endif
-        ax-load-src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc("gallery-json-media") }}"
-        x-load-css="[@js(\Filament\Support\Facades\FilamentAsset::getStyleHref("gallery-json-media"))]"
+        ax-load-src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc("gallery-json-media","webplusm/gallery-json-media") }}"
+        x-load-css="[@js(\Filament\Support\Facades\FilamentAsset::getStyleHref("gallery-json-media-styles","webplusm/gallery-json-media"))]"
         x-data="galleryFileUpload({
                      state : $wire.$entangle('{{ $getStatePath() }}'),
                      statePath : @js($getStatePath()),

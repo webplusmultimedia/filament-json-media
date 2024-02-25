@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 namespace WebplusMultimedia\GalleryJsonMedia\Form;
 
 use Bkwld\Croppa\Facades\Croppa;
@@ -143,7 +143,7 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
                 'name'      => $fileName,
                 'size'      => data_get($file, 'size'),
                 'mime_type' => $mimeType,
-                'url'       => $this->isImageFile($mimeType) and !$this->isSvgFile($mimeType)
+                'url'       => ($this->isImageFile($mimeType) and !$this->isSvgFile($mimeType))
                         ? url(Croppa::url($storage->url($fileName), $this->getThumbWidth()))
                         : $storage->url($fileName),
             ];

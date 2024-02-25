@@ -1,5 +1,5 @@
 <?php
 
-use GalleryJsonMedia\FilamentJsonMedia\Tests\TestCase;
+use WebplusMultimedia\GalleryJsonMedia\Tests\TestCase;
 
 uses(TestCase::class)->in(__DIR__);
