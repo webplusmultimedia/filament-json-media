@@ -1,24 +1,27 @@
 <?php
+
 declare(strict_types=1);
+
 namespace WebplusMultimedia\GalleryJsonMedia\Form;
 
 use Bkwld\Croppa\Facades\Croppa;
+use Closure;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\BaseFileUpload;
 use Filament\Forms\Components\Concerns\HasAffixes;
 use Filament\Forms\Components\Contracts\HasAffixActions;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use League\Flysystem\UnableToCheckFileExistence;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
-use Closure;
 use WebplusMultimedia\GalleryJsonMedia\Form\Concerns\HasCustomProperties;
 use WebplusMultimedia\GalleryJsonMedia\Form\Concerns\HasThumbProperties;
 
 class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
 {
-    use HasCustomProperties;
     use HasAffixes;
+    use HasCustomProperties;
     use HasThumbProperties;
 
     private string $baseDirectory = 'web-attachements';
@@ -26,7 +29,6 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
     protected string $view = 'gallery-json-media::gallery-file-upload';
 
     protected string $acceptedFileText = '.jpg, .svg, .png, .webp, .avif';
-
 
     public function documents(): static
     {
@@ -57,12 +59,11 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
             $this->image();
         }
 
-
         $this->suffixActions([
-            static fn(GalleryJsonMedia $component): ?Action => $component->customPropertiesAction(),
+            static fn (GalleryJsonMedia $component): ?Action => $component->customPropertiesAction(),
         ]);
 
-        $this->afterStateHydrated(static function (GalleryJsonMedia $component, array | null $state): void {
+        $this->afterStateHydrated(static function (GalleryJsonMedia $component, ?array $state): void {
             if (blank($state)) {
                 $component->state([]);
 
@@ -76,9 +77,9 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
             }
             $files = collect($state)
                 ->map(static function (array $file) {
-                    $file["deleted"] = false;
+                    $file['deleted'] = false;
 
-                    return [(string) \Str::uuid() => $file];
+                    return [(string) Str::uuid() => $file];
                 });
 
             $component->state($files->collapse()
@@ -86,7 +87,7 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
 
         });
 
-        $this->afterStateUpdated(static function (GalleryJsonMedia $component, array | null $state) {
+        $this->afterStateUpdated(static function (GalleryJsonMedia $component, ?array $state) {
             if (blank($state)) {
                 return;
             }
@@ -94,16 +95,16 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
             $newState = collect($state)
                 ->map(static function ($file, $key) use ($component) {
                     if ($file instanceof TemporaryUploadedFile) {
-                        $file = ['file'             => $file,
-                                 'size'             => $file->getSize(),
-                                 "disk"             => $component->getDiskName(),
-                                 "mime_type"        => $file->getMimeType(),
-                                 "deleted"          => false,
-                                 "customProperties" => ["alt" => str($file->getClientOriginalName())->beforeLast('.')
-                                     ->headline()
-                                     ->lower()
-                                     ->ucfirst()
-                                     ->value(), "title"       => NULL]
+                        $file = ['file' => $file,
+                            'size' => $file->getSize(),
+                            'disk' => $component->getDiskName(),
+                            'mime_type' => $file->getMimeType(),
+                            'deleted' => false,
+                            'customProperties' => ['alt' => str($file->getClientOriginalName())->beforeLast('.')
+                                ->headline()
+                                ->lower()
+                                ->ucfirst()
+                                ->value(), 'title' => null],
                         ];
                     }
 
@@ -129,6 +130,7 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
             if ($file['deleted']) {
                 continue;
             }
+
             try {
                 if (! $storage->exists(data_get($file, 'file'))) {
                     continue;
@@ -140,10 +142,10 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
             $fileName = data_get($file, 'file');
             $mimeType = data_get($file, 'mime_type');
             $url[$fileKey] = [
-                'name'      => $fileName,
-                'size'      => data_get($file, 'size'),
+                'name' => $fileName,
+                'size' => data_get($file, 'size'),
                 'mime_type' => $mimeType,
-                'url'       => ($this->isImageFile($mimeType) and !$this->isSvgFile($mimeType))
+                'url' => ($this->isImageFile($mimeType) and ! $this->isSvgFile($mimeType))
                         ? url(Croppa::url($storage->url($fileName), $this->getThumbWidth()))
                         : $storage->url($fileName),
             ];
@@ -175,7 +177,7 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
 
                 $storage->delete($file['file']);
 
-                return NULL;
+                return null;
             }
 
             if (! $file['file'] instanceof TemporaryUploadedFile) {
@@ -194,8 +196,8 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
                 'file' => $file['file'],
             ]);
 
-            if ($storedFile === NULL) {
-                return NULL;
+            if ($storedFile === null) {
+                return null;
             }
 
             $this->storeFileName($storedFile, $file['file']->getClientOriginalName());
@@ -206,7 +208,11 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
         }, Arr::wrap($this->getState())));
 
         // purge files , we dnt want deleted in json
-        $state = collect($state)->map(function($file) { unset($file['deleted']); return $file;})->all();
+        $state = collect($state)->map(function ($file) {
+            unset($file['deleted']);
+
+            return $file;
+        })->all();
         $this->state($state);
     }
 
@@ -214,7 +220,6 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
     {
         return $this->baseDirectory . '/' . parent::getDirectory();
     }
-
 
     public function getValidationRules(): array
     {
@@ -233,9 +238,9 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
 
         $rules[] = function (string $attribute, array $value, Closure $fail): void {
 
-            $files = array_filter($value, fn(array $file): bool => $file['file'] instanceof TemporaryUploadedFile);
+            $files = array_filter($value, fn (array $file): bool => $file['file'] instanceof TemporaryUploadedFile);
 
-            $files = collect($files)->map(fn($val) => $val['file'])->toArray();
+            $files = collect($files)->map(fn ($val) => $val['file'])->toArray();
             $name = $this->getName();
             $validator = Validator::make(
                 [$name => $files],
@@ -255,10 +260,10 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
     public function removeUploadedFile(string $fileKey): string | TemporaryUploadedFile | null
     {
         $files = $this->getState();
-        $file = $files[$fileKey] ?? NULL;
+        $file = $files[$fileKey] ?? null;
 
         if (! $file) {
-            return NULL;
+            return null;
         }
 
         if (is_string($file['file'])) {

@@ -224,12 +224,12 @@ export function galleryFileUpload(
             },
             ['@dragover.prevent.stop']() {
 
-                if (this.$event.target.classList.contains('la-dropZone')) {
+                if (this.$event.target.classList.contains('wm-json-media-dropzone')) {
 
                 }
             },
             async ['@drop.prevent.stop']() {
-                if (this.$event.target.classList.contains('la-dropzone')) {
+                if (this.$event.target.classList.contains('wm-json-media-dropzone')) {
 
                     await this.saveFilesUsing(this.$event.dataTransfer.files)
                     this.$refs.dropzone.classList.remove('border-primary-500', 'text-primary-500')

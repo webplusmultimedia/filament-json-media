@@ -60,8 +60,7 @@
                accept="{{  implode(',',Arr::wrap($getAcceptedFileTypes())) }}"
         >
         <div @class([
-            "la-dropzone flex items-center justify-center w-full py-3 border border-dashed rounded-lg border-gray-300  text-gray-400 transition
-            hover:border-primary-400 dark:border-gray-400/50 dark:bg-gray-800 dark:hover:border-primary-600 dark:text-white/80",
+            "wm-json-media-dropzone",
         ])
              :class="{'pointer-events-none opacity-40' : startUpload}"
 
@@ -82,12 +81,12 @@
         <div class="flex justify-self-end space-y-2">
             <div class="flex gap-x-4 mt-2">
                 <button type="button" x-bind="leftArrow"
-                        class="text-slate-400 hover:text-slate-500 p-1 rounded-full border"
+                        class="wm-btn"
                 >
                     @svg(name: 'heroicon-c-chevron-left',class: 'w-5 h-5')
                 </button>
                 <button type="button" x-bind="rightArrow"
-                        class="text-slate-400 hover:text-slate-500 p-1 rounded-full border"
+                        class="wm-btn"
                 >
                     @svg(name: 'heroicon-c-chevron-right',class: 'w-5 h-5')
                 </button>
@@ -118,7 +117,7 @@
                         @dragover="updateListOrder($event)"
                         draggable="false"
                         :class="{
-                            'opacity-25': indexBeingDragged === fileIndex,
+                            'opacity-25': indexBeingDragged === fileIndex
                         }"
 
                     >
