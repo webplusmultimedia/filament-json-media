@@ -51,7 +51,7 @@ export function checkFile(file) {
             return this
         },
         check() {
-            return !checkFileType(file, this.acceptedFileTypes)
+            return !checkFileType(file, this._acceptedFileTypes)
                 || !checkMaxSize(file, this._maxSize)
                 || !checkMinSize(file, this._minSize)
         }

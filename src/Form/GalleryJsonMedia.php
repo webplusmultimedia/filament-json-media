@@ -26,7 +26,7 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
 
     private string $baseDirectory = 'web-attachements';
 
-    protected string $view = 'gallery-json-media::gallery-file-upload';
+    protected string $view = 'gallery-json-media::forms.gallery-file-upload';
 
     protected string $acceptedFileText = '.jpg, .svg, .png, .webp, .avif';
 

@@ -70,11 +70,11 @@
              x-bind="dropZone"
              x-show="canUpload"
         >
-            <div class="flex gap-3" x-ref="ladroptitle">
+            <div class="flex gap-3 pointer-events-none" x-ref="ladroptitle">
                 @svg(name: 'heroicon-o-document-arrow-up',class:"w-10 h-auto text-slate-500" )
                 <div class="flex flex-col x-space-y-2">
                     <span>Drag & Drop ou cliquer ICI</span>
-                    <span class="text-slate-400" x-text="@js($getAcceptFileText())"></span>
+                    <span x-text="@js($getAcceptFileText())"></span>
                 </div>
             </div>
         </div>

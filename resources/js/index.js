@@ -232,20 +232,15 @@ export function galleryFileUpload(
                 if (this.$event.target.classList.contains('wm-json-media-dropzone')) {
 
                     await this.saveFilesUsing(this.$event.dataTransfer.files)
-                    this.$refs.dropzone.classList.remove('border-primary-500', 'text-primary-500')
-                    this.$refs.ladroptitle.classList.remove('pointer-events-none')
-                    this.$refs.ladroptitle.classList.add('pointer-events-auto')
-
+                    this.$refs.dropzone.classList.remove('wm-dropzone')
                 }
             },
             ['@dragenter.prevent.stop']() {
-                this.$refs.dropzone.classList.add('border-primary-500', 'text-primary-500')
-                this.$refs.ladroptitle.classList.remove('pointer-events-auto')
-                this.$refs.ladroptitle.classList.add('pointer-events-none')
+                this.$refs.dropzone.classList.add('wm-dropzone')
             },
             ['@dragleave.prevent.stop']() {
                 if (this.$event.target === this.$refs.dropzone) {
-                    this.$refs.dropzone.classList.remove('border-primary-500', 'text-primary-500')
+                    this.$refs.dropzone.classList.remove('wm-dropzone')
                 }
                 return false
             },
