@@ -14,7 +14,7 @@ final class Media implements CanDeleteMedia, Htmlable, Stringable
 {
     private string $svgMimeType = 'image/svg+xml';
 
-    protected string $view = 'gallery-json-media::media';
+    protected string $view = 'gallery-json-media::json-media.media';
 
     public function __construct(
         protected array $content,
