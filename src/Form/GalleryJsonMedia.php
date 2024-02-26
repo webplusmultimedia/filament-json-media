@@ -24,30 +24,28 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
     use HasCustomProperties;
     use HasThumbProperties;
 
-    private string $baseDirectory = 'web-attachements';
-
     protected string $view = 'gallery-json-media::forms.gallery-file-upload';
 
-    protected string $acceptedFileText = '.jpg, .svg, .png, .webp, .avif';
+    protected ?string $acceptedFileText = NULL;
 
     public function documents(): static
     {
-        $this->acceptedFileTypes = ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/wps-office.xlsx', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/wps-office.docx', 'application/pdf'];
-        $this->acceptedFileText = '.pdf, .doc(x), .xls(x)';
+        $this->acceptedFileTypes = config('gallery-json-media.form.default.document-accepted-file-type');
+        $this->acceptedFileText = config('gallery-json-media.form.default.document-accepted-text');
 
         return $this;
     }
 
     public function image(): static
     {
-        $this->acceptedFileTypes = ['image/jpeg', 'image/png', 'image/svg+xml', 'image/webp', 'image/avif'];
+        $this->acceptedFileTypes = config('gallery-json-media.form.default.image-accepted-file-type');
 
         return $this;
     }
 
     public function getAcceptFileText(): string
     {
-        return $this->acceptedFileText;
+        return $this->acceptedFileText ?? config('gallery-json-media.form.default.image-accepted-text');
     }
 
     protected function setUp(): void
@@ -219,7 +217,7 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
 
     public function getDirectory(): ?string
     {
-        return $this->baseDirectory . '/' . parent::getDirectory();
+        return config('gallery-json-media.root-directory','web-attachments') . '/' . parent::getDirectory();
     }
 
     public function getValidationRules(): array

@@ -16,6 +16,7 @@
     --gallery-file-snap-x: proximity;
     --gallery-file-btn-delete-color: #ff1a1a;
     --gallery-file-btn-edit-color: #7ceb54;
+    --wm-progress : 0;
 
     display: flex;
     gap: 1rem;
@@ -68,10 +69,14 @@
         }
 
         .file-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
             height: 2px;
             border-radius: 2rem;
             background: orange;
-            width: 0;
+            width: var(--wm-progress);
         }
 
         .gallery-footer {

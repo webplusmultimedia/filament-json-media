@@ -79,7 +79,9 @@
                 </div>
             </div>
         </div>
-        <div class="flex justify-self-end space-y-2">
+        <div class="flex justify-self-end space-y-2"
+            x-show="uploadFiles.length"
+        >
             <div class="flex gap-x-4 mt-2">
                 <button type="button" x-bind="leftArrow"
                         class="wm-btn"
@@ -132,7 +134,7 @@
                                 <div style="overflow: hidden;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 1;"
                                      x-text="getFileName(file.name)"></div>
                                 <div x-text="getHumanSize(file.size)"></div>
-                                <div class="file-progress" :style="file.is_new && { width : `${file.progress}%`}"></div>
+                                <div class="file-progress" :style="{ '--wm-progress' : `calc(${file.progress??0} * 1%)`}"></div>
                             </div>
                             <div class="flex w-full pointer-events-none">
                                 <img :src="file.url" :alt="file.name" class="object-cover w-full" loading="lazy">
