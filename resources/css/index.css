@@ -1,11 +1,7 @@
 /*@import '../../vendor/filament/filament/resources/css/theme.css';*/
 @tailwind utilities;
-.wm-json-media-dropzone{
-    @apply  flex items-center justify-center w-full py-3 border border-dashed rounded-lg border-gray-300  text-gray-400 transition
-    hover:border-primary-400 dark:border-gray-400/50 dark:bg-gray-800 dark:hover:border-primary-600 dark:text-white/80;
-    &.wm-dropzone{
-        @apply border-primary-600 text-primary-600
-    }
+.wm-json-media-dropzone.wm-dropzone{
+        @apply border-primary-600 text-primary-600 dark:border-primary-600 dark:text-primary-600;
 }
 .wm-btn{
       @apply transition text-gray-800/40 hover:text-gray-800 p-1 rounded-full border border-gray-800/40 hover:border-gray-800 dark:text-gray-300/40 dark:hover:text-gray-300   dark:rounded-full dark:border dark:border-gray-300/40 dark:hover:border-gray-300;

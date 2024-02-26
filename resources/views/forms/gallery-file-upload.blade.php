@@ -60,7 +60,8 @@
                accept="{{  implode(',',Arr::wrap($getAcceptedFileTypes())) }}"
         >
         <div @class([
-            "wm-json-media-dropzone",
+            "wm-json-media-dropzone flex items-center justify-center w-full py-3 border border-dashed rounded-lg border-gray-300  text-gray-400 transition
+    hover:border-primary-400 dark:border-gray-400/50 dark:bg-gray-800 dark:hover:border-primary-600 dark:text-white/80",
         ])
              :class="{'pointer-events-none opacity-40' : startUpload}"
 
@@ -73,7 +74,7 @@
             <div class="flex gap-3 pointer-events-none" x-ref="ladroptitle">
                 @svg(name: 'heroicon-o-document-arrow-up',class:"w-10 h-auto text-slate-500" )
                 <div class="flex flex-col x-space-y-2">
-                    <span>Drag & Drop ou cliquer ICI</span>
+                    <span>{{ trans('gallery-json-media::gallery-json-media.Drag&Drop') }}</span>
                     <span x-text="@js($getAcceptFileText())"></span>
                 </div>
             </div>
