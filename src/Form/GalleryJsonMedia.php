@@ -52,11 +52,13 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
     protected function setUp(): void
     {
         parent::setUp();
-        $this->hiddenLabel();
+        //$this->hiddenLabel();
         $this->columnSpanFull();
         if (! $this->getAcceptedFileTypes()) {
             $this->image();
         }
+
+        $this->multiple();
 
         $this->suffixActions([
             static fn (GalleryJsonMedia $component): ?Action => $component->customPropertiesAction(),

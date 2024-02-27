@@ -181,6 +181,7 @@
                                                     'pointer-events-auto' : !startUpload && file.is_success && !indexBeingDragged,
                                                     'pointer-events-none opacity-40' : startUpload || !file.is_success
                                                 }"
+                                                :disabled="isFire"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                  stroke-width="2.5" stroke="currentColor" class="w-5 h-5" x-show="!isFire" aria-hidden="true" data-slot="icon"
@@ -209,7 +210,8 @@
                                                     'pointer-events-none opacity-40' : startUpload || !file.is_success
                                                 }"
                                                 x-on:click="isFire = true;await $wire.mountFormComponentAction(statePath, customPropertyActionName, {key : file.filekey});isFire = false;"
-                                                x-show="hasCustomPropertiesAction"
+                                                wire:loading.attr="disabled"
+                                                :disabled="isFire"
                                         >
                                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" class="h-5 w-5" aria-hidden="true" data-slot="icon"
                                                  x-show="!isFire"

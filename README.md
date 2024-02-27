@@ -8,7 +8,7 @@
 
 
 This package add a gallery images/documents for filament V3.x and fluents api for front-end in Laravel to display images, responsive images, url link for documents ...
-
+[![json-media.webp](https://i.postimg.cc/8Cn6Zttf/json-media.webp)](https://postimg.cc/wtLMvcK9)
 ## Installation
 
 You can install the package via composer:
@@ -29,18 +29,37 @@ Optionally, you can publish the views using
 php artisan vendor:publish --tag="webplusm-json-media-views"
 ```
 
-This is the contents of the published config file:
-
+## Usage
+### In Filament Forms
 ```php
-return [
-];
+use WebplusMultimedia\GalleryJsonMedia\Form\GalleryJsonMedia;
+GalleryJsonMedia::make('images')
+    ->directory('page')
+    ->reorderable()
+    ->preserveFilenames()
+    ->acceptedFileTypes()
+    ->disk()
+    ->visibility() // only public for now
+    ->maxSize(4 * 1024)
+    ->minSize()
+    ->maxFiles()
+    ->minFiles()
+    ->image() // only images
+    ->document() // only documents (eg: pdf, doc, xls,...)
+    ->downloadable()
+    ->deletable()
+    ->withCustomProperties(
+       customPropertiesSchema: [                                     
+            ...
+        ],
+       editCustomPropertiesOnSlideOver: true,
+       editCustomPropertiesTitle: "Edit customs properties")
 ```
 
-## Usage
-
+### In Filament Tables
 ```php
-$filamentJsonMedia = new GalleryJsonMedia\FilamentJsonMedia();
-echo $filamentJsonMedia->echoPhrase('Hello, GalleryJsonMedia!');
+use WebplusMultimedia\GalleryJsonMedia\Tables\Columns\GalleryJsonMediaColumn;
+GalleryJsonMediaColumn::make('images')
 ```
 
 ## Testing
@@ -59,12 +78,11 @@ Please see [CONTRIBUTING](.github/CONTRIBUTING.md) for details.
 
 ## Security Vulnerabilities
 
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
+Please review [our security policy](https://github.com/webplusmultimedia/filament-json-media/security/policy) on how to report security vulnerabilities.
 
 ## Credits
 
 - [webplusm](https://github.com/webplusmultimedia)
-- [All Contributors](../../contributors)
 
 ## License
 
