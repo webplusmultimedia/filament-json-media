@@ -26,26 +26,27 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
 
     protected string $view = 'gallery-json-media::forms.gallery-file-upload';
 
-    protected ?string $acceptedFileText = NULL;
+    protected ?string $acceptedFileText = null;
 
-    public function documents(): static
+    public function document(): static
     {
-        $this->acceptedFileTypes = config('gallery-json-media.form.default.document-accepted-file-type');
-        $this->acceptedFileText = config('gallery-json-media.form.default.document-accepted-text');
+        $this->acceptedFileTypes = config('gallery-json-media.form.default.document_accepted_file_type');
+        $this->acceptedFileText = config('gallery-json-media.form.default.document_accepted_text');
 
         return $this;
     }
 
     public function image(): static
     {
-        $this->acceptedFileTypes = config('gallery-json-media.form.default.image-accepted-file-type');
+        $this->acceptedFileTypes = config('gallery-json-media.form.default.image_accepted_file_type');
+        $this->acceptedFileText = config('gallery-json-media.form.default.image_accepted_text');
 
         return $this;
     }
 
     public function getAcceptFileText(): string
     {
-        return $this->acceptedFileText ?? config('gallery-json-media.form.default.image-accepted-text');
+        return $this->acceptedFileText ?? config('gallery-json-media.form.default.image_accepted_text');
     }
 
     protected function setUp(): void
@@ -217,7 +218,7 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
 
     public function getDirectory(): ?string
     {
-        return config('gallery-json-media.root-directory','web-attachments') . '/' . parent::getDirectory();
+        return config('gallery-json-media.root_directory', 'web-attachments') . '/' . parent::getDirectory();
     }
 
     public function getValidationRules(): array

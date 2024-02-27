@@ -69,6 +69,7 @@ export function galleryFileUpload(
             }
             return name;
         },
+        /**@param {FileList} filesList */
         saveFilesUsing(filesList) {
             /**@type {HTMLElement} */
             const wrapper = this.$refs.galleryImages
@@ -95,11 +96,11 @@ export function galleryFileUpload(
                 this.uploadFiles[fileKey].progress = progressEvent.detail.progress
             }
 
-            const nbFilesUpload = this.uploadFiles.length
+            const nbFilesUpload = filesList.length
             let filesUpload = 0
             if (nbFilesUpload) {
                 if (!checkMaxFile(filesList, maxFiles, nbFilesUpload)) {
-                    new Notification().title('Max Files reach').danger().send()
+                    new FilamentNotification().title('Max Files reach').danger().send()
                     return
                 }
                 if (!this.startUpload) {
@@ -116,8 +117,10 @@ export function galleryFileUpload(
                         .minSize(minSize)
                         .check()
                     ) {
+                        new FilamentNotification().title(`File "${file.name}" invalid`).warning().send()
                         continue
                     }
+
                     let newFile = normalizeFileToShow(file, uuid())
                     if (newFile) {
                         this.uploadFiles.push({...newFile})

@@ -58,6 +58,7 @@
             background-image: linear-gradient(rgba(40, 40, 40, 0.78) 45%, rgba(26, 26, 26, 0));
             transition: all 0.5s ease-in-out;
             pointer-events: none;
+            z-index: 1;
         }
 
         .webplusm-finish-uploading {
@@ -88,7 +89,6 @@
             flex-shrink: 0;
             flex-direction: row;
             align-items: stretch;
-
             place-content: space-between;
             color: white;
             pointer-events: none;
@@ -97,9 +97,7 @@
                 width: fit-content;
                 background-color: rgba(26, 26, 26, 0.72);
                 transition: all 0.2s ease-in-out;
-                pointer-events: auto;
                 padding-inline: 0.53rem;
-
                 z-index: 1;
 
                 &.reorder {

@@ -64,7 +64,6 @@
     hover:border-primary-400 dark:border-gray-400/50 dark:bg-gray-800 dark:hover:border-primary-600 dark:text-white/80",
         ])
              :class="{'pointer-events-none opacity-40' : startUpload}"
-
              role="button"
              x-ref="dropzone"
              x-cloak
@@ -134,16 +133,28 @@
                                 <div style="overflow: hidden;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 1;"
                                      x-text="getFileName(file.name)"></div>
                                 <div x-text="getHumanSize(file.size)"></div>
-                                <div class="file-progress" :style="{ '--wm-progress' : `calc(${file.progress??0} * 1%)`}"></div>
                             </div>
                             <div class="flex w-full pointer-events-none">
-                                <img :src="file.url" :alt="file.name" class="object-cover w-full" loading="lazy">
+                                <img :src="file.url" :alt="file.name" class="object-cover w-full" loading="lazy"
+                                    :class="{ 'blur-[2px]' : startUpload && file.is_new && !file.is_success }"
+                                >
+                            </div>
+                            <div class="absolute inset-0 m-auto  w-28 h-28 flex items-center justify-center rounded-full z-[3] pointer-events-none"
+                                :style="{'--wm-progress' : `calc(${file.progress??0} * 1%)`,backgroundImage: `conic-gradient(white var(--wm-progress), transparent var(--wm-progress))`}"
+                                 x-show="startUpload && file.is_new && !file.is_success"
+                            >
+                                    <div class="flex items-center justify-center text-xl font-medium bg-gray-700 rounded-full text-white dark:text-white w-24 h-24" x-text="(file.progress??0)+'%'"></div>
                             </div>
                             <div class="gallery-footer" x-data="{ itemDrag : false }">
                                 <div class="flex">
                                     @if($isReorderable())
                                         <button type="button" class="gallery-icon reorder justify-self-start hidden sm:block"
-                                                :class="{'grabbing-cursor' : startGrabbing , 'grab-cursor' : !startGrabbing,'pointer-events-none' : !file.is_success || indexBeingDragged}"
+                                                :class="{
+                                                    'grabbing-cursor' : startGrabbing ,
+                                                    'grab-cursor' : !startGrabbing,
+                                                    'pointer-events-auto' : !startUpload && file.is_success && !indexBeingDragged,
+                                                    'pointer-events-none opacity-40' : startUpload || !file.is_success || indexBeingDragged
+                                                }"
                                                 x-on:mousedown.stop="startGrabbing = true;setParentDraggable($event)"
                                                 x-on:mouseup.stop="startGrabbing = false"
                                                 @dragover.stop
@@ -166,12 +177,13 @@
                                                 @dragover.stop.prevent
                                                 x-on:click.stop="isFire = true;file.is_new?await removeUploadFile(file.filekey,fileIndex):await deleteUploadFile(file.filekey,fileIndex);isFire = false;"
                                                 x-data="{ isFire : false }"
-                                                :class="{'pointer-events-none' : file.is_success}"
-                                                x-show="isDeletable"
+                                                :class="{
+                                                    'pointer-events-auto' : !startUpload && file.is_success && !indexBeingDragged,
+                                                    'pointer-events-none opacity-40' : startUpload || !file.is_success
+                                                }"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                  stroke-width="2.5" stroke="currentColor" class="w-5 h-5" x-show="!isFire" aria-hidden="true" data-slot="icon"
-
                                             >
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                       d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -192,7 +204,10 @@
                                         <button x-data="{ isFire : false }" type="button"
                                                 @dragover.stop.prevent
                                                 class="gallery-icon edit"
-                                                :class="{'pointer-events-none' : file.is_success}"
+                                                :class="{
+                                                    'pointer-events-auto' : !startUpload && file.is_success && !indexBeingDragged,
+                                                    'pointer-events-none opacity-40' : startUpload || !file.is_success
+                                                }"
                                                 x-on:click="isFire = true;await $wire.mountFormComponentAction(statePath, customPropertyActionName, {key : file.filekey});isFire = false;"
                                                 x-show="hasCustomPropertiesAction"
                                         >
@@ -221,6 +236,5 @@
                 </template>
             </ul>
         </div>
-
     </div>
 </x-dynamic-component>
