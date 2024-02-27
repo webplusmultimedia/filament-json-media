@@ -1,9 +1,9 @@
 # A Gallery media (Json) for Filament
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/daniel-ramesay/filament-json-media.svg?style=flat-square)](https://packagist.org/packages/daniel-ramesay/filament-json-media)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/daniel-ramesay/filament-json-media/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/daniel-ramesay/filament-json-media/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/daniel-ramesay/filament-json-media/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/daniel-ramesay/filament-json-media/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/daniel-ramesay/filament-json-media.svg?style=flat-square)](https://packagist.org/packages/daniel-ramesay/filament-json-media)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/webplusm/gallery-json-media.svg?style=flat-square)](https://packagist.org/packages/webplusm/gallery-json-media)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/webplusmultimedia/filament-json-media/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/webplusmultimedia/filament-json-media/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/webplusmultimedia/filament-json-media/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/webplusmultimedia/filament-json-media/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/webplusm/gallery-json-media.svg?style=flat-square)](https://packagist.org/packages/webplusm/gallery-json-media)
 
 
 
@@ -14,7 +14,7 @@ This package add a gallery images/documents for filament V3.x and fluents api fo
 You can install the package via composer:
 
 ```bash
-composer require webplusm/filament-json-media
+composer require webplusm/gallery-json-media
 ```
 
 You can publish the config file with:
