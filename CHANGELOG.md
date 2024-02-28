@@ -2,6 +2,10 @@
 
 All notable changes to `filament-json-media` will be documented in this file.
 
+## can upload documents - 2024-02-28
+
+**Full Changelog**: https://github.com/webplusmultimedia/filament-json-media/compare/v1.0.0...v1.0.1
+
 ## form field + column json media gallery - 2024-02-26
 
 add: filament form field + column json media gallery
