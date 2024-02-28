@@ -1,4 +1,4 @@
-import {checkFile, checkMaxFile, humanFileSize, normalizeFileToShow, uuid} from "./support/FileInfo.js";
+import { checkFile, checkMaxFile, humanFileSize, normalizeFileToShow, uuid } from './support/FileInfo.js'
 import { contentFile } from './support/svgDocumentFiles.js'
 
 export function galleryFileUpload(
@@ -21,7 +21,7 @@ export function galleryFileUpload(
         removeUploadedFileUsing,
         customPropertyActionName,
         reorderUploadedFilesUsing,
-    }
+    },
 ) {
     return {
         state,
@@ -60,7 +60,7 @@ export function galleryFileUpload(
             )
         },
         /**@param {String} name */
-        getFileName: function (name) {
+        getFileName: function(name) {
             if (name.startsWith('blob:') || name.startsWith('livewire:')) {
                 return name
             }
@@ -68,16 +68,16 @@ export function galleryFileUpload(
             if (last_slash !== -1) {
                 return name.slice(last_slash + 1)
             }
-            return name;
+            return name
         },
-        getContentImage(file){
+        getContentImage(file) {
             return contentFile(file).getFile()
         },
         /**@param {FileList} filesList */
         saveFilesUsing(filesList) {
             /**@type {HTMLElement} */
             const wrapper = this.$refs.galleryImages
-            const stopUploading = function (component) {
+            const stopUploading = function(component) {
                 let rest = component.uploadFiles.filter(f => f.is_success === false).length
 
                 if (rest === 0) {
@@ -127,7 +127,7 @@ export function galleryFileUpload(
 
                     let newFile = normalizeFileToShow(file, uuid())
                     if (newFile) {
-                        this.uploadFiles.push({...newFile})
+                        this.uploadFiles.push({ ...newFile })
                         this.uploadUsing(newFile.filekey, file, success, error, progress, this.uploadFiles.length - 1)
                         filesUpload++
                     }
@@ -135,7 +135,7 @@ export function galleryFileUpload(
                 setTimeout(() => {
                     wrapper.scrollTo({
                         left: wrapper.scrollWidth,
-                        behavior: "smooth",
+                        behavior: 'smooth',
                     })
                 }, 30)
                 if (filesUpload === 0) {
@@ -151,22 +151,27 @@ export function galleryFileUpload(
                 const filesList = this.$event.target.files
 
                 await this.saveFilesUsing(filesList)
-            }
+            },
         },
         onScrolling: {
             ['@wheel.stop'](e) {
                 const nbFiles = Object.entries(this.uploadFiles).length
-                const wrapper = this.$refs.galleryImages
-                if ((nbFiles * 320) > wrapper.clientWidth) {
-                    e.preventDefault()
-                    let delta = e.deltaY < 0 ? -300 : 300
+                /** @var {HTMLElement} wrapper */
+                const wrapper = this.$refs.galleryImages,
+                    /** @var {HTMLElement} ulWrapper */
+                    ulWrapper = this.$refs.ulGalleryWrapper
 
-                    if ((e.deltaY > 0 && wrapper.scrollLeft >= 0 && (wrapper.scrollLeft + delta) < wrapper.clientWidth)
+                if ((nbFiles * 320) > wrapper.clientWidth) {
+
+                    let delta = e.deltaY < 0 ? -280 : 280
+
+                    if ((e.deltaY > 0 && wrapper.scrollLeft >= 0 && (wrapper.scrollLeft + wrapper.clientWidth) < ulWrapper.clientWidth)
                         || (e.deltaY < 0 && wrapper.scrollLeft > 0)
                     ) {
+                        e.preventDefault()
                         wrapper.scrollTo({
                             left: wrapper.scrollLeft + delta,
-                            behavior: "smooth",
+                            behavior: 'smooth',
                         })
                     }
                 }
@@ -219,10 +224,10 @@ export function galleryFileUpload(
                 if (wrapper.scrollLeft > 0) {
                     wrapper.scroll({
                         left: wrapper.scrollLeft - 300,
-                        behavior: "smooth",
+                        behavior: 'smooth',
                     })
                 }
-            }
+            },
         },
         rightArrow: {
             ['@click.stop']() {
@@ -233,16 +238,16 @@ export function galleryFileUpload(
                 if (totalScroll < wrapper.scrollWidth) {
                     wrapper.scroll({
                         left: wrapper.scrollLeft + 300,
-                        behavior: "smooth",
+                        behavior: 'smooth',
                     })
                 }
-            }
+            },
         },
-        removeUploadFile: async function (filekey, index) {
+        removeUploadFile: async function(filekey, index) {
             await removeUploadedFileUsing(filekey)
             this.uploadFiles.splice(index, 1)
         },
-        deleteUploadFile: async function (filekey, index) {
+        deleteUploadFile: async function(filekey, index) {
             await deleteUploadedFileUsing(filekey)
             this.uploadFiles.splice(index, 1)
         },
@@ -254,7 +259,7 @@ export function galleryFileUpload(
             const wrapper = this.$refs.galleryImages
             return wrapper.querySelector(`div[id="id_${fileKey.replaceAll('-', '')}"]`)
         },
-        getUploadedFiles: async function () {
+        getUploadedFiles: async function() {
             const uploadedFiles = await getUploadedFilesUsing()
 
             this.fileKeyIndex = uploadedFiles ?? {}
@@ -276,18 +281,18 @@ export function galleryFileUpload(
                     value.is_success = true
                     value.is_new = false
                     value.filekey = key
-                    obj.push({...value})
+                    obj.push({ ...value })
                     return obj
-                }, []);
+                }, [])
         },
-        getUpdateFileEntries: function () {
+        getUpdateFileEntries: function() {
             return Object.entries(this.state)
                 .map((value, key) => {
                     delete value.deleted
-                    return {key: value}
+                    return { key: value }
                 })
         },
-        dispatchFormEvent: function (name, detail = {}) {
+        dispatchFormEvent: function(name, detail = {}) {
             this.$el.closest('form')?.dispatchEvent(
                 new CustomEvent(name, {
                     composed: true,
@@ -296,7 +301,7 @@ export function galleryFileUpload(
                 }),
             )
         },
-        canUpload: function () {
+        canUpload: function() {
             if (!maxFiles) {
                 return true
             }
@@ -329,7 +334,7 @@ export function galleryFileUpload(
                 this.uploadFiles = await this.getFiles()
             })
 
-            this.$watch('sortKeys',async () => {
+            this.$watch('sortKeys', async () => {
                 await reorderUploadedFilesUsing(this.sortKeys)
             })
             this.$nextTick(async () => {
@@ -353,7 +358,7 @@ export function galleryFileUpload(
             // The original is needed for then the drag leaves the container
             this.originalIndexBeingDragged = event.target.getAttribute('x-ref')
             // Not entirely sure this is needed but moz recommended it (?)
-            event.dataTransfer.dropEffect = "copy"
+            event.dataTransfer.dropEffect = 'copy'
         },
         updateListOrder(event) {
             // This fires every time you drag over another list item

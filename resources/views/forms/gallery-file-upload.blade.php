@@ -99,19 +99,20 @@
              x-ref="galleryImages"
              x-bind="onScrolling"
         >
-            <ul x-data
-                class="flex gap-2 transition-all delay-150"
+            <ul role="list"
+                class="flex gap-2 transition-all duration-200"
                 @keydown.window.tab="usedKeyboard = true"
                 @dragenter.stop.prevent="dropcheck++"
                 @dragleave="dropcheck--;dropcheck || rePositionPlaceholder()"
                 @dragover.stop.prevent
                 @dragend="revertState()"
                 @drop.stop.prevent="getSort();resetState()"
+                x-ref="ulGalleryWrapper"
                 {{--:class="{'flex-wrap' : !stopDragging }"--}}
             >
 
                 <template x-for="(file, fileIndex) in uploadFiles" :key="fileIndex">
-                    <li class="image-file"
+                    <li class="image-file" role="listitem"
                         x-data="{startGrabbing: false}"
                         :data-id="file.filekey"
                         :x-ref="fileIndex"
