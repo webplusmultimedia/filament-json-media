@@ -23,7 +23,7 @@ export function normalizeFileToShow(file,uuid) {
     return {
         name: file.name,
         size: file.size,
-        type: file.type,
+        mime_type: file.type,
         is_new: true,
         is_success: false,
         error : false,

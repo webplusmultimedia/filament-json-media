@@ -156,12 +156,13 @@
                                                     'grabbing-cursor' : startGrabbing,
                                                     'grab-cursor' : !startGrabbing,
                                                     'pointer-events-auto' : !startUpload && file.is_success && !indexBeingDragged,
-                                                    'pointer-events-none opacity-40' : startUpload || !file.is_success || indexBeingDragged
+                                                    'pointer-events-none cursor-not-allowed' : startUpload || !file.is_success || indexBeingDragged
                                                 }"
                                                 x-on:mousedown.stop="startGrabbing = true;stopDragging = false;setParentDraggable($event)"
                                                 x-on:mouseup.stop="stopDragging = true;startGrabbing = false"
                                                 @dragover.stop
                                                 x-show="!itemDrag && !indexBeingDragged && isReorderable"
+                                                wire:loading.attr="disabled"
                                         >
                                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                                  xmlns="http://www.w3.org/2000/svg"
@@ -182,7 +183,7 @@
                                                 x-data="{ isFire : false }"
                                                 :class="{
                                                     'pointer-events-auto' : !startUpload && file.is_success && !indexBeingDragged,
-                                                    'pointer-events-none opacity-40' : startUpload || !file.is_success
+                                                    'pointer-events-none cursor-not-allowed' : startUpload || !file.is_success
                                                 }"
                                                 :disabled="isFire"
                                         >
@@ -210,7 +211,7 @@
                                                 class="gallery-icon edit"
                                                 :class="{
                                                     'pointer-events-auto' : !startUpload && file.is_success && !indexBeingDragged,
-                                                    'pointer-events-none opacity-40' : startUpload || !file.is_success
+                                                    'pointer-events-none cursor-not-allowed' : startUpload || !file.is_success
                                                 }"
                                                 x-on:click="isFire = true;await $wire.mountFormComponentAction(statePath, customPropertyActionName, {key : file.filekey});isFire = false;"
                                                 wire:loading.attr="disabled"
