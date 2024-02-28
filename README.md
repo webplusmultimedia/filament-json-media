@@ -20,13 +20,13 @@ composer require webplusm/gallery-json-media
 You can publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag="webplusm-json-media-config"
+php artisan vendor:publish --tag="gallery-json-media-config"
 ```
 
 Optionally, you can publish the views using
 
 ```bash
-php artisan vendor:publish --tag="webplusm-json-media-views"
+php artisan vendor:publish --tag="gallery-json-media-views"
 ```
 
 ## Usage

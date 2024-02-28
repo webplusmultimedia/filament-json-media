@@ -1,4 +1,5 @@
 import {checkFile, checkMaxFile, humanFileSize, normalizeFileToShow, uuid} from "./support/FileInfo.js";
+import { contentFile } from './support/svgDocumentFiles.js'
 
 export function galleryFileUpload(
     {
@@ -37,7 +38,7 @@ export function galleryFileUpload(
         fileKeyIndex: {},
         progress: 0,
         _startSwipeX: 0,
-        stopDragging: false,
+        stopDragging: true,
         getHumanSize(size) {
             return humanFileSize(size)
         },
@@ -68,6 +69,9 @@ export function galleryFileUpload(
                 return name.slice(last_slash + 1)
             }
             return name;
+        },
+        getContentImage(file){
+            return contentFile(file).getFile()
         },
         /**@param {FileList} filesList */
         saveFilesUsing(filesList) {
@@ -143,8 +147,6 @@ export function galleryFileUpload(
         },
         laFileInput: {
             async ['@change']() {
-
-
                 /**@var {FileList} filesList */
                 const filesList = this.$event.target.files
 
@@ -167,47 +169,9 @@ export function galleryFileUpload(
                             behavior: "smooth",
                         })
                     }
-
                 }
 
             },
-            /* ['@touchstart.stop']() {
-                 try {
-                     this._startSwipeX = this.$event.changedTouches[0].clientX
-                 }catch (e) {
-                     console.log(e)
-                 }
-
-             },
-             ['@touchend.stop'](e) {
-                 try {
-                     const nbFiles = Object.entries(this.uploadFiles).length
-                     const wrapper = this.$refs.galleryImages
-                     if ((nbFiles * 320) > wrapper.clientWidth) {
-                         e.preventDefault()
-                         const endSwipeX = this.$event.changedTouches[0].clientX,
-                             diffX = this._startSwipeX - endSwipeX
-
-                         if (Math.abs(diffX) < 30) return;
-
-                         const delta = Math.abs(diffX) < 80 ? 300
-                                 : Math.abs(diffX) < 180 ? 600
-                                     : Math.abs(diffX) < 380 ? 900
-                                         : 1200,
-                             total = diffX > 0 ? wrapper.scrollLeft + delta : wrapper.scrollLeft - delta
-
-                         wrapper.scrollTo({
-                             left: total,
-                             behavior: "smooth",
-                         })
-                         console.log(diffX, delta, total)
-                     }
-                 }catch (e) {
-                     console.log(e)
-                 }
-
-             },*/
-
         },
         pointerNone: {
             ['@pointerenter'](e) {
@@ -226,7 +190,6 @@ export function galleryFileUpload(
                 this.$refs.laFileInput.click()
             },
             ['@dragover.prevent.stop']() {
-
                 if (this.$event.target.classList.contains('wm-json-media-dropzone')) {
 
                 }

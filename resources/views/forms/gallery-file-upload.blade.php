@@ -100,13 +100,14 @@
              x-bind="onScrolling"
         >
             <ul x-data
-                class="flex gap-2"
+                class="flex gap-2 transition-all delay-150"
                 @keydown.window.tab="usedKeyboard = true"
                 @dragenter.stop.prevent="dropcheck++"
                 @dragleave="dropcheck--;dropcheck || rePositionPlaceholder()"
                 @dragover.stop.prevent
                 @dragend="revertState()"
                 @drop.stop.prevent="getSort();resetState()"
+                {{--:class="{'flex-wrap' : !stopDragging }"--}}
             >
 
                 <template x-for="(file, fileIndex) in uploadFiles" :key="fileIndex">
@@ -115,7 +116,7 @@
                         :data-id="file.filekey"
                         :x-ref="fileIndex"
                         @dragstart="dragstart($event)"
-                        @dragend="$event.target.setAttribute('draggable', false)"
+                        @dragend="$event.target.setAttribute('draggable', false);stopDragging = true"
                         @dragover="updateListOrder($event)"
                         draggable="false"
                         :class="{
@@ -134,10 +135,12 @@
                                      x-text="getFileName(file.name)"></div>
                                 <div x-text="getHumanSize(file.size)"></div>
                             </div>
-                            <div class="flex w-full pointer-events-none">
-                                <img :src="file.url" :alt="file.name" class="object-cover w-full" loading="lazy"
+                            <div class="flex w-full pointer-events-none object-cover" x-html="getContentImage(file)"
+                                 :class="{ 'blur-[2px]' : startUpload && file.is_new && !file.is_success }"
+                            >
+                               {{--<img :src="file.url" :alt="file.name" class="object-cover w-full" loading="lazy"
                                     :class="{ 'blur-[2px]' : startUpload && file.is_new && !file.is_success }"
-                                >
+                                >--}}
                             </div>
                             <div class="absolute inset-0 m-auto  w-28 h-28 flex items-center justify-center rounded-full z-[3] pointer-events-none"
                                 :style="{'--wm-progress' : `calc(${file.progress??0} * 1%)`,backgroundImage: `conic-gradient(white var(--wm-progress), transparent var(--wm-progress))`}"
@@ -150,13 +153,13 @@
                                     @if($isReorderable())
                                         <button type="button" class="gallery-icon reorder justify-self-start hidden sm:block"
                                                 :class="{
-                                                    'grabbing-cursor' : startGrabbing ,
+                                                    'grabbing-cursor' : startGrabbing,
                                                     'grab-cursor' : !startGrabbing,
                                                     'pointer-events-auto' : !startUpload && file.is_success && !indexBeingDragged,
                                                     'pointer-events-none opacity-40' : startUpload || !file.is_success || indexBeingDragged
                                                 }"
-                                                x-on:mousedown.stop="startGrabbing = true;setParentDraggable($event)"
-                                                x-on:mouseup.stop="startGrabbing = false"
+                                                x-on:mousedown.stop="startGrabbing = true;stopDragging = false;setParentDraggable($event)"
+                                                x-on:mouseup.stop="stopDragging = true;startGrabbing = false"
                                                 @dragover.stop
                                                 x-show="!itemDrag && !indexBeingDragged && isReorderable"
                                         >
