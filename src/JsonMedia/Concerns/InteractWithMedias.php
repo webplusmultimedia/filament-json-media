@@ -106,4 +106,9 @@ trait InteractWithMedias
         }
 
     }
+
+    public function mediasCount(string $field): int
+    {
+        return count($this->getMedias($field));
+    }
 }
