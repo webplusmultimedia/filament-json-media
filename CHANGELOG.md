@@ -2,6 +2,10 @@
 
 All notable changes to `filament-json-media` will be documented in this file.
 
+## JsonMediaEntry for Infolist - 2024-03-02
+
+**Full Changelog**: https://github.com/webplusmultimedia/filament-json-media/compare/v1.0.1...v1.1.0
+
 ## can upload documents - 2024-02-28
 
 **Full Changelog**: https://github.com/webplusmultimedia/filament-json-media/compare/v1.0.0...v1.0.1
