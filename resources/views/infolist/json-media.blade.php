@@ -1,6 +1,6 @@
-<div>
-    <div class="text-sm font-medium pb-3">
+<x-filament-infolists::entry-wrapper >
+    <x-filament-infolists::entry-wrapper.label >
         {{ $getLabel() }}
-    </div>
+    </x-filament-infolists::entry-wrapper.label>
     @include('gallery-json-media::table.gallery-column')
-</div>
+</x-filament-infolists::entry-wrapper>

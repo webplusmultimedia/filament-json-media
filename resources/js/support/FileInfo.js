@@ -15,6 +15,7 @@ export function humanFileSize(size) {
 /**
  * @param {File} file
  * @param {String} uuid
+ * @returns {Object}
  * **/
 export function normalizeFileToShow(file,uuid) {
     if (!(file instanceof File)) {
@@ -33,6 +34,10 @@ export function normalizeFileToShow(file,uuid) {
     }
 }
 
+/**
+ * @param {File} file
+ * @returns {Object}
+ * */
 export function checkFile(file) {
     return {
         _minSize : null,
@@ -60,7 +65,7 @@ export function checkFile(file) {
 
 /**
  * @param {FileList} files
- * @param {number|none} maxFiles
+ * @param {number|null} maxFiles
  * @param {number} nbFilesUpload
  *
  * @return {boolean}

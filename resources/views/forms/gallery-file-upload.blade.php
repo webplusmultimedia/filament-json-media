@@ -1,6 +1,6 @@
 @php
     use Illuminate\Support\Arr;
-    $suffixActions = Arr::wrap($getSuffixActions()) ;
+    $editPropertiesAction = $getAction($getCustomPropertiesActionName()) ;
 
 @endphp
 

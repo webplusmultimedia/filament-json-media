@@ -63,20 +63,20 @@ trait HasCustomProperties
         return $this->getCustomPropertiesSchema() !== null;
     }
 
-    public function customPropertiesAction(): ?Action
+    public function getCustomPropertiesAction(): ?Action
     {
         if ($this->hasCustomPropertiesAction()) {
             $action = Action::make($this->getCustomPropertiesActionName())
-                ->fillForm(static function (array $arguments, GalleryJsonMedia $component): array {
+                ->fillForm(static function (array $arguments, GalleryJsonMedia $component, Action $action): array {
                     $key = $arguments['key'];
                     $state = $component->getState();
                     if (! isset($state[$key])) {
-                        return [];
+                        $action->cancel();
                     }
 
                     return $state[$key]['customProperties'];
                 })
-                ->label('Edition des propriétés')
+                ->label(trans('gallery-json-media::gallery-json-media.title.edit-modal-form-for-customs-properties'))
                 ->form(fn (array $arguments) => $this->getMinimumFieldForCustomEditField($arguments, $this->getState()))
                 ->action(function (array $arguments, array $data, Form $form, GalleryJsonMedia $component) {
                     $key = $arguments['key'];
@@ -89,6 +89,7 @@ trait HasCustomProperties
                 })
                 ->iconButton()
                 ->icon('heroicon-o-bars-3-center-left')
+                ->tooltip(trans('gallery-json-media::gallery-json-media.tooltip.edit-button-custom-property'))
                 ->modalAlignment(Alignment::Center);
 
             if ($this->evaluate($this->editCustomPropertiesOnSlideOver)) {

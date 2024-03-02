@@ -8,8 +8,6 @@ use Bkwld\Croppa\Facades\Croppa;
 use Closure;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\BaseFileUpload;
-use Filament\Forms\Components\Concerns\HasAffixes;
-use Filament\Forms\Components\Contracts\HasAffixActions;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -18,9 +16,8 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use WebplusMultimedia\GalleryJsonMedia\Form\Concerns\HasCustomProperties;
 use WebplusMultimedia\GalleryJsonMedia\Form\Concerns\HasThumbProperties;
 
-class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
+class GalleryJsonMedia extends BaseFileUpload
 {
-    use HasAffixes;
     use HasCustomProperties;
     use HasThumbProperties;
 
@@ -59,9 +56,11 @@ class GalleryJsonMedia extends BaseFileUpload implements HasAffixActions
 
         $this->multiple();
 
-        $this->suffixActions([
-            static fn (GalleryJsonMedia $component): ?Action => $component->customPropertiesAction(),
-        ]);
+        $this->registerActions(
+            actions: [
+                static fn (GalleryJsonMedia $component): ?Action => $component->getCustomPropertiesAction(),
+            ]
+        );
 
         $this->afterStateHydrated(static function (GalleryJsonMedia $component, ?array $state): void {
             if (blank($state)) {
