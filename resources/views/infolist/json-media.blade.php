@@ -1,3 +1,6 @@
-/**
-* Created by daniel on 01/03/2024.
-*/
+<div>
+    <div class="text-sm font-medium pb-3">
+        {{ $getLabel() }}
+    </div>
+    @include('gallery-json-media::table.gallery-column')
+</div>

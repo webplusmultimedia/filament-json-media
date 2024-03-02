@@ -11,7 +11,9 @@
             <div class="flex -space-x-3 overflow-hidden">
                 @foreach(collect($record->getMedias($getName()))->take($getMaxAvatars())->all() as $media)
                     <img class="inline-block rounded-full ring-2 ring-white" src="{{ $media->getCropUrl($getThumbWidth(),$getThumbHeight()) }}"
-                         alt="{{ $media->getCustomProperty('alt') }}" />
+                         alt="{{ $media->getCustomProperty('alt') }}" width="{{ $getThumbWidth() }}"
+                         height="{{ $getThumbHeight() }}"
+                    />
                 @endforeach
             </div>
             @if(($nb = ($record->mediasCount($getName()) - collect($record->getMedias($getName()))->take($getMaxAvatars())->count())) > 0)
