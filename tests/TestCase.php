@@ -1,6 +1,6 @@
 <?php
 
-namespace WebplusMultimedia\GalleryJsonMedia\Tests;
+namespace GalleryJsonMedia\Tests;
 
 use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
 use BladeUI\Icons\BladeIconsServiceProvider;
@@ -14,11 +14,11 @@ use Filament\SpatieLaravelTranslatablePluginServiceProvider;
 use Filament\Support\SupportServiceProvider;
 use Filament\Tables\TablesServiceProvider;
 use Filament\Widgets\WidgetsServiceProvider;
+use GalleryJsonMedia\JsonMediaServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
-use WebplusMultimedia\GalleryJsonMedia\GalleryJsonMediaServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -27,7 +27,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'WebplusMultimedia\\GalleryJsonMedia\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
+            fn (string $modelName) => 'GalleryJsonMedia\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
         );
     }
 
@@ -48,7 +48,7 @@ class TestCase extends Orchestra
             SupportServiceProvider::class,
             TablesServiceProvider::class,
             WidgetsServiceProvider::class,
-            GalleryJsonMediaServiceProvider::class,
+            JsonMediaServiceProvider::class,
         ];
     }
 

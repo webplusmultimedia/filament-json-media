@@ -71,7 +71,7 @@
                 "GalleryJsonMedia\\JsonMediaServiceProvider"
             ],
             "aliases": {
-                "FilamentJsonMedia": "\\GalleryJsonMedia\\Facades\\GalleryJsonMedia"
+                "FilamentJsonMedia": "GalleryJsonMedia\\Facades\\GalleryJsonMedia"
             }
         }
     },
