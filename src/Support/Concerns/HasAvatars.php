@@ -10,7 +10,7 @@
  * Date: 01/03/2024 17:43
  */
 
-namespace WebplusMultimedia\GalleryJsonMedia\Tables\Columns\Concerns;
+namespace GalleryJsonMedia\Support\Concerns;
 
 trait HasAvatars
 {

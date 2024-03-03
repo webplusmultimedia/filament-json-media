@@ -1,5 +1,5 @@
 @php
-    use WebplusMultimedia\GalleryJsonMedia\JsonMedia\Contracts\HasMedia;
+    use GalleryJsonMedia\JsonMedia\Contracts\HasMedia;
     /** @var HasMedia $record */
     $record = $getRecord();
 @endphp

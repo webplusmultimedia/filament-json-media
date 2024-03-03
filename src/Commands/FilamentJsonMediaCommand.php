@@ -1,6 +1,6 @@
 <?php
 
-namespace WebplusMultimedia\GalleryJsonMedia\Commands;
+namespace GalleryJsonMedia\Commands;
 
 use Illuminate\Console\Command;
 

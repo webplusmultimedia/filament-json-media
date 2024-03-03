@@ -1,6 +1,6 @@
 <?php
 
-namespace WebplusMultimedia\GalleryJsonMedia\Testing;
+namespace GalleryJsonMedia\Testing;
 
 use Livewire\Features\SupportTesting\Testable;
 

@@ -1,11 +1,11 @@
 <?php
 
-namespace WebplusMultimedia\GalleryJsonMedia\JsonMedia;
+namespace GalleryJsonMedia\JsonMedia;
 
 use Bkwld\Croppa\Facades\Croppa;
+use GalleryJsonMedia\JsonMedia\Contracts\CanDeleteMedia;
 use Illuminate\Support\Facades\Storage;
 use Stringable;
-use WebplusMultimedia\GalleryJsonMedia\JsonMedia\Contracts\CanDeleteMedia;
 
 class Document implements CanDeleteMedia, Stringable
 {

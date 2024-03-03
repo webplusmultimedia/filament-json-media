@@ -10,7 +10,7 @@
  * Date: 21/02/2024 12:37
  */
 
-namespace WebplusMultimedia\GalleryJsonMedia\JsonMedia\Contracts;
+namespace GalleryJsonMedia\JsonMedia\Contracts;
 
 interface CanDeleteMedia
 {

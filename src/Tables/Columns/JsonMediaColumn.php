@@ -1,12 +1,12 @@
 <?php
 
-namespace WebplusMultimedia\GalleryJsonMedia\Tables\Columns;
+namespace GalleryJsonMedia\Tables\Columns;
 
 use Filament\Tables\Columns\Column;
-use WebplusMultimedia\GalleryJsonMedia\Form\Concerns\HasThumbProperties;
-use WebplusMultimedia\GalleryJsonMedia\Tables\Columns\Concerns\HasAvatars;
+use GalleryJsonMedia\Support\Concerns\HasAvatars;
+use GalleryJsonMedia\Support\Concerns\HasThumbProperties;
 
-class GalleryJsonMediaColumn extends Column
+class JsonMediaColumn extends Column
 {
     use HasAvatars;
     use HasThumbProperties;

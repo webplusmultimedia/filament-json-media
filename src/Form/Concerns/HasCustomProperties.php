@@ -10,14 +10,14 @@
  * Date: 14/02/2024 11:05
  */
 
-namespace WebplusMultimedia\GalleryJsonMedia\Form\Concerns;
+namespace GalleryJsonMedia\Form\Concerns;
 
 use Closure;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Support\Enums\Alignment;
-use WebplusMultimedia\GalleryJsonMedia\Form\GalleryJsonMedia;
+use GalleryJsonMedia\Form\JsonMediaGallery;
 
 trait HasCustomProperties
 {
@@ -67,7 +67,7 @@ trait HasCustomProperties
     {
         if ($this->hasCustomPropertiesAction()) {
             $action = Action::make($this->getCustomPropertiesActionName())
-                ->fillForm(static function (array $arguments, GalleryJsonMedia $component, Action $action): array {
+                ->fillForm(static function (array $arguments, JsonMediaGallery $component, Action $action): array {
                     $key = $arguments['key'];
                     $state = $component->getState();
                     if (! isset($state[$key])) {
@@ -78,7 +78,7 @@ trait HasCustomProperties
                 })
                 ->label(trans('gallery-json-media::gallery-json-media.title.edit-modal-form-for-customs-properties'))
                 ->form(fn (array $arguments) => $this->getMinimumFieldForCustomEditField($arguments, $this->getState()))
-                ->action(function (array $arguments, array $data, Form $form, GalleryJsonMedia $component) {
+                ->action(function (array $arguments, array $data, Form $form, JsonMediaGallery $component) {
                     $key = $arguments['key'];
                     $state = $component->getState();
                     if (! isset($state[$key])) {

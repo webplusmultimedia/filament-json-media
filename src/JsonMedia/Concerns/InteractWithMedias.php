@@ -1,12 +1,12 @@
 <?php
 
-namespace WebplusMultimedia\GalleryJsonMedia\JsonMedia\Concerns;
+namespace GalleryJsonMedia\JsonMedia\Concerns;
 
 use Bkwld\Croppa\Facades\Croppa;
-use WebplusMultimedia\GalleryJsonMedia\JsonMedia\Contracts\CanDeleteMedia;
-use WebplusMultimedia\GalleryJsonMedia\JsonMedia\Contracts\HasMedia;
-use WebplusMultimedia\GalleryJsonMedia\JsonMedia\Document;
-use WebplusMultimedia\GalleryJsonMedia\JsonMedia\Media;
+use GalleryJsonMedia\JsonMedia\Contracts\CanDeleteMedia;
+use GalleryJsonMedia\JsonMedia\Contracts\HasMedia;
+use GalleryJsonMedia\JsonMedia\Document;
+use GalleryJsonMedia\JsonMedia\Media;
 
 /**
  * @method static deleting(\Closure $param)

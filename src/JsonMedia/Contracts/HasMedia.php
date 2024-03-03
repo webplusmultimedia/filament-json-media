@@ -1,9 +1,9 @@
 <?php
 
-namespace WebplusMultimedia\GalleryJsonMedia\JsonMedia\Contracts;
+namespace GalleryJsonMedia\JsonMedia\Contracts;
 
-use WebplusMultimedia\GalleryJsonMedia\JsonMedia\Document;
-use WebplusMultimedia\GalleryJsonMedia\JsonMedia\Media;
+use GalleryJsonMedia\JsonMedia\Document;
+use GalleryJsonMedia\JsonMedia\Media;
 
 /**
  * @method void deleteFilesFrom(string $field)

@@ -10,7 +10,7 @@
  * Date: 19/02/2024 22:51
  */
 
-namespace WebplusMultimedia\GalleryJsonMedia\Form\Concerns;
+namespace GalleryJsonMedia\Support\Concerns;
 
 use Closure;
 

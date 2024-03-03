@@ -1,14 +1,14 @@
 <?php
 
-namespace WebplusMultimedia\GalleryJsonMedia\JsonMedia;
+namespace GalleryJsonMedia\JsonMedia;
 
 use Bkwld\Croppa\Facades\Croppa;
 use Exception;
+use GalleryJsonMedia\JsonMedia\Contracts\CanDeleteMedia;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Stringable;
-use WebplusMultimedia\GalleryJsonMedia\JsonMedia\Contracts\CanDeleteMedia;
 
 final class Media implements CanDeleteMedia, Htmlable, Stringable
 {

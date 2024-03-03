@@ -1,13 +1,13 @@
 {
     "name": "webplusm/gallery-json-media",
-    "description": "This is my package filament-json-media",
+    "description": "a filament media storing in a Json field",
     "keywords": [
         "filament",
         "plugin",
         "media",
         "gallery",
         "laravel",
-        "filament-json-media"
+        "json"
     ],
     "homepage": "https://github.com/webplusmultimedia/filament-json-media",
     "support": {
@@ -43,12 +43,12 @@
     },
     "autoload": {
         "psr-4": {
-            "WebplusMultimedia\\GalleryJsonMedia\\": "src/"
+            "GalleryJsonMedia\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "WebplusMultimedia\\GalleryJsonMedia\\Tests\\": "tests/"
+            "GalleryJsonMedia\\Tests\\": "tests/"
         }
     },
     "scripts": {
@@ -68,10 +68,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "WebplusMultimedia\\GalleryJsonMedia\\GalleryJsonMediaServiceProvider"
+                "GalleryJsonMedia\\JsonMediaServiceProvider"
             ],
             "aliases": {
-                "FilamentJsonMedia": "WebplusMultimedia\\GalleryJsonMedia\\Facades\\GalleryJsonMedia"
+                "FilamentJsonMedia": "\\GalleryJsonMedia\\Facades\\GalleryJsonMedia"
             }
         }
     },

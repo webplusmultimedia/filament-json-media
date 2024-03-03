@@ -1,6 +1,6 @@
 <?php
 
-namespace WebplusMultimedia\GalleryJsonMedia;
+namespace GalleryJsonMedia;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;

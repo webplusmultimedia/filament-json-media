@@ -1,6 +1,6 @@
 <?php
 
-namespace WebplusMultimedia\GalleryJsonMedia;
+namespace GalleryJsonMedia;
 
 use Filament\Support\Assets\AlpineComponent;
 use Filament\Support\Assets\Asset;
@@ -8,15 +8,15 @@ use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
+use GalleryJsonMedia\Commands\FilamentJsonMediaCommand;
+use GalleryJsonMedia\Testing\TestsFilamentJsonMedia;
 use Illuminate\Filesystem\Filesystem;
 use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use WebplusMultimedia\GalleryJsonMedia\Commands\FilamentJsonMediaCommand;
-use WebplusMultimedia\GalleryJsonMedia\Testing\TestsFilamentJsonMedia;
 
-class GalleryJsonMediaServiceProvider extends PackageServiceProvider
+class JsonMediaServiceProvider extends PackageServiceProvider
 {
     public static string $name = 'gallery-json-media';
 

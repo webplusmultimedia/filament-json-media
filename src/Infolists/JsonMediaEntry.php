@@ -10,11 +10,11 @@
  * Date: 01/03/2024 19:32
  */
 
-namespace WebplusMultimedia\GalleryJsonMedia\Infolists;
+namespace GalleryJsonMedia\Infolists;
 
 use Filament\Infolists\Components\Entry;
-use WebplusMultimedia\GalleryJsonMedia\Form\Concerns\HasThumbProperties;
-use WebplusMultimedia\GalleryJsonMedia\Tables\Columns\Concerns\HasAvatars;
+use GalleryJsonMedia\Support\Concerns\HasAvatars;
+use GalleryJsonMedia\Support\Concerns\HasThumbProperties;
 
 class JsonMediaEntry extends Entry
 {

@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace WebplusMultimedia\GalleryJsonMedia\Form;
+namespace GalleryJsonMedia\Form;
 
 use Bkwld\Croppa\Facades\Croppa;
 use Closure;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\BaseFileUpload;
+use GalleryJsonMedia\Form\Concerns\HasCustomProperties;
+use GalleryJsonMedia\Support\Concerns\HasThumbProperties;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use League\Flysystem\UnableToCheckFileExistence;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
-use WebplusMultimedia\GalleryJsonMedia\Form\Concerns\HasCustomProperties;
-use WebplusMultimedia\GalleryJsonMedia\Form\Concerns\HasThumbProperties;
 
-class GalleryJsonMedia extends BaseFileUpload
+class JsonMediaGallery extends BaseFileUpload
 {
     use HasCustomProperties;
     use HasThumbProperties;
@@ -58,11 +58,11 @@ class GalleryJsonMedia extends BaseFileUpload
 
         $this->registerActions(
             actions: [
-                static fn (GalleryJsonMedia $component): ?Action => $component->getCustomPropertiesAction(),
+                static fn (JsonMediaGallery $component): ?Action => $component->getCustomPropertiesAction(),
             ]
         );
 
-        $this->afterStateHydrated(static function (GalleryJsonMedia $component, ?array $state): void {
+        $this->afterStateHydrated(static function (JsonMediaGallery $component, ?array $state): void {
             if (blank($state)) {
                 $component->state([]);
 
@@ -87,7 +87,7 @@ class GalleryJsonMedia extends BaseFileUpload
 
         });
 
-        $this->afterStateUpdated(static function (GalleryJsonMedia $component, ?array $state) {
+        $this->afterStateUpdated(static function (JsonMediaGallery $component, ?array $state) {
             if (blank($state)) {
                 return;
             }

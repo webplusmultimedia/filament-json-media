@@ -1,16 +1,17 @@
 <?php
 
-namespace WebplusMultimedia\GalleryJsonMedia\Facades;
+namespace GalleryJsonMedia\Facades;
 
+use GalleryJsonMedia\Form\JsonMediaGallery;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \WebplusMultimedia\GalleryJsonMedia\Form\GalleryJsonMedia
+ * @see \GalleryJsonMedia\Form\JsonMediaGallery
  */
 class GalleryJsonMedia extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \WebplusMultimedia\GalleryJsonMedia\Form\GalleryJsonMedia::class;
+        return JsonMediaGallery::class;
     }
 }
