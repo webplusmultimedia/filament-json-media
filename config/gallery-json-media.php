@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // config for WebplusMultimedia\GalleryJsonMedia
 return [
     'disk' => 'public',

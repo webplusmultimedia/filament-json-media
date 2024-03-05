@@ -1,14 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- *
- * @category    Category
- *
- * @author      daniel
- *
- * @link        http://webplusm.net
- * Date: 01/03/2024 19:32
- */
+
+declare(strict_types=1);
 
 namespace GalleryJsonMedia\Infolists;
 

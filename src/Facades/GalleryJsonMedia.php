@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GalleryJsonMedia\Facades;
 
 use GalleryJsonMedia\Form\JsonMediaGallery;

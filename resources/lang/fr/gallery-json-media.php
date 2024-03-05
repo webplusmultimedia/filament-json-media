@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // translations for GalleryJsonMedia/FilamentJsonMedia
 return [
     'Drag&Drop' => 'Drag & Drop ou cliquer ICI',

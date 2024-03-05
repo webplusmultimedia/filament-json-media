@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GalleryJsonMedia\JsonMedia;
 
 use Bkwld\Croppa\Facades\Croppa;
