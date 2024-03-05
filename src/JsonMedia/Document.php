@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace GalleryJsonMedia\JsonMedia;
 
-use Bkwld\Croppa\Facades\Croppa;
+use GalleryJsonMedia\JsonMedia\Concerns\HasFile;
 use GalleryJsonMedia\JsonMedia\Contracts\CanDeleteMedia;
-use Illuminate\Support\Facades\Storage;
 use Stringable;
 
 class Document implements CanDeleteMedia, Stringable
 {
+    use HasFile;
+
     public function __construct(
         protected array $content,
     ) {
@@ -24,20 +25,12 @@ class Document implements CanDeleteMedia, Stringable
 
     public function getUrl(): ?string
     {
-        if ($fileName = $this->getContentKeyValue('file')) {
-            $disk = Storage::disk($this->getContentKeyValue('disk'));
-            if ($disk->exists($fileName)) {
-                return $disk->url($fileName);
-            }
-
+        $disk = $this->getDisk();
+        if ($fileName = $this->getFileName()) {
+            return $disk->url($fileName);
         }
 
         return null;
-    }
-
-    private function getContentKeyValue(string $key): mixed
-    {
-        return data_get($this->content, $key);
     }
 
     public function getCustomProperty(string $property): mixed
@@ -47,8 +40,8 @@ class Document implements CanDeleteMedia, Stringable
 
     public function delete(): void
     {
-        if ($this->getUrl()) {
-            Croppa::delete($this->getUrl());
+        if ($fileName = $this->getFileName()) {
+            $this->getDisk()->delete($fileName);
         }
     }
 

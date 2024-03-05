@@ -8,11 +8,12 @@
         @if(!$hasAvatars())
             {{ $record->getFirstMedia($getName())?->withImageProperties($getThumbWidth(),$getThumbHeight()) }}
         @else
-            <div class="flex -space-x-3 overflow-hidden">
+            <div class="flex -space-x-3 overflow-hidden" style="height: {{ $getThumbHeight() }}px">
                 @foreach(collect($record->getMedias($getName()))->take($getMaxAvatars())->all() as $media)
-                    <img class="inline-block rounded-full ring-2 ring-white" src="{{ $media->getCropUrl($getThumbWidth(),$getThumbHeight()) }}"
+                    <img class="inline-block rounded-full ring-2 ring-white object-cover" src="{{ $media->getCropUrl($getThumbWidth(),$getThumbHeight()) }}"
                          alt="{{ $media->getCustomProperty('alt') }}" width="{{ $getThumbWidth() }}"
                          height="{{ $getThumbHeight() }}"
+                         loading="lazy"
                     />
                 @endforeach
             </div>

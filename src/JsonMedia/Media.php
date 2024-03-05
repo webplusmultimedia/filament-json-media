@@ -6,14 +6,16 @@ namespace GalleryJsonMedia\JsonMedia;
 
 use Bkwld\Croppa\Facades\Croppa;
 use Exception;
+use GalleryJsonMedia\JsonMedia\Concerns\HasFile;
 use GalleryJsonMedia\JsonMedia\Contracts\CanDeleteMedia;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Stringable;
 
 final class Media implements CanDeleteMedia, Htmlable, Stringable
 {
+    use HasFile;
+
     private string $svgMimeType = 'image/svg+xml';
 
     protected string $view = 'gallery-json-media::json-media.media';
@@ -35,15 +37,10 @@ final class Media implements CanDeleteMedia, Htmlable, Stringable
         return str($mimeType)->startsWith('image');
     }
 
-    private function getContentKeyValue(string $key): mixed
-    {
-        return data_get($this->content, $key);
-    }
-
     public function getUrl(): ?string
     {
         if ($fileName = $this->getContentKeyValue('file')) {
-            $storage = Storage::disk($this->getContentKeyValue('disk'));
+            $storage = $this->getDisk();
             if ($storage->exists($fileName)) {
                 return $storage->url($fileName);
             }
@@ -62,9 +59,9 @@ final class Media implements CanDeleteMedia, Htmlable, Stringable
         return url(Croppa::url($this->getUrl(), $width, $height, $options));
     }
 
-    private function isSvgFile(): bool
+    public function isSvgFile(): bool
     {
-        return str($this->getContentKeyValue('mime_type'))->afterLast('.')->value() === $this->svgMimeType;
+        return $this->getContentKeyValue('mime_type') === $this->svgMimeType;
     }
 
     public function getCustomProperty(string $property): mixed

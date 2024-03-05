@@ -13,9 +13,9 @@ use GalleryJsonMedia\JsonMedia\Media;
 /**
  * @method static deleting(\Closure $param)
  */
-trait InteractWithMedias
+trait InteractWithMedia
 {
-    protected static function InteractWithMedia(): void
+    protected static function bootInteractWithMedia(): void
     {
         static::deleting(function (HasMedia $model) {
             foreach ($model->getFieldsToDeleteMedia() as $field) {
