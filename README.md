@@ -81,7 +81,7 @@ JsonMediaGallery::make('images')
 ```
 
 ### In Filament Tables
-![table json media column](table-filament-json-media.png)
+![table json media column]([table-filament-json-media.png](https://raw.githubusercontent.com/webplusmultimedia/filament-json-media/main/table-filament-json-media.png))
 ```php
 use GalleryJsonMedia\Tables\Columns\JsonMediaColumn;
 JsonMediaColumn::make('images')
