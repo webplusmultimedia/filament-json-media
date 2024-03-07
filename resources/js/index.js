@@ -305,7 +305,6 @@ export function galleryFileUpload(
             if (!maxFiles) {
                 return true
             }
-            console.log(Object.entries(this.uploadFiles).length ,maxFiles)
             return Object.entries(this.uploadFiles).length < maxFiles
         },
         init() {
