@@ -30,6 +30,30 @@ php artisan vendor:publish --tag="gallery-json-media-views"
 ```
 
 ## Usage
+### Prepare your model
+```php
+use GalleryJsonMedia\JsonMedia\Concerns\InteractWithMedia;
+use GalleryJsonMedia\JsonMedia\Contracts\HasMedia;
+
+class Page extends Model implements HasMedia
+{
+    use HasFactory;
+    use InteractWithMedia;
+    
+    protected $casts =[
+        'images' => 'array',
+        'documents' => 'array',
+    ];
+    
+    // for auto-delete media thumbnails
+    protected function getFieldsToDeleteMedia(): array {
+        return ['images','documents'];
+    }
+    ...
+    
+}
+```
+
 ### In Filament Forms
 ```php
 use WebplusMultimedia\GalleryJsonMedia\Form\JsonMediaGallery;
@@ -70,6 +94,30 @@ JsonMediaEntry::make('images')
     ->thumbHeight(100)
     ->thumbWidth(100)
     ->visible(static fn(array|null $state)=> filled($state))
+```
+
+### In Blade Front-end
+```injectablephp
+/** for media */
+ @foreach($page->getMedias('images') as $media)
+        <div style="display: flex;gap: .5rem">
+            {{ $media }}
+        </div>
+ @endforeach
+ 
+ // For documents
+ <div>
+        <ul>
+            @foreach($page->getDocuments('documents') as $document)
+                <li>
+                    <a href="{{ $document->getUrl() }}" target="_blank">
+                        {{ $document->getCustomProperty('title') }}
+                    </a>
+                </li>
+            @endforeach
+        </ul>
+ </div>
+
 ```
 
 ## Testing
