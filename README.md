@@ -56,7 +56,7 @@ class Page extends Model implements HasMedia
 
 ### In Filament Forms
 ```php
-use WebplusMultimedia\GalleryJsonMedia\Form\JsonMediaGallery;
+use GalleryJsonMedia\Form\JsonMediaGallery;
 JsonMediaGallery::make('images')
     ->directory('page')
     ->reorderable()
@@ -81,14 +81,15 @@ JsonMediaGallery::make('images')
 ```
 
 ### In Filament Tables
+![table json media column](table-filament-json-media.png)
 ```php
-use WebplusMultimedia\GalleryJsonMedia\Tables\Columns\JsonMediaColumn;
+use GalleryJsonMedia\Tables\Columns\JsonMediaColumn;
 JsonMediaColumn::make('images')
     ->avatars(bool|Closure)
 ```
 ### In Filament Infolists
 ```php
-use WebplusMultimedia\GalleryJsonMedia\Infolists\JsonMediaEntry;
+use GalleryJsonMedia\Infolists\JsonMediaEntry;
 JsonMediaEntry::make('images')
     ->avatars()
     ->thumbHeight(100)
@@ -97,7 +98,7 @@ JsonMediaEntry::make('images')
 ```
 
 ### In Blade Front-end
-```injectablephp
+```html
 /** for media */
  @foreach($page->getMedias('images') as $media)
         <div style="display: flex;gap: .5rem">
