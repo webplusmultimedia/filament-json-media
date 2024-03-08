@@ -37,7 +37,7 @@ class JsonMediaServiceProvider extends PackageServiceProvider
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->publishConfigFile()
-                    ->askToStarRepoOnGitHub('webplusm/gallery-json-media');
+                    ->askToStarRepoOnGitHub('webplusmultimedia/filament-json-media');
             });
 
         $configFileName = $package->shortName();

@@ -7,7 +7,7 @@
 
 
 
-This package add a gallery images/documents for filament V3.x and fluents api for front-end in Laravel to display images, responsive images, url link for documents ...
+This package add a json field media for images/documents to filament V3.x and fluents api for front-end in Laravel to display photos and url link for documents ...
 [![json-media.webp](https://i.postimg.cc/8Cn6Zttf/json-media.webp)](https://postimg.cc/wtLMvcK9)
 ## Installation
 
