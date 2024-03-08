@@ -2,7 +2,6 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/webplusm/gallery-json-media.svg?style=flat-square)](https://packagist.org/packages/webplusm/gallery-json-media)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/webplusmultimedia/filament-json-media/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/webplusmultimedia/filament-json-media/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/webplusmultimedia/filament-json-media/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/webplusmultimedia/filament-json-media/actions/workflows/fix-php-code-styling.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/webplusm/gallery-json-media.svg?style=flat-square)](https://packagist.org/packages/webplusm/gallery-json-media)
 
 
@@ -99,27 +98,51 @@ JsonMediaEntry::make('images')
 
 ### In Blade Front-end
 ```html
-/** for media */
- @foreach($page->getMedias('images') as $media)
-        <div style="display: flex;gap: .5rem">
-            {{ $media }}
-        </div>
- @endforeach
+<!-- for media -->
+@foreach($page->getMedias('images') as $media)
+    <div style="display: flex;gap: .5rem">
+        {{ $media }}
+    </div>
+@endforeach
  
- // For documents
- <div>
-        <ul>
-            @foreach($page->getDocuments('documents') as $document)
-                <li>
-                    <a href="{{ $document->getUrl() }}" target="_blank">
-                        {{ $document->getCustomProperty('title') }}
-                    </a>
-                </li>
-            @endforeach
-        </ul>
- </div>
-
+<!-- For documents -->
+<div>
+    <ul>
+        @foreach($page->getDocuments('documents') as $document)
+            <li>
+                <a href="{{ $document->getUrl() }}" target="_blank">
+                    {{ $document->getCustomProperty('title') }}
+                </a>
+            </li>
+        @endforeach
+    </ul>
+</div>
 ```
+You can also control the entire view to render the media by passing a blade file to your view like this :
+```html
+@foreach($page->getMedias('images') as $media)
+    <div style="display: flex;gap: .5rem">
+        {{ $media->withImageProperties( width : 200,height: 180)->withView('page.json-media') }}
+    </div>
+ @endforeach
+
+
+<!-- the json-media.blade.php -->
+@php
+   use GalleryJsonMedia\JsonMedia\Media;
+   /** @var Media $media*/
+   $media
+@endphp
+<figure class="" style="width: {{ $media->width }}px">
+    <img class="object-cover w-full aspect-video" loading="lazy"
+         src="{{ $media->getCropUrl(width: $media->width,height: $media->height) }}"
+         alt="{{ $media->getCustomProperty('alt') }}"
+         width="{{ $media->width }}"
+         height="{{ $media->height }}"
+    >
+</figure>
+```
+
 
 ## Testing
 
