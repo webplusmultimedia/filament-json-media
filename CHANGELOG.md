@@ -2,6 +2,10 @@
 
 All notable changes to `filament-json-media` will be documented in this file.
 
+## v1.2.02 - 2024-03-21
+
+**Full Changelog**: https://github.com/webplusmultimedia/filament-json-media/compare/v1.2.01...v1.2.02
+
 ## fix padding column table - 2024-03-21
 
 fix padding column table
