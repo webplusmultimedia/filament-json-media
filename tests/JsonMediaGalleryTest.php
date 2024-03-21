@@ -11,11 +11,12 @@ it('return empty array state when null value', function () {
 
     $jsonInput->container(
         ComponentContainer::make(
-            $livewire = Livewire::make()
+            Livewire::make()
                 ->data(['images' => null])
         )->statePath('data')
             ->components([$jsonInput])
             ->fill(['images' => null])
     );
+
     expect($jsonInput->getState())->toEqual([]);
 });

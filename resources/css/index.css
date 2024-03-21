@@ -124,15 +124,6 @@
                     --gallery-file-btn-edit-color: rgba(85, 206, 42, 1);
                     color: var(--gallery-file-btn-edit-color);
 
-
-                    /*&:disabled {
-                        --gallery-file-btn-edit-color: rgba(85, 206, 42, 0.62);
-
-                        &:hover {
-                            --gallery-file-btn-edit-color: rgba(85, 206, 42, 0.62);
-                        }
-                    }*/
-
                     &:hover {
                         --gallery-file-btn-edit-color: #55ce2a;
                     }
@@ -148,14 +139,6 @@
                     margin-block-end: 0.2rem;
                     color: var(--gallery-file-btn-delete-color);
                     --gallery-file-btn-delete-color: rgba(249, 56, 76, 0.62);
-
-                   /* &:disabled {
-                        --gallery-file-btn-delete-color: rgba(249, 56, 76, 0.62);
-
-                        &:hover {
-                            --gallery-file-btn-delete-color: rgba(249, 56, 76, 0.62);
-                        }
-                    }*/
 
                     &:hover {
                         --gallery-file-btn-delete-color: #f9384c;
