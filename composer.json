@@ -24,16 +24,16 @@
     ],
     "require": {
         "php": "^8.1",
-        "bkwld/croppa": "^6.0",
+        "bkwld/croppa": "dev-l11-compatibility",
         "filament/filament": "^3.0",
-        "illuminate/contracts": "^10.0",
+        "illuminate/contracts": "^10.0|^11.0",
         "spatie/laravel-package-tools": "^1.15.0"
     },
     "require-dev": {
         "laravel/pint": "^1.0",
-        "nunomaduro/collision": "^7.9",
-        "nunomaduro/larastan": "^2.0.1",
-        "orchestra/testbench": "^8.0",
+        "nunomaduro/collision": "^7.9|^8.1",
+        "larastan/larastan": "^2.0.1",
+        "orchestra/testbench": "^8.0|^v9.0.1",
         "pestphp/pest": "^2.0",
         "pestphp/pest-plugin-arch": "^2.0",
         "pestphp/pest-plugin-laravel": "^2.0",
@@ -41,6 +41,12 @@
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/laravel-shift/croppa.git"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "GalleryJsonMedia\\": "src/"
