@@ -31,13 +31,13 @@ php artisan vendor:publish --tag="gallery-json-media-views"
 ## Usage
 ### Prepare your model
 ```php
-use GalleryJsonMedia\JsonMedia\Concerns\InteractWithMedias;
+use GalleryJsonMedia\JsonMedia\Concerns\InteractWithMedia;
 use GalleryJsonMedia\JsonMedia\Contracts\HasMedia;
 
 class Page extends Model implements HasMedia
 {
     use HasFactory;
-    use InteractWithMedias;
+    use InteractWithMedia;
     
     protected $casts =[
         'images' => 'array',
