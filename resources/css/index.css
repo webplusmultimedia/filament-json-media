@@ -1,4 +1,4 @@
-/*@import '../../vendor/filament/filament/resources/css/theme.css';*/
+@import '../../vendor/filament/filament/resources/css/theme.css';
 @tailwind utilities;
 .wm-json-media-dropzone.wm-dropzone{
         @apply border-primary-600 text-primary-600 dark:border-primary-600 dark:text-primary-600;
