@@ -1,7 +1,7 @@
 @php
     use GalleryJsonMedia\JsonMedia\Contracts\HasMedia;
-    /** @var HasMedia $record */
-    $record = $getRecord();
+        /** @var HasMedia $record */
+        $record = $getRecord();
 @endphp
 <div class="flex gap-x-1 items-center max-w-max">
     @if(($record))
