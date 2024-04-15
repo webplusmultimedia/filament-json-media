@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Storage;
 
 trait HasFile
 {
-    public function getFileName(): ?string
+    protected function getFileName(): ?string
     {
         if ($fileName = $this->getContentKeyValue('file')) {
             $disk = $this->getDisk();
@@ -32,7 +32,7 @@ trait HasFile
         return null;
     }
 
-    public function getDisk(): Filesystem
+    protected function getDisk(): Filesystem
     {
         return Storage::disk($this->getContentKeyValue('disk'));
     }

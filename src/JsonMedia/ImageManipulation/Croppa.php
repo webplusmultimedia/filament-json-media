@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace GalleryJsonMedia\JsonMedia\ImageManipulation;
 
@@ -9,7 +9,9 @@ use Spatie\Image\Image;
 
 final class Croppa
 {
-    public function __construct(protected Filesystem $filesystem, private ?string $filePath = NULL, private ?int $width = NULL, private ?int $height = NULL) {}
+    public function __construct(protected Filesystem $filesystem, private string $filePath, private ?int $width = null, private ?int $height = null)
+    {
+    }
 
     public function url(): string
     {
@@ -42,7 +44,7 @@ final class Croppa
     protected function getSuffix(): string
     {
         $suffix = '-';
-        if ($this->width === NULL && $this->height === NULL) {
+        if ($this->width === null && $this->height === null) {
             return '';
         }
         $first = $this->width ?? '_';
@@ -58,5 +60,14 @@ final class Croppa
     protected function getFileInfo(): array
     {
         return pathinfo($this->filesystem->path($this->filePath));
+    }
+
+    public function reset(): void
+    {
+        //$this->filesystem->delete($this->filePath);
+    }
+
+    public function delete(): void
+    {
     }
 }

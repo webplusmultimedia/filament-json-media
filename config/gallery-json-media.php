@@ -6,6 +6,12 @@ declare(strict_types=1);
 return [
     'disk' => 'public',
     'root_directory' => 'web_attachments',
+    'images' => [
+        'driver' => 'gd',
+        'quality' => 80,
+        'thumbnails.format' => null, // Manipulations::FORMAT_PNG / following formats are supported: FORMAT_JPG, FORMAT_PJPG, FORMAT_PNG, FORMAT_GIF, FORMAT_WEBP and FORMAT_TIFF
+        'thumbnails' => [],
+    ],
     'form' => [
         'default' => [
             'image_accepted_text' => '.jpg, .svg, .png, .webp, .avif',

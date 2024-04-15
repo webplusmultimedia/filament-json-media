@@ -171,7 +171,7 @@ class JsonMediaGallery extends BaseFileUpload
         $state = array_filter(array_map(function (array $file) use ($storage) {
             if (isset($file['deleted']) and $file['deleted']) {
                 try {
-                    Croppa::reset($storage->url($file['file'])); // remove all thumbs
+                    (new Croppa($storage, $file['file']))->reset(); // remove all thumbs
                 } catch (\Throwable) {
                     //never mind if file doesn't exist
                 }

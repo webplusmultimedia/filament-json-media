@@ -99,8 +99,8 @@ final class Media implements CanDeleteMedia, Htmlable, Stringable
 
     public function delete(): void
     {
-        if ($this->getUrl()) {
-            Croppa::delete($this->getUrl());
+        if ($this->getFileName()) {
+            (new Croppa($this->getDisk(), $this->getFileName()))->delete();
         }
     }
 
