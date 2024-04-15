@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace GalleryJsonMedia\Form;
 
-use Bkwld\Croppa\Facades\Croppa;
 use Closure;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\BaseFileUpload;
 use GalleryJsonMedia\Form\Concerns\HasCustomProperties;
+use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
 use GalleryJsonMedia\Support\Concerns\HasThumbProperties;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
@@ -146,8 +146,9 @@ class JsonMediaGallery extends BaseFileUpload
                 'size' => data_get($file, 'size'),
                 'mime_type' => $mimeType,
                 'url' => ($this->isImageFile($mimeType) and ! $this->isSvgFile($mimeType))
-                        ? url(Croppa::url($storage->url($fileName), $this->getThumbWidth()))
-                        : $storage->url($fileName),
+                    ? (new Croppa(filesystem: $storage, filePath: $fileName, width: $this->getThumbWidth()))
+                        ->url()
+                    : $storage->url($fileName),
             ];
         }
 
