@@ -56,6 +56,8 @@ class JsonMediaGallery extends BaseFileUpload
 
         $this->multiple();
 
+        $this->diskName = config('gallery-json-media.disk');
+
         $this->registerActions(
             actions: [
                 static fn (JsonMediaGallery $component): ?Action => $component->getCustomPropertiesAction(),

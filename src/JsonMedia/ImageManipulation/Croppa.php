@@ -15,30 +15,47 @@ final class Croppa
 
     public function url(): string
     {
-        $this->save();
+        if (! $this->filesystem->exists($this->getPathNameForThumbs())) {
+            $this->save();
+        }
 
-        return $this->filesystem->url($this->getPathName());
+        return $this->filesystem->url($this->getPathNameForThumbs());
     }
 
     protected function save(): void
     {
-        if (! $this->filesystem->exists($this->getPathName())) {
-            $image = Image::load($this->filesystem->path($this->filePath));
+        $image = Image::load($this->filesystem->path($this->filePath))
+            ->quality(config('gallery-json-media.images.quality'))
+            ->useImageDriver('imagick');
+
+        if ($this->width and $this->height) {
+            $image->crop(
+                cropMethod: config('gallery-json-media.images.thumbnails-crop-method'),
+                width: $this->width,
+                height: $this->height
+            );
+
+        } else {
             if ($this->width) {
                 $image->width($this->width);
             }
             if ($this->height) {
                 $image->height($this->height);
             }
-            $image->save($this->filesystem->path($this->getPathName()));
         }
+        $image->save($this->filesystem->path($this->getPathNameForThumbs()));
     }
 
-    public function getPathName(): string
+    protected function getPathNameForThumbs(): string
+    {
+        return $this->getBaseNameForTumbs() . $this->getSuffix() . '.' . $this->getFileInfo()['extension'];
+    }
+
+    protected function getBaseNameForTumbs()
     {
         $basePath = str($this->filePath)->beforeLast('/');
 
-        return $basePath . '/' . $this->getFileInfo()['filename'] . $this->getSuffix() . '.' . $this->getFileInfo()['extension'];
+        return $basePath . '/' . $this->getFileInfo()['filename'];
     }
 
     protected function getSuffix(): string

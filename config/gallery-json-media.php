@@ -3,14 +3,17 @@
 declare(strict_types=1);
 
 // config for WebplusMultimedia\GalleryJsonMedia
+use Spatie\Image\Manipulations;
+
 return [
     'disk' => 'public',
     'root_directory' => 'web_attachments',
     'images' => [
         'driver' => 'gd',
         'quality' => 80,
-        'thumbnails.format' => null, // Manipulations::FORMAT_PNG / following formats are supported: FORMAT_JPG, FORMAT_PJPG, FORMAT_PNG, FORMAT_GIF, FORMAT_WEBP and FORMAT_TIFF
-        'thumbnails' => [],
+        'thumbnails-crop-method' => Manipulations::CROP_CENTER,
+        'thumbnails-saved-format' => null, // Manipulations::FORMAT_PNG / following formats are supported: FORMAT_JPG, FORMAT_PJPG, FORMAT_PNG, FORMAT_GIF, FORMAT_WEBP and FORMAT_TIFF
+
     ],
     'form' => [
         'default' => [
