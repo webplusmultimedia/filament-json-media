@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace GalleryJsonMedia\JsonMedia;
 
-use Bkwld\Croppa\Facades\Croppa;
-use Exception;
 use GalleryJsonMedia\JsonMedia\Concerns\HasFile;
 use GalleryJsonMedia\JsonMedia\Contracts\CanDeleteMedia;
+use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\View\View;
 use Stringable;
@@ -37,6 +36,18 @@ final class Media implements CanDeleteMedia, Htmlable, Stringable
         return str($mimeType)->startsWith('image');
     }
 
+    protected function getPath(): ?string
+    {
+        if ($fileName = $this->getContentKeyValue('file')) {
+            $storage = $this->getDisk();
+            if ($storage->exists($fileName)) {
+                return $storage->path($fileName);
+            }
+        }
+
+        return null;
+    }
+
     public function getUrl(): ?string
     {
         if ($fileName = $this->getContentKeyValue('file')) {
@@ -44,7 +55,6 @@ final class Media implements CanDeleteMedia, Htmlable, Stringable
             if ($storage->exists($fileName)) {
                 return $storage->url($fileName);
             }
-            //throw new Exception("File not Found [\$imagesDirectory] {$fileName}");
         }
 
         return null;
@@ -55,8 +65,18 @@ final class Media implements CanDeleteMedia, Htmlable, Stringable
         if ($this->isSvgFile()) {
             return $this->getUrl();
         }
+        if ($path = $this->getPath()) {
+            $croppa = new Croppa(
+                $this->getDisk(),
+                $this->getContentKeyValue('file'),
+                $width,
+                $height
+            );
 
-        return url(Croppa::url($this->getUrl(), $width, $height, $options));
+            return $croppa->url();
+        }
+
+        return '';
     }
 
     public function isSvgFile(): bool
