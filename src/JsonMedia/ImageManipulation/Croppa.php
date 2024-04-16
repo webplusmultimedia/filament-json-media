@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GalleryJsonMedia\JsonMedia\ImageManipulation;
 
+use GalleryJsonMedia\JsonMedia\UrlParser;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Spatie\Image\Exceptions\InvalidImageDriver;
 use Spatie\Image\Exceptions\InvalidManipulation;
@@ -18,18 +19,20 @@ final class Croppa
 
     public function url(): string
     {
-        if (! $this->filesystem->exists($this->getPathNameForThumbs())) {
+        /*if (! $this->filesystem->exists($this->getPathNameForThumbs())) {
             $this->save();
-        }
+        }*/
+        $url = $this->filesystem->url($this->getPathNameForThumbs());
+        $url .= '?_token=' . UrlParser::make()->signingToken($url);
 
-        return $this->filesystem->url($this->getPathNameForThumbs());
+        return $url;
     }
 
     /**
      * @throws InvalidManipulation
      * @throws InvalidImageDriver
      */
-    protected function save(): void
+    public function render(): void
     {
         $image = Image::load($this->filesystem->path($this->filePath))
             ->useImageDriver(config('gallery-json-media.images.driver'));

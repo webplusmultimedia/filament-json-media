@@ -9,6 +9,8 @@ return [
     'disk' => 'public',
     'root_directory' => 'web_attachments',
     'images' => [
+        'path' => 'storage/(.*)$',
+        'signing_key' => 'app.key',
         'driver' => 'imagick', // gd or imagick
         'quality' => 80,
         'thumbnails-crop-method' => Manipulations::CROP_CENTER,
