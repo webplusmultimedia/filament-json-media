@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace GalleryJsonMedia\JsonMedia\ImageManipulation;
 
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Spatie\Image\Exceptions\InvalidImageDriver;
+use Spatie\Image\Exceptions\InvalidManipulation;
 use Spatie\Image\Image;
+use Spatie\Image\Manipulations;
 
 final class Croppa
 {
@@ -22,28 +25,34 @@ final class Croppa
         return $this->filesystem->url($this->getPathNameForThumbs());
     }
 
+    /**
+     * @throws InvalidManipulation
+     * @throws InvalidImageDriver
+     */
     protected function save(): void
     {
         $image = Image::load($this->filesystem->path($this->filePath))
-            ->quality(config('gallery-json-media.images.quality'))
-            ->useImageDriver('imagick');
+            ->useImageDriver(config('gallery-json-media.images.driver'));
+
+        $manipulations = new Manipulations();
+        $manipulations->quality(config('gallery-json-media.images.quality'));
 
         if ($this->width and $this->height) {
-            $image->crop(
+            $manipulations->crop(
                 cropMethod: config('gallery-json-media.images.thumbnails-crop-method'),
                 width: $this->width,
                 height: $this->height
             );
-
         } else {
             if ($this->width) {
-                $image->width($this->width);
+                $manipulations->width($this->width);
             }
             if ($this->height) {
-                $image->height($this->height);
+                $manipulations->height($this->height);
             }
         }
-        $image->save($this->filesystem->path($this->getPathNameForThumbs()));
+        $image->manipulate($manipulations)
+            ->save($this->filesystem->path($this->getPathNameForThumbs()));
     }
 
     protected function getPathNameForThumbs(): string
@@ -64,9 +73,9 @@ final class Croppa
         if ($this->width === null && $this->height === null) {
             return '';
         }
-        $first = $this->width ?? '_';
-        $second = $this->height ?? '_';
-        $suffix .= $first . 'x' . $second;
+        $width = $this->width ?? '_';
+        $height = $this->height ?? '_';
+        $suffix .= $width . 'x' . $height;
 
         return $suffix;
     }
@@ -81,10 +90,15 @@ final class Croppa
 
     public function reset(): void
     {
-        //$this->filesystem->delete($this->filePath);
+        $search = $this->filesystem->path($this->getBaseNameForTumbs() . '-*.*');
+        foreach (glob($search) as $file) {
+            unlink($file);
+        }
     }
 
     public function delete(): void
     {
+        $this->reset();
+        $this->filesystem->delete($this->filePath);
     }
 }

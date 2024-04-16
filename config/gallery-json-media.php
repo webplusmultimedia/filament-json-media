@@ -9,7 +9,7 @@ return [
     'disk' => 'public',
     'root_directory' => 'web_attachments',
     'images' => [
-        'driver' => 'gd',
+        'driver' => 'imagick', // gd or imagick
         'quality' => 80,
         'thumbnails-crop-method' => Manipulations::CROP_CENTER,
         'thumbnails-saved-format' => null, // Manipulations::FORMAT_PNG / following formats are supported: FORMAT_JPG, FORMAT_PJPG, FORMAT_PNG, FORMAT_GIF, FORMAT_WEBP and FORMAT_TIFF

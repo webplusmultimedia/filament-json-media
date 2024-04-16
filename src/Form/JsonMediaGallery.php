@@ -143,6 +143,7 @@ class JsonMediaGallery extends BaseFileUpload
 
             $fileName = data_get($file, 'file');
             $mimeType = data_get($file, 'mime_type');
+
             $url[$fileKey] = [
                 'name' => $fileName,
                 'size' => data_get($file, 'size'),
