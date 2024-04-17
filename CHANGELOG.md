@@ -2,6 +2,16 @@
 
 All notable changes to `filament-json-media` will be documented in this file.
 
+## v2.1.0 - 2024-04-17
+* Add support L11 by @webplusmultimedia in https://github.com/webplusmultimedia/filament-json-media/pull/8
+
+**Full Changelog**: https://github.com/webplusmultimedia/filament-json-media/compare/v2.0.0.0...v2.1.0
+
+## v2.0.0 - 2024-04-16
+* Feature with spatie/image by @webplusmultimedia in https://github.com/webplusmultimedia/filament-json-media/pull/7
+
+**Full Changelog**: https://github.com/webplusmultimedia/filament-json-media/compare/v1.2.03...v2.0.0.0
+
 ## v1.2.02 - 2024-03-21
 
 **Full Changelog**: https://github.com/webplusmultimedia/filament-json-media/compare/v1.2.01...v1.2.02
