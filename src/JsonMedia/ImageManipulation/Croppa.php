@@ -36,13 +36,12 @@ final class Croppa
     {
         $image = Image::load($this->filesystem->path($this->filePath))
             ->useImageDriver(config('gallery-json-media.images.driver'));
-
         $manipulations = new Manipulations();
         $manipulations->quality(config('gallery-json-media.images.quality'));
 
         if ($this->width and $this->height) {
             $manipulations->crop(
-                cropMethod: config('gallery-json-media.images.thumbnails-crop-method'),
+                cropMethod: config('gallery-json-media.images.thumbnails-crop-method', Manipulations::CROP_CENTER),
                 width: $this->width,
                 height: $this->height
             );
