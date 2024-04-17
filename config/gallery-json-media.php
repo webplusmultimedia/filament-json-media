@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 // config for WebplusMultimedia\GalleryJsonMedia
 
-use Spatie\Image\Enums\CropPosition;
-
 return [
     'disk' => 'public',
     'root_directory' => 'web_attachments',
