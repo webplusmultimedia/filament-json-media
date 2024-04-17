@@ -6,7 +6,6 @@ namespace GalleryJsonMedia\JsonMedia\ImageManipulation;
 
 use GalleryJsonMedia\JsonMedia\UrlParser;
 use Illuminate\Contracts\Filesystem\Filesystem;
-use Spatie\Image\Enums\CropPosition;
 use Spatie\Image\Exceptions\InvalidImageDriver;
 use Spatie\Image\Exceptions\InvalidManipulation;
 use Spatie\Image\Image;
@@ -38,20 +37,13 @@ final class Croppa
             ->load($this->filesystem->path($this->filePath))
             ->quality(config('gallery-json-media.images.quality'));
 
-        if ($this->width and $this->height) {
-            $image->crop(
-                position: config('gallery-json-media.images.thumbnails-crop-method', CropPosition::Center),
-                width: $this->width,
-                height: $this->height
-            );
-        } else {
-            if ($this->width) {
-                $image->width($this->width);
-            }
-            if ($this->height) {
-                $image->height($this->height);
-            }
+        if ($this->width) {
+            $image->width($this->width);
         }
+        if ($this->height) {
+            $image->height($this->height);
+        }
+
         $image->save($this->filesystem->path($this->getPathNameForThumbs()));
     }
 

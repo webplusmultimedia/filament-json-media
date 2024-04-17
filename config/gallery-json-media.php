@@ -5,7 +5,6 @@ declare(strict_types=1);
 // config for WebplusMultimedia\GalleryJsonMedia
 
 use Spatie\Image\Enums\CropPosition;
-use Spatie\Image\Manipulations;
 
 return [
     'disk' => 'public',
@@ -15,7 +14,7 @@ return [
         'signing_key' => 'app.key',
         'driver' => 'imagick', // gd or imagick
         'quality' => 80,
-        'thumbnails-crop-method' => CropPosition::Center,
+        'thumbnails-crop-method' => null,
         'thumbnails-saved-format' => null, // Manipulations::FORMAT_PNG / following formats are supported: FORMAT_JPG, FORMAT_PJPG, FORMAT_PNG, FORMAT_GIF, FORMAT_WEBP and FORMAT_TIFF
 
     ],

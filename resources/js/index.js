@@ -78,10 +78,17 @@ export function galleryFileUpload(
             /**@type {HTMLElement} */
             const wrapper = this.$refs.galleryImages
             const stopUploading = function(component) {
-                let rest = component.uploadFiles.filter(f => f.is_success === false).length
+                let rest = component.uploadFiles.filter(f => f.is_success === false).length,
+                    numberErrors = component.uploadFiles.filter(f => f.error === true).length
 
-                if (rest === 0) {
+                if ((rest - numberErrors) === 0) {
                     component.dispatchFormEvent('form-processing-finished')
+                    if(numberErrors) {
+                        // Removed thumbnails with no upload
+                        component.uploadFiles = component.uploadFiles
+                            .filter(file => !file.error)
+                            .map(file =>{ file.error = false; return file })
+                    }
                     component.startUpload = false
                 }
             }
@@ -91,7 +98,6 @@ export function galleryFileUpload(
                 stopUploading(this)
             }
             const error = (fileKey) => {
-                //delete this.uploadFiles[fileKey]
                 this.uploadFiles[fileKey].progress = 0
                 this.uploadFiles[fileKey].error = true
                 stopUploading(this)
