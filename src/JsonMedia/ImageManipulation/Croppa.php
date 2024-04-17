@@ -9,7 +9,6 @@ use Illuminate\Contracts\Filesystem\Filesystem;
 use Spatie\Image\Exceptions\InvalidImageDriver;
 use Spatie\Image\Exceptions\InvalidManipulation;
 use Spatie\Image\Image;
-use Spatie\Image\Manipulations;
 
 final class Croppa
 {
@@ -34,28 +33,18 @@ final class Croppa
      */
     public function render(): void
     {
-        $image = Image::load($this->filesystem->path($this->filePath))
-            ->useImageDriver(config('gallery-json-media.images.driver'));
+        $image = Image::useImageDriver(config('gallery-json-media.images.driver'))
+            ->load($this->filesystem->path($this->filePath))
+            ->quality(config('gallery-json-media.images.quality'));
 
-        $manipulations = new Manipulations();
-        $manipulations->quality(config('gallery-json-media.images.quality'));
-
-        if ($this->width and $this->height) {
-            $manipulations->crop(
-                cropMethod: config('gallery-json-media.images.thumbnails-crop-method'),
-                width: $this->width,
-                height: $this->height
-            );
-        } else {
-            if ($this->width) {
-                $manipulations->width($this->width);
-            }
-            if ($this->height) {
-                $manipulations->height($this->height);
-            }
+        if ($this->width) {
+            $image->width($this->width);
         }
-        $image->manipulate($manipulations)
-            ->save($this->filesystem->path($this->getPathNameForThumbs()));
+        if ($this->height) {
+            $image->height($this->height);
+        }
+
+        $image->save($this->filesystem->path($this->getPathNameForThumbs()));
     }
 
     protected function getPathNameForThumbs(): string
