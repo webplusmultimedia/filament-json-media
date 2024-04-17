@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace GalleryJsonMedia\Form;
 
-use Bkwld\Croppa\Facades\Croppa;
 use Closure;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\BaseFileUpload;
 use GalleryJsonMedia\Form\Concerns\HasCustomProperties;
+use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
 use GalleryJsonMedia\Support\Concerns\HasThumbProperties;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
@@ -55,6 +55,8 @@ class JsonMediaGallery extends BaseFileUpload
         }
 
         $this->multiple();
+
+        $this->diskName = config('gallery-json-media.disk');
 
         $this->registerActions(
             actions: [
@@ -141,13 +143,15 @@ class JsonMediaGallery extends BaseFileUpload
 
             $fileName = data_get($file, 'file');
             $mimeType = data_get($file, 'mime_type');
+
             $url[$fileKey] = [
                 'name' => $fileName,
                 'size' => data_get($file, 'size'),
                 'mime_type' => $mimeType,
                 'url' => ($this->isImageFile($mimeType) and ! $this->isSvgFile($mimeType))
-                        ? url(Croppa::url($storage->url($fileName), $this->getThumbWidth()))
-                        : $storage->url($fileName),
+                    ? (new Croppa(filesystem: $storage, filePath: $fileName, width: $this->getThumbWidth(), height: $this->getThumbHeight()))
+                        ->url()
+                    : $storage->url($fileName),
             ];
         }
 
@@ -170,7 +174,7 @@ class JsonMediaGallery extends BaseFileUpload
         $state = array_filter(array_map(function (array $file) use ($storage) {
             if (isset($file['deleted']) and $file['deleted']) {
                 try {
-                    Croppa::reset($storage->url($file['file'])); // remove all thumbs
+                    (new Croppa($storage, $file['file']))->reset(); // remove all thumbs
                 } catch (\Throwable) {
                     //never mind if file doesn't exist
                 }
