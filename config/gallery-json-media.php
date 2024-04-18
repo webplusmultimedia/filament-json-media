@@ -11,9 +11,9 @@ return [
         'path' => 'storage/(.*)$',
         'signing_key' => 'app.key',
         'driver' => 'imagick', // gd or imagick
-        'quality' => 80,
+        'quality' => 70,
         'thumbnails-crop-method' => null,
-        'thumbnails-saved-format' => null, // Manipulations::FORMAT_PNG / following formats are supported: FORMAT_JPG, FORMAT_PJPG, FORMAT_PNG, FORMAT_GIF, FORMAT_WEBP and FORMAT_TIFF
+        'thumbnails-saved-format' => [],
 
     ],
     'form' => [

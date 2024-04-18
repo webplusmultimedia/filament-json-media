@@ -8,6 +8,9 @@
 
 This package add a json field media for images/documents to filament V3.x and fluents api for front-end in Laravel to display photos and url link for documents ...
 [![json-media.webp](https://i.postimg.cc/8Cn6Zttf/json-media.webp)](https://postimg.cc/wtLMvcK9)
+
+V2.x Use now spatie/image package (^PHP 8.2 need)
+
 ## Installation
 
 You can install the package via composer:
@@ -27,6 +30,9 @@ Optionally, you can publish the views using
 ```bash
 php artisan vendor:publish --tag="gallery-json-media-views"
 ```
+## Discord
+
+Find it on [discord](https://discord.com/channels/883083792112300104/1220043851977199616)
 
 ## Usage
 ### Prepare your model
