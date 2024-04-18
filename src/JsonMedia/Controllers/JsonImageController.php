@@ -29,7 +29,7 @@ class JsonImageController extends Controller
     {
     }
 
-    public function handle(string $requestPath)
+    public function handle(string $requestPath): BinaryFileResponse | \Illuminate\Http\RedirectResponse | null
     {
         // Validate the signing token
         $token = $this->urlParser->signingToken($requestPath);
@@ -38,17 +38,19 @@ class JsonImageController extends Controller
             throw new NotFoundHttpException('Token mismatch');
         }
 
-        $url = $this->urlParser->parse($requestPath);
+        if (! $params = $this->urlParser->parse($requestPath)) {
+            return null;
+        }
+        ['path' => $path, 'width' => $width, 'height' => $height, 'options' => $options] = $params;
 
         /** @var FilesystemAdapter $storage */
         $storage = Storage::disk(config('gallery-json-media.disk'));
-
         /**@todo : for non local file Soon */
         // Create the image file
-        $croppa = (new Croppa(filesystem: $storage, filePath: $url['path'], width: $url['width'], height: $url['height']));
+        $croppa = (new Croppa(filesystem: $storage, filePath: $path, width: $width, height: $height));
         $croppa->render();
         if ($storage->getAdapter() instanceof LocalFilesystemAdapter) {
-            return redirect($requestPath, 301);
+            return redirect(url($requestPath));
         }
 
         $absolutePath = $storage->path($requestPath);
