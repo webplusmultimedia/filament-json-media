@@ -64,16 +64,18 @@ export function checkFile(file) {
 }
 
 /**
- * @param {FileList} files
+ * @param {number} nbPresentFile
  * @param {number|null} maxFiles
  * @param {number} nbFilesUpload
  *
  * @return {boolean}
  */
-export function checkMaxFile(files, maxFiles, nbFilesUpload) {
-    const nbFiles = files.length + nbFilesUpload
-
-    return !(maxFiles && nbFiles > maxFiles);
+export function checkMaxFile(nbPresentFile, maxFiles, nbFilesUpload) {
+    const nbFiles = nbPresentFile + nbFilesUpload
+     if(!maxFiles) {
+         return true
+     }
+    return   nbFiles <= maxFiles;
 }
 /**
  * @param {File} file

@@ -106,11 +106,12 @@ export function galleryFileUpload(
                 this.uploadFiles[fileKey].progress = progressEvent.detail.progress
             }
 
-            const nbFilesUpload = filesList.length
+            const nbFilesUpload = filesList.length,
+                nbFiles = this.uploadFiles.length
             let filesUpload = 0
             if (nbFilesUpload) {
-                if (!checkMaxFile(filesList, maxFiles, nbFilesUpload)) {
-                    new FilamentNotification().title('Max Files reach').danger().send()
+                if (!checkMaxFile(nbFiles, maxFiles, nbFilesUpload)) {
+                    new FilamentNotification().title(`Max [${maxFiles}] Files reach `).danger().send()
                     return
                 }
                 if (!this.startUpload) {
