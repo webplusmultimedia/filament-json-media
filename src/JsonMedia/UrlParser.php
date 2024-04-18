@@ -54,9 +54,12 @@ final class UrlParser
     /**
      * Parse a request path into Croppa instructions.
      *
-     * @return array{path : string,width : int|null,height : int|null,options : null|string}|bool
+     *
+     * @return array{path : string,width : int|null,height : int|null,options : null|string}|false
+     *
+     * @throws Exception
      */
-    public function parse(string $request)
+    public function parse(string $request): array | false
     {
         if (! preg_match('#' . self::PATTERN . '#', $request, $matches)) {
             return false;

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace GalleryJsonMedia\JsonMedia\ImageManipulation;
 
+use Exception;
 use GalleryJsonMedia\JsonMedia\UrlParser;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Spatie\Image\Enums\Fit;
 use Spatie\Image\Exceptions\InvalidImageDriver;
 use Spatie\Image\Exceptions\InvalidManipulation;
 use Spatie\Image\Image;
@@ -37,14 +39,27 @@ final class Croppa
             ->load($this->filesystem->path($this->filePath))
             ->quality(config('gallery-json-media.images.quality'));
 
-        if ($this->width) {
-            $image->width($this->width);
-        }
-        if ($this->height) {
-            $image->height($this->height);
-        }
+        try {
 
-        $image->save($this->filesystem->path($this->getPathNameForThumbs()));
+            if ($this->width && $this->height) {
+                $image = $image->fit(
+                    Fit::Crop,
+                    desiredWidth: $this->width,
+                    desiredHeight: $this->height
+                );
+            } else {
+                if ($this->width) {
+                    $image->width($this->width);
+                }
+                if ($this->height) {
+                    $image->height($this->height);
+                }
+            }
+
+            $image->save($this->filesystem->path($this->getPathNameForThumbs()));
+        } catch (InvalidManipulation $e) {
+            throw new Exception('Invalid manipulation or you are need php 8.2');
+        }
     }
 
     protected function getPathNameForThumbs(): string
