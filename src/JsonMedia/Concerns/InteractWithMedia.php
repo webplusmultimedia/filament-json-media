@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace GalleryJsonMedia\JsonMedia\Concerns;
 
-use Bkwld\Croppa\Facades\Croppa;
 use GalleryJsonMedia\JsonMedia\Contracts\CanDeleteMedia;
 use GalleryJsonMedia\JsonMedia\Contracts\HasMedia;
 use GalleryJsonMedia\JsonMedia\Document;
@@ -71,6 +70,11 @@ trait InteractWithMedia
         return $documents;
     }
 
+    public function hasDocuments(string $fieldName): bool
+    {
+        return ! empty($this->getDocuments($fieldName));
+    }
+
     public function getFirstMedia(string $fieldName): ?Media
     {
         return collect($this->getMedias($fieldName))->first();
@@ -87,11 +91,11 @@ trait InteractWithMedia
 
     public function getFirstMediaCropUrl(string $fieldName, ?int $width = null, ?int $height = null, ?array $options = null): ?string
     {
-        if (! $firstMedia = $this->getFirstMediaUrl($fieldName)) {
+        if (! $firstMedia = $this->getFirstMedia($fieldName)) {
             return null;
         }
 
-        return url(Croppa::url($firstMedia, $width, $height, $options));
+        return $firstMedia->getCropUrl($width, $height, $options);
     }
 
     protected function getFieldsToDeleteMedia(): array
