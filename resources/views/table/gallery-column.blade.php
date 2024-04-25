@@ -4,7 +4,7 @@
         $record = $getRecord();
 @endphp
 <div class="flex gap-x-1 items-center max-w-max">
-    @if(($record))
+    @if(($record) and !$record->hasDocuments($getName()))
         @if(!$hasAvatars())
             {{ $record->getFirstMedia($getName())?->withImageProperties($getThumbWidth(),$getThumbHeight()) }}
         @else

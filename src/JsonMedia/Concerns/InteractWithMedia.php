@@ -117,4 +117,9 @@ trait InteractWithMedia
     {
         return count($this->getMedias($field));
     }
+
+    public function documentsCount(string $field): int
+    {
+        return count($this->getDocuments($field));
+    }
 }
