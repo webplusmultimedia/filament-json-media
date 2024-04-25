@@ -27,10 +27,14 @@ interface HasMedia
 
     public function getFirstMediaUrl(string $fieldName): ?string;
 
+    public function hasDocuments(string $fieldName): bool;
+
     public function getFirstMediaCropUrl(string $fieldName, ?int $width = null, ?int $height = null, ?array $options = null): ?string;
 
     /** @return Document[] */
     public function getDocuments(string $fieldName): array;
 
     public function mediasCount(string $field): int;
+
+    public function documentsCount(string $field): int;
 }
