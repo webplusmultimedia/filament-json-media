@@ -67,13 +67,13 @@ JsonMediaGallery::make('images')
     ->reorderable()
     ->preserveFilenames()
     ->acceptedFileTypes()
-    ->disk()
-    ->visibility() // only public for now
+    ->visibility() // only public for now - NO S3
     ->maxSize(4 * 1024)
     ->minSize()
     ->maxFiles()
     ->minFiles()
-    ->image() // only images
+    ->replaceNameByTitle() // If you want to show title (alt customProperties) against file name
+    ->image() // only images by default , u need to choose one (images or document)
     ->document() // only documents (eg: pdf, doc, xls,...)
     ->downloadable()
     ->deletable()
@@ -95,11 +95,18 @@ JsonMediaColumn::make('images')
 ### In Filament Infolists
 ```php
 use GalleryJsonMedia\Infolists\JsonMediaEntry;
+use GalleryJsonMedia\Infolists\JsonDocumentsEntry;
 JsonMediaEntry::make('images')
     ->avatars()
     ->thumbHeight(100)
     ->thumbWidth(100)
     ->visible(static fn(array|null $state)=> filled($state))
+
+
+// or for Documents, you can download them here 
+GalleryJsonMedia\Infolists\JsonDocumentsEntry::make('documents')
+    ->columns(4)
+    ->columnSpanFull()
 ```
 
 ### In Blade Front-end
