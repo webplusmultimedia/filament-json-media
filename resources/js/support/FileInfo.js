@@ -1,7 +1,7 @@
 export function humanFileSize(size) {
     if (size) {
         if (size > (1000 * 1000)) {
-            return ((size / (1000 *1000)).toFixed(1) + ' Mb').replace('.', ',')
+            return ((size / (1000 * 1000)).toFixed(1) + ' Mb').replace('.', ',')
         }
         if (size > 1024) {
             return ((size / 1000).toFixed(1) + ' kb').replace('.', ',')
@@ -17,18 +17,19 @@ export function humanFileSize(size) {
  * @param {String} uuid
  * @returns {Object}
  * **/
-export function normalizeFileToShow(file,uuid) {
+export function normalizeFileToShow(file, uuid) {
     if (!(file instanceof File)) {
         return false
     }
     return {
         name: file.name,
+        alt : file.name,
         size: file.size,
         mime_type: file.type,
         is_new: true,
         is_success: false,
-        error : false,
-        filekey : uuid,
+        error: false,
+        filekey: uuid,
         progress: 0,
         'url': URL.createObjectURL(file),
     }
@@ -40,10 +41,10 @@ export function normalizeFileToShow(file,uuid) {
  * */
 export function checkFile(file) {
     return {
-        _minSize : null,
-        _maxSize : null,
-        _acceptedFileTypes : null,
-        minSize(minSize){
+        _minSize: null,
+        _maxSize: null,
+        _acceptedFileTypes: null,
+        minSize(minSize) {
             this._minSize = minSize
             return this
         },
@@ -51,7 +52,7 @@ export function checkFile(file) {
             this._maxSize = maxSize
             return this
         },
-        fileType(acceptedFileTypes){
+        fileType(acceptedFileTypes) {
             this._acceptedFileTypes = acceptedFileTypes
             return this
         },
@@ -59,7 +60,7 @@ export function checkFile(file) {
             return !checkFileType(file, this._acceptedFileTypes)
                 || !checkMaxSize(file, this._maxSize)
                 || !checkMinSize(file, this._minSize)
-        }
+        },
     }
 }
 
@@ -72,28 +73,30 @@ export function checkFile(file) {
  */
 export function checkMaxFile(nbPresentFile, maxFiles, nbFilesUpload) {
     const nbFiles = nbPresentFile + nbFilesUpload
-     if(!maxFiles) {
-         return true
-     }
-    return   nbFiles <= maxFiles;
+    if (!maxFiles) {
+        return true
+    }
+    return nbFiles <= maxFiles
 }
+
 /**
  * @param {File} file
- * @param {number|none} minSize
+ * @param {number|null} minSize
  *
  * @return {boolean}
  */
 export function checkMinSize(file, minSize) {
-    return !(minSize && file.size > minSize);
+    return !(minSize && file.size > minSize)
 }
+
 /**
  * @param {File} file
- * @param {number|none} maxSize
+ * @param {number|null} maxSize
  *
  * @return {boolean}
  */
 export function checkMaxSize(file, maxSize) {
-    return !(maxSize && file.size >( maxSize * 1024));
+    return !(maxSize && file.size > (maxSize * 1024))
 }
 
 /**
@@ -103,8 +106,8 @@ export function checkMaxSize(file, maxSize) {
  * @return {boolean}
  */
 export function checkFileType(file, fileTypes) {
-    if(fileTypes) {
-        let type = fileTypes.filter(type => type === file.type);
+    if (fileTypes) {
+        let type = fileTypes.filter(type => type === file.type)
         return type.length > 0
     }
     return true
@@ -125,6 +128,6 @@ export function uuid() {
                     new Uint8Array(1),
                 )[0] &
                 (15 >> (c / 4)))
-        ).toString(16)
+        ).toString(16),
     )
 }

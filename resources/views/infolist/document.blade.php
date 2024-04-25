@@ -23,13 +23,13 @@
                 <a href="{{ $document->getUrl() }}" target="_blank"
                    class="inline-flex items-center gap-x-1 text-xs text-primary-600 hover:text-primary-500"
                 >
-                    @svg('heroicon-o-document','h-6 w-6')    {{ $document->getCustomProperty('alt') }}
+                    @svg('heroicon-o-document','h-6 w-6')  <span class="flex-1">{{ $document->getCustomProperty('alt') }}</span>
                 </a>
             @endforeach
         </x-filament::grid>
     @else
-        <div>
-            {{ __('gallery-json-media::infolist.document.nothing-to-show') }}
+        <div class="text-sm">
+            {{ __('gallery-json-media::gallery-json-media.infoList.document.nothing-to-show') }}
         </div>
     @endif
 </div>

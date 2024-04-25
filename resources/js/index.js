@@ -13,6 +13,7 @@ export function galleryFileUpload(
         isDisabled,
         isDownloadable,
         uploadingMessage,
+        changeNameToAlt,
         isReorderable,
         acceptedFileTypes,
         hasCustomPropertiesAction,
@@ -59,16 +60,19 @@ export function galleryFileUpload(
                 },
             )
         },
-        /**@param {String} name */
-        getFileName: function(name) {
-            if (name.startsWith('blob:') || name.startsWith('livewire:')) {
-                return name
+        /**@param {Object : { name : string,alt : string}} file */
+        getFileName: function(file) {
+            if (file.name.startsWith('blob:') || file.name.startsWith('livewire:')) {
+                return file.name
             }
-            let last_slash = name.lastIndexOf('/')
+            if(changeNameToAlt){
+                return file.alt
+            }
+            let last_slash = file.name.lastIndexOf('/')
             if (last_slash !== -1) {
-                return name.slice(last_slash + 1)
+                return file.name.slice(last_slash + 1)
             }
-            return name
+            return file.name
         },
         getContentImage(file) {
             return contentFile(file).getFile()
