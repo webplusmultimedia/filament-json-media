@@ -25,12 +25,26 @@ class JsonMediaGallery extends BaseFileUpload
 
     protected ?string $acceptedFileText = null;
 
+    protected Closure | bool $hasAltToName = false;
+
     public function document(): static
     {
         $this->acceptedFileTypes = config('gallery-json-media.form.default.document_accepted_file_type');
         $this->acceptedFileText = config('gallery-json-media.form.default.document_accepted_text');
 
         return $this;
+    }
+
+    public function replaceNameByTitle(bool | Closure $hasAltToName = true): JsonMediaGallery
+    {
+        $this->hasAltToName = $hasAltToName;
+
+        return $this;
+    }
+
+    public function hasNameReplaceByTitle(): bool
+    {
+        return $this->evaluate($this->hasAltToName);
     }
 
     public function image(): static
@@ -143,10 +157,10 @@ class JsonMediaGallery extends BaseFileUpload
 
             $fileName = data_get($file, 'file');
             $mimeType = data_get($file, 'mime_type');
-
             $url[$fileKey] = [
                 'name' => $fileName,
                 'size' => data_get($file, 'size'),
+                'alt' => data_get($file, 'customProperties.alt'),
                 'mime_type' => $mimeType,
                 'url' => ($this->isImageFile($mimeType) and ! $this->isSvgFile($mimeType))
                     ? (new Croppa(filesystem: $storage, filePath: $fileName, width: $this->getThumbWidth(), height: $this->getThumbHeight()))

@@ -7,28 +7,21 @@
         @dragend="$event.target.setAttribute('draggable', false);stopDragging = true"
         @dragover="updateListOrder($event)"
         draggable="false"
-        :class="{
-                            'opacity-25': indexBeingDragged === fileIndex
-                        }"
-
+        :class="{ 'opacity-25': indexBeingDragged === fileIndex }"
     >
         <div class="flex w-full max-h-fit"
              :class="{'pointer-events-none': indexBeingDragged}"
         >
-
             <div class="gallery-header"
                  :class="{ 'webplusm-finish-uploading' : file.is_success  && file.is_new, 'webplusm-error-uploading' : file.error  && file.is_new }"
             >
                 <div style="overflow: hidden;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 1;"
-                     x-text="getFileName(file.name)"></div>
+                     x-text="getFileName(file)"></div>
                 <div x-text="getHumanSize(file.size)"></div>
             </div>
             <div class="flex w-full pointer-events-none object-cover" x-html="getContentImage(file)"
                  :class="{ 'blur-[2px]' : startUpload && file.is_new && !file.is_success }"
             >
-                {{--<img :src="file.url" :alt="file.name" class="object-cover w-full" loading="lazy"
-                     :class="{ 'blur-[2px]' : startUpload && file.is_new && !file.is_success }"
-                 >--}}
             </div>
             <div class="absolute inset-0 m-auto  w-28 h-28 flex items-center justify-center rounded-full z-[3] pointer-events-none"
                  :style="{'--wm-progress' : `calc(${file.progress??0} * 1%)`,backgroundImage: `conic-gradient(white var(--wm-progress), transparent var(--wm-progress))`}"

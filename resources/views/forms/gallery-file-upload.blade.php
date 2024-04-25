@@ -31,6 +31,7 @@
                      isMultiple : @js($isMultiple()),
                      acceptedFileTypes : @js($getAcceptedFileTypes()),
                      uploadingMessage: @js($getUploadingMessage()),
+                     changeNameToAlt : @js($hasNameReplaceByTitle()),
                      removeUploadedFileUsing: async (fileKey) => {
                         return await $wire.removeFormUploadedFile(@js($getStatePath()), fileKey)
                     },
