@@ -8,4 +8,6 @@ return [
     'tooltip.edit-button-custom-property' => 'Edit custom properties',
     'title.edit-modal-form-for-customs-properties' => 'Edit custom properties',
     'infoList.document.nothing-to-show' => 'Nothing to show',
+    'form.alt.label.media' => 'Alt',
+    'form.alt.label.document' => 'Document title',
 ];

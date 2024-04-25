@@ -79,7 +79,7 @@ trait HasCustomProperties
                     return $state[$key]['customProperties'];
                 })
                 ->label(trans('gallery-json-media::gallery-json-media.title.edit-modal-form-for-customs-properties'))
-                ->form(fn (array $arguments) => $this->getMinimumFieldForCustomEditField($arguments, $this->getState()))
+                ->form(fn (array $arguments) => $this->getMinimumFieldForCustomEditField($arguments))
                 ->action(function (array $arguments, array $data, Form $form, JsonMediaGallery $component) {
                     $key = $arguments['key'];
                     $state = $component->getState();
@@ -104,9 +104,16 @@ trait HasCustomProperties
         return null;
     }
 
-    private function getMinimumFieldForCustomEditField(array $arguments, array $state): array
+    private function getMinimumFieldForCustomEditField(array $arguments): array
     {
-        return array_merge([TextInput::make('alt')->required()->helperText('Alternative text image')], $this->getCustomPropertiesSchema());
+        $key = $arguments['key'];
+        $state = $this->getState();
+        $mimeType = $state[$key]['mime_type'];
+        $label = $this->isImageFile($mimeType) ?
+            trans('gallery-json-media::gallery-json-media.form.alt.label.media')
+            : trans('gallery-json-media::gallery-json-media.form.alt.label.document');
+
+        return array_merge([TextInput::make('alt')->label($label)->required()], $this->getCustomPropertiesSchema());
     }
 
     private function isImageFile(string $mimeType): bool
