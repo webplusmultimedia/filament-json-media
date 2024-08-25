@@ -19,14 +19,14 @@ use Illuminate\Support\Facades\Storage;
 
 trait HasFile
 {
+    protected Filesystem $storage;
+
     protected function getFileName(): ?string
     {
         if ($fileName = $this->getContentKeyValue('file')) {
-            $disk = $this->getDisk();
-            if ($disk->exists($fileName)) {
+            if ($this->storage->exists($fileName)) {
                 return $fileName;
             }
-
         }
 
         return null;
@@ -34,7 +34,11 @@ trait HasFile
 
     protected function getDisk(): Filesystem
     {
-        return Storage::disk($this->getContentKeyValue('disk'));
+        if (! isset($this->storage)) {
+            $this->storage = Storage::disk($this->getContentKeyValue('disk'));
+        }
+
+        return $this->storage;
     }
 
     protected function getContentKeyValue(string $key): mixed

@@ -24,6 +24,7 @@ final class Media implements CanDeleteMedia, Htmlable, Stringable
         public int $width = 250,
         public int $height = 180,
     ) {
+        $this->getDisk();
     }
 
     public static function make(array $content): Media
@@ -38,11 +39,8 @@ final class Media implements CanDeleteMedia, Htmlable, Stringable
 
     protected function getPath(): ?string
     {
-        if ($fileName = $this->getContentKeyValue('file')) {
-            $storage = $this->getDisk();
-            if ($storage->exists($fileName)) {
-                return $storage->path($fileName);
-            }
+        if ($fileName = $this->getFileName()) {
+            return $this->storage->path($fileName);
         }
 
         return null;
@@ -50,11 +48,8 @@ final class Media implements CanDeleteMedia, Htmlable, Stringable
 
     public function getUrl(): ?string
     {
-        if ($fileName = $this->getContentKeyValue('file')) {
-            $storage = $this->getDisk();
-            if ($storage->exists($fileName)) {
-                return $storage->url($fileName);
-            }
+        if ($fileName = $this->getFileName()) {
+            return $this->storage->url($fileName);
         }
 
         return null;
