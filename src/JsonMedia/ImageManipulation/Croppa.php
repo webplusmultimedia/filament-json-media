@@ -14,9 +14,7 @@ use Spatie\Image\Image;
 
 final class Croppa
 {
-    public function __construct(protected Filesystem $filesystem, private string $filePath, private ?int $width = null, private ?int $height = null)
-    {
-    }
+    public function __construct(protected Filesystem $filesystem, private string $filePath, private ?int $width = null, private ?int $height = null) {}
 
     public function url(): string
     {

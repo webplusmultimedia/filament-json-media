@@ -20,7 +20,7 @@ final class UrlParser
 {
     public static function make(): UrlParser
     {
-        return new self();
+        return new self;
     }
 
     /**

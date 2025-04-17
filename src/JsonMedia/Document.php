@@ -14,9 +14,7 @@ class Document implements CanDeleteMedia, Stringable
 
     public function __construct(
         protected array $content,
-    ) {
-
-    }
+    ) {}
 
     public static function make(array $content): Document
     {

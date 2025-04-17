@@ -59,9 +59,7 @@ class JsonMediaServiceProvider extends PackageServiceProvider
         }
     }
 
-    public function packageRegistered(): void
-    {
-    }
+    public function packageRegistered(): void {}
 
     public function packageBooted(): void
     {
@@ -89,7 +87,7 @@ class JsonMediaServiceProvider extends PackageServiceProvider
         }*/
 
         // Testing
-        Testable::mixin(new TestsFilamentJsonMedia());
+        Testable::mixin(new TestsFilamentJsonMedia);
     }
 
     protected function getAssetPackageName(): ?string
