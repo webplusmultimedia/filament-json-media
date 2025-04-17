@@ -25,9 +25,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class JsonImageController extends Controller
 {
-    public function __construct(protected UrlParser $urlParser)
-    {
-    }
+    public function __construct(protected UrlParser $urlParser) {}
 
     public function handle(string $requestPath): BinaryFileResponse | \Illuminate\Http\RedirectResponse | null
     {

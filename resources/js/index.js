@@ -29,6 +29,7 @@ export function galleryFileUpload(
         statePath,
         customPropertyActionName,
         hasCustomPropertiesAction,
+        isDownloadable,
         isDeletable,
         isReorderable,
         lastState: null,
