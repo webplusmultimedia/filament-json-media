@@ -103,7 +103,7 @@ class JsonMediaServiceProvider extends PackageServiceProvider
         return [
             Css::make('gallery-json-media-styles', __DIR__ . '/../resources/dist/gallery-json-media.css')->loadedOnRequest(),
             AlpineComponent::make('gallery-json-media', __DIR__ . '/../resources/dist/components/gallery-json-media.js'),
-            //Js::make('gallery-json-media-scripts', __DIR__ . '/../resources/dist/gallery-json-media.js'),
+            // Js::make('gallery-json-media-scripts', __DIR__ . '/../resources/dist/gallery-json-media.js'),
         ];
     }
 

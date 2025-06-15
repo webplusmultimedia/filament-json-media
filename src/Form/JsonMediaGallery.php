@@ -85,7 +85,7 @@ class JsonMediaGallery extends BaseFileUpload
                 return;
             }
 
-            /** @var array<string,mixed>|array<int,mixed> $keys */
+            /** @type array<int|string,mixed> $keys */
             $keys = array_keys($state);
 
             if (is_string(array_key_first($keys))) {
@@ -190,7 +190,7 @@ class JsonMediaGallery extends BaseFileUpload
                 try {
                     (new Croppa($storage, $file['file']))->reset(); // remove all thumbs
                 } catch (\Throwable) {
-                    //never mind if file doesn't exist
+                    // never mind if file doesn't exist
                 }
 
                 $storage->delete($file['file']);
@@ -285,7 +285,7 @@ class JsonMediaGallery extends BaseFileUpload
         }
 
         if (is_string($file['file'])) {
-            //$this->removeStoredFileName($file['file']);
+            // $this->removeStoredFileName($file['file']);
             $file['deleted'] = true;
             $files[$fileKey] = $file;
         } elseif ($file['file'] instanceof TemporaryUploadedFile) {
