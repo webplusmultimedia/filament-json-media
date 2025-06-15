@@ -10,6 +10,7 @@ use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\View\View;
 use Stringable;
+use Throwable;
 
 final class Media implements CanDeleteMedia, Htmlable, Stringable
 {
@@ -111,7 +112,7 @@ final class Media implements CanDeleteMedia, Htmlable, Stringable
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function toHtml(): string
     {

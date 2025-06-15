@@ -15,9 +15,9 @@ declare(strict_types=1);
 namespace GalleryJsonMedia\Form\Concerns;
 
 use Closure;
-use Filament\Forms\Components\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Support\Enums\Alignment;
 use GalleryJsonMedia\Form\JsonMediaGallery;
 
@@ -79,8 +79,8 @@ trait HasCustomProperties
                     return $state[$key]['customProperties'];
                 })
                 ->label(trans('gallery-json-media::gallery-json-media.title.edit-modal-form-for-customs-properties'))
-                ->form(fn (array $arguments) => $this->getMinimumFieldForCustomEditField($arguments))
-                ->action(function (array $arguments, array $data, Form $form, JsonMediaGallery $component) {
+                ->schema(fn (array $arguments) => $this->getMinimumFieldForCustomEditField($arguments))
+                ->action(function (array $arguments, array $data, Schema $schema, JsonMediaGallery $component) {
                     $key = $arguments['key'];
                     $state = $component->getState();
                     if (! isset($state[$key])) {
