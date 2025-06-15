@@ -14,25 +14,27 @@ declare(strict_types=1);
 
 namespace GalleryJsonMedia\Support\Concerns;
 
+use Closure;
+
 trait HasAvatars
 {
-    protected bool | \Closure $isAvatars = false;
+    protected bool | Closure $isAvatars = false;
 
-    protected int | \Closure $maxAvatar = 4;
+    protected int | Closure $maxAvatar = 4;
 
     public function hasAvatars(): bool
     {
         return $this->evaluate($this->isAvatars);
     }
 
-    public function avatars(bool | \Closure $isAvatars = true): static
+    public function avatars(bool | Closure $isAvatars = true): static
     {
         $this->isAvatars = $isAvatars;
 
         return $this;
     }
 
-    public function maxAvatar(int | \Closure $maxAvatar = 4): static
+    public function maxAvatar(int | Closure $maxAvatar = 4): static
     {
         $this->maxAvatar = $maxAvatar;
 

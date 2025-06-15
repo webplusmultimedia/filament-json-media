@@ -17,6 +17,7 @@ namespace GalleryJsonMedia\JsonMedia\Controllers;
 use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
 use GalleryJsonMedia\JsonMedia\UrlParser;
 use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Local\LocalFilesystemAdapter;
@@ -27,7 +28,7 @@ class JsonImageController extends Controller
 {
     public function __construct(protected UrlParser $urlParser) {}
 
-    public function handle(string $requestPath): BinaryFileResponse | \Illuminate\Http\RedirectResponse | null
+    public function handle(string $requestPath): BinaryFileResponse | RedirectResponse | null
     {
         // Validate the signing token
         $token = $this->urlParser->signingToken($requestPath);

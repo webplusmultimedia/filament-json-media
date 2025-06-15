@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace GalleryJsonMedia\JsonMedia\Concerns;
 
+use Closure;
 use GalleryJsonMedia\JsonMedia\Contracts\CanDeleteMedia;
 use GalleryJsonMedia\JsonMedia\Contracts\HasMedia;
 use GalleryJsonMedia\JsonMedia\Document;
 use GalleryJsonMedia\JsonMedia\Media;
 
 /**
- * @method static deleting(\Closure $param)
+ * @method static deleting(Closure $param)
  */
+// @phpstan-ignore trait.unused
 trait InteractWithMedia
 {
     protected static function bootInteractWithMedia(): void

@@ -11,6 +11,4 @@ parameters:
     checkModelProperties: true
     #checkMissingIterableValueType: false
     ignoreErrors:
-    		-
-    			identifier: property.defaultValue
 

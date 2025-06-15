@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace GalleryJsonMedia\Form;
 
 use Closure;
-use Filament\Forms\Components\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Forms\Components\BaseFileUpload;
 use GalleryJsonMedia\Form\Concerns\HasCustomProperties;
 use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use League\Flysystem\UnableToCheckFileExistence;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Throwable;
 
 class JsonMediaGallery extends BaseFileUpload
 {
@@ -88,7 +89,7 @@ class JsonMediaGallery extends BaseFileUpload
             /** @type array<int|string,mixed> $keys */
             $keys = array_keys($state);
 
-            if (is_string(array_key_first($keys))) {
+            if (is_string(array_key_first($keys))) { // @phpstan-ignore  function.impossibleType
                 return;
             }
             $files = collect($state)
@@ -189,7 +190,7 @@ class JsonMediaGallery extends BaseFileUpload
             if (isset($file['deleted']) and $file['deleted']) {
                 try {
                     (new Croppa($storage, $file['file']))->reset(); // remove all thumbs
-                } catch (\Throwable) {
+                } catch (Throwable) {
                     // never mind if file doesn't exist
                 }
 
