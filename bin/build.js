@@ -1,4 +1,4 @@
-import esbuild from 'esbuild'
+import * as esbuild from 'esbuild'
 
 const isDev = process.argv.includes('--dev')
 
@@ -27,7 +27,7 @@ const defaultOptions = {
     minify: !isDev,
     plugins: [{
         name: 'watchPlugin',
-        setup: function (build) {
+        setup(build) {
             build.onStart(() => {
                 console.log(`Build started at ${new Date(Date.now()).toLocaleTimeString()}: ${build.initialOptions.outfile}`)
             })

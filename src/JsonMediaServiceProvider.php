@@ -7,9 +7,7 @@ namespace GalleryJsonMedia;
 use Filament\Support\Assets\AlpineComponent;
 use Filament\Support\Assets\Asset;
 use Filament\Support\Assets\Css;
-use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
-use Filament\Support\Facades\FilamentIcon;
 use GalleryJsonMedia\Commands\FilamentJsonMediaCommand;
 use GalleryJsonMedia\Testing\TestsFilamentJsonMedia;
 use Livewire\Features\SupportTesting\Testable;
@@ -32,6 +30,7 @@ class JsonMediaServiceProvider extends PackageServiceProvider
          */
         $package->name(static::$name)
             ->hasCommands($this->getCommands())
+            ->hasViews(static::$viewNamespace)
             ->hasTranslations()
             ->hasRoute('web')
             ->hasInstallCommand(function (InstallCommand $command) {
@@ -54,14 +53,14 @@ class JsonMediaServiceProvider extends PackageServiceProvider
             $package->hasTranslations();
         }
 
-        if (file_exists($package->basePath('/../resources/views'))) {
-            $package->hasViews(static::$viewNamespace);
-        }
+        /* if (file_exists($package->basePath('/../resources/views'))) {
+             $package->hasViews(static::$viewNamespace);
+         }*/
     }
 
     public function packageRegistered(): void {}
 
-    public function packageBooted(): void
+    public function bootingPackage()
     {
         // Asset Registration
         FilamentAsset::register(
@@ -69,25 +68,10 @@ class JsonMediaServiceProvider extends PackageServiceProvider
             $this->getAssetPackageName()
         );
 
-        FilamentAsset::registerScriptData(
-            $this->getScriptData(),
-            $this->getAssetPackageName()
-        );
-
-        // Icon Registration
-        FilamentIcon::register($this->getIcons());
-
-        // Handle Stubs
-        /*if (app()->runningInConsole()) {
-            foreach (app(Filesystem::class)->files(__DIR__ . '/../stubs/') as $file) {
-                $this->publishes([
-                    $file->getRealPath() => base_path("stubs/filament-json-media/{$file->getFilename()}"),
-                ], 'filament-json-media-stubs');
-            }
-        }*/
-
         // Testing
         Testable::mixin(new TestsFilamentJsonMedia);
+
+        return $this;
     }
 
     protected function getAssetPackageName(): ?string
