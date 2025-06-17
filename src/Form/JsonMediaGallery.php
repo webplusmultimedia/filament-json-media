@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace GalleryJsonMedia\Form;
 
 use Closure;
-use Filament\Actions\Action;
 use Filament\Forms\Components\BaseFileUpload;
+use Filament\Support\Components\Attributes\ExposedLivewireMethod;
 use GalleryJsonMedia\Form\Concerns\HasCustomProperties;
 use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
 use GalleryJsonMedia\Support\Concerns\HasThumbProperties;
@@ -14,6 +14,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use League\Flysystem\UnableToCheckFileExistence;
+use Livewire\Attributes\Renderless;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Throwable;
 
@@ -73,11 +74,7 @@ class JsonMediaGallery extends BaseFileUpload
 
         $this->diskName = config('gallery-json-media.disk');
 
-        $this->registerActions(
-            actions: [
-                static fn (JsonMediaGallery $component): ?Action => $component->getCustomPropertiesAction(),
-            ]
-        );
+        $this->action($this->editCustomPropertiesAction());
 
         $this->afterStateHydrated(static function (JsonMediaGallery $component, ?array $state): void {
             if (blank($state)) {
@@ -136,11 +133,13 @@ class JsonMediaGallery extends BaseFileUpload
     /**
      * @return array<array{name: string, size: int, mime_type: string, url: string} | null>
      */
+    #[ExposedLivewireMethod]
+    #[Renderless]
     public function getUploadedFiles(): array
     {
         $storage = $this->getDisk();
         $url = [];
-        foreach ($this->getState() ?? [] as $fileKey => $file) {
+        foreach ($this->getRawState() ?? [] as $fileKey => $file) {
             if (! isset($file['deleted'])) {
                 $file['deleted'] = false;
             }
@@ -176,8 +175,8 @@ class JsonMediaGallery extends BaseFileUpload
     public function saveUploadedFiles(): void
     {
         $storage = $this->getDisk();
-        if (blank($this->getState())) {
-            $this->state([]);
+        if (blank($this->getRawState())) {
+            $this->rawState([]);
 
             return;
         }
@@ -185,8 +184,7 @@ class JsonMediaGallery extends BaseFileUpload
         if (! $this->shouldStoreFiles()) {
             return;
         }
-
-        $state = array_filter(array_map(function (array $file) use ($storage) {
+        $rawState = array_filter(array_map(function (array $file) use ($storage) {
             if (isset($file['deleted']) and $file['deleted']) {
                 try {
                     (new Croppa($storage, $file['file']))->reset(); // remove all thumbs
@@ -224,15 +222,15 @@ class JsonMediaGallery extends BaseFileUpload
             $file['file'] = $storedFile;
 
             return $file;
-        }, Arr::wrap($this->getState())));
+        }, Arr::wrap($this->getRawState())));
 
         // purge files , we dnt want deleted in json
-        $state = collect($state)->map(function ($file) {
+        $rawState = collect($rawState)->map(function ($file) {
             unset($file['deleted']);
 
             return $file;
         })->all();
-        $this->state($state);
+        $this->rawState($rawState);
     }
 
     public function getDirectory(): ?string
@@ -276,9 +274,11 @@ class JsonMediaGallery extends BaseFileUpload
         return $rules;
     }
 
+    #[ExposedLivewireMethod]
+    #[Renderless]
     public function removeUploadedFile(string $fileKey): string | TemporaryUploadedFile | null
     {
-        $files = $this->getState();
+        $files = $this->getRawState();
         $file = $files[$fileKey] ?? null;
 
         if (! $file) {
@@ -293,11 +293,13 @@ class JsonMediaGallery extends BaseFileUpload
             $file['file']->delete();
             unset($files[$fileKey]);
         }
-        $this->state($files);
+        $this->rawState($files);
 
         return $file['file'];
     }
 
+    #[ExposedLivewireMethod]
+    #[Renderless]
     public function deleteUploadedFile(string $fileKey): static
     {
         $file = $this->removeUploadedFile($fileKey);

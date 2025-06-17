@@ -1,6 +1,9 @@
 @php
+    use Filament\Support\Facades\FilamentAsset;
+    use Filament\Support\Facades\FilamentView;
     use Illuminate\Support\Arr;
     $editPropertiesAction = $getAction($getCustomPropertiesActionName()) ;
+     $key = $getKey();
 
 @endphp
 
@@ -10,13 +13,13 @@
     :label-sr-only="$isLabelHidden()"
 >
     <div
-        @if (\Filament\Support\Facades\FilamentView::hasSpaMode())
-            ax-load="visible"
+        @if (FilamentView::hasSpaMode())
+            x-load="visible"
         @else
-            ax-load
+            x-load
         @endif
-        ax-load-src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc("gallery-json-media","webplusm/gallery-json-media") }}"
-        x-load-css="[@js(\Filament\Support\Facades\FilamentAsset::getStyleHref("gallery-json-media-styles","webplusm/gallery-json-media"))]"
+        x-load-src="{{ FilamentAsset::getAlpineComponentSrc("gallery-json-media","webplusm/gallery-json-media") }}"
+        x-load-css="['{{ FilamentAsset::getStyleHref("gallery-json-media-styles","webplusm/gallery-json-media")}}']"
         x-data="galleryFileUpload({
                      state : $wire.$entangle('{{ $getStatePath() }}'),
                      statePath : @js($getStatePath()),
@@ -33,16 +36,31 @@
                      uploadingMessage: @js($getUploadingMessage()),
                      changeNameToAlt : @js($hasNameReplaceByTitle()),
                      removeUploadedFileUsing: async (fileKey) => {
-                        return await $wire.removeFormUploadedFile(@js($getStatePath()), fileKey)
+                        return await $wire.callSchemaComponentMethod(
+                            @js($key),
+                            'removeFormUploadedFile',
+                            { fileKey },
+                        )
                     },
                      deleteUploadedFileUsing: async (fileKey) => {
-                        return await $wire.deleteUploadedFile(@js($getStatePath()), fileKey)
+                         return await $wire.callSchemaComponentMethod(
+                            @js($key),
+                            'deleteUploadedFile',
+                            { fileKey },
+                        )
                     },
                     getUploadedFilesUsing: async () => {
-                        return await $wire.getFormUploadedFiles(@js($getStatePath()))
+                        return await $wire.callSchemaComponentMethod(
+                            @js($key),
+                            'getUploadedFiles',
+                        )
                     },
-                    reorderUploadedFilesUsing: async (files) => {
-                        return await $wire.reorderFormUploadedFiles(@js($getStatePath()), files)
+                    reorderUploadedFilesUsing: async (fileKeys) => {
+                        return await $wire.callSchemaComponentMethod(
+                            @js($key),
+                            'reorderUploadedFiles',
+                            { fileKeys },
+                        )
                     },
                     customPropertyActionName : @js($getCustomPropertiesActionName()),
 
@@ -80,7 +98,7 @@
             </div>
         </div>
         <div class="flex justify-self-end space-y-2"
-            x-show="uploadFiles.length"
+             x-show="uploadFiles.length"
         >
             <div class="flex gap-x-4 mt-2">
                 <button type="button" x-bind="leftArrow"
@@ -96,7 +114,7 @@
             </div>
         </div>
 
-        <div class="gallery-file-upload-wrapper "
+        <div class="gallery-file-upload-wrapper bg-gray-100 dark:bg-gray-800 p-2 rounded-lg"
              x-ref="galleryImages"
              x-bind="onScrolling"
         >
@@ -111,7 +129,7 @@
                 x-ref="ulGalleryWrapper"
                 {{--:class="{'flex-wrap' : !stopDragging }"--}}
             >
-               @include('gallery-json-media::forms.content.gallery-content')
+                @include('gallery-json-media::forms.content.gallery-content')
             </ul>
         </div>
     </div>

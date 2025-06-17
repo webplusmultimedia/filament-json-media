@@ -65,7 +65,7 @@ trait HasCustomProperties
         return $this->getCustomPropertiesSchema() !== null;
     }
 
-    public function getCustomPropertiesAction(): ?Action
+    public function editCustomPropertiesAction(): ?Action
     {
         if ($this->hasCustomPropertiesAction()) {
             $action = Action::make($this->getCustomPropertiesActionName())
