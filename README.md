@@ -10,6 +10,7 @@ This package add a json field media for images/documents to filament V3.x and fl
 [![json-media.webp](https://i.postimg.cc/8Cn6Zttf/json-media.webp)](https://postimg.cc/wtLMvcK9)
 
 V2.x Use now spatie/image package (^PHP 8.2 need)
+V3.x Filament V4.x  (^PHP 8.2 need)
 
 ## Installation
 
@@ -72,14 +73,14 @@ JsonMediaGallery::make('images')
     ->minSize()
     ->maxFiles()
     ->minFiles()
-    ->replaceNameByTitle() // If you want to show title (alt customProperties) against file name
+    ->replaceTitleByAlt() // If you want to show title (alt customProperties) against file name
     ->image() // only images by default , u need to choose one (images or document)
     ->document() // only documents (eg: pdf, doc, xls,...)
     ->downloadable()
     ->deletable()
     ->withCustomProperties(
        customPropertiesSchema: [                                     
-            ...
+            ...some form fields here
         ],
        editCustomPropertiesOnSlideOver: true,
        editCustomPropertiesTitle: "Edit customs properties")
