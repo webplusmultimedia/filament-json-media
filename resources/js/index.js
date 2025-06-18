@@ -8,6 +8,7 @@ export function galleryFileUpload(
         minSize,
         maxSize,
         maxFiles,
+        hasHorizontalMouseScroll,
         isMultiple,
         isDeletable,
         isDisabled,
@@ -29,6 +30,9 @@ export function galleryFileUpload(
         statePath,
         customPropertyActionName,
         hasCustomPropertiesAction,
+        get canMouseScroll() {
+          return hasHorizontalMouseScroll
+        },
         isDownloadable,
         isDeletable,
         isReorderable,
@@ -66,7 +70,7 @@ export function galleryFileUpload(
             if (file.name.startsWith('blob:') || file.name.startsWith('livewire:')) {
                 return file.name
             }
-            if(changeNameToAlt){
+            if (changeNameToAlt) {
                 return file.alt
             }
             let last_slash = file.name.lastIndexOf('/')
@@ -88,11 +92,14 @@ export function galleryFileUpload(
 
                 if ((rest - numberErrors) === 0) {
                     component.dispatchFormEvent('form-processing-finished')
-                    if(numberErrors) {
+                    if (numberErrors) {
                         // Removed thumbnails with no upload
                         component.uploadFiles = component.uploadFiles
                             .filter(file => !file.error)
-                            .map(file =>{ file.error = false; return file })
+                            .map(file => {
+                                file.error = false
+                                return file
+                            })
                     }
                     component.startUpload = false
                 }
@@ -167,27 +174,28 @@ export function galleryFileUpload(
         },
         onScrolling: {
             ['@wheel.stop'](e) {
-                const nbFiles = Object.entries(this.uploadFiles).length
-                /** @var {HTMLElement} wrapper */
-                const wrapper = this.$refs.galleryImages,
-                    /** @var {HTMLElement} ulWrapper */
-                    ulWrapper = this.$refs.ulGalleryWrapper
+                if (this.canMouseScroll) {
+                    const nbFiles = Object.entries(this.uploadFiles).length
+                    /** @var {HTMLElement} wrapper */
+                    const wrapper = this.$refs.galleryImages,
+                        /** @var {HTMLElement} ulWrapper */
+                        ulWrapper = this.$refs.ulGalleryWrapper
 
-                if ((nbFiles * 320) > wrapper.clientWidth) {
+                    if ((nbFiles * 320) > wrapper.clientWidth) {
 
-                    let delta = e.deltaY < 0 ? -280 : 280
+                        let delta = e.deltaY < 0 ? -280 : 280
 
-                    if ((e.deltaY > 0 && wrapper.scrollLeft >= 0 && (wrapper.scrollLeft + wrapper.clientWidth) < ulWrapper.clientWidth)
-                        || (e.deltaY < 0 && wrapper.scrollLeft > 0)
-                    ) {
-                        e.preventDefault()
-                        wrapper.scrollTo({
-                            left: wrapper.scrollLeft + delta,
-                            behavior: 'smooth',
-                        })
+                        if ((e.deltaY > 0 && wrapper.scrollLeft >= 0 && (wrapper.scrollLeft + wrapper.clientWidth) < ulWrapper.clientWidth)
+                            || (e.deltaY < 0 && wrapper.scrollLeft > 0)
+                        ) {
+                            e.preventDefault()
+                            wrapper.scrollTo({
+                                left: wrapper.scrollLeft + delta,
+                                behavior: 'smooth',
+                            })
+                        }
                     }
                 }
-
             },
         },
         pointerNone: {

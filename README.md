@@ -85,8 +85,8 @@ JsonMediaGallery::make('images')
     ->minSize()
     ->maxFiles()
     ->minFiles()
-    ->replaceTitleByAlt() // If you want to show title (alt customProperties) against file name
-    ->image() // only images by default , u need to choose one (images or document)
+    ->replaceTitleByAlt() // If you want to show alt customProperties  against file name
+    ->image() // only images by default , u need to choose one method (image or document)
     ->document() // only documents (eg: pdf, doc, xls,...)
     ->downloadable()
     ->deletable()
