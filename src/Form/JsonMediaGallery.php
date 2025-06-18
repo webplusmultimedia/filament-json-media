@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GalleryJsonMedia\Form;
 
 use Closure;
+use Filament\Actions\Action;
 use Filament\Forms\Components\BaseFileUpload;
 use Filament\Support\Components\Attributes\ExposedLivewireMethod;
 use GalleryJsonMedia\Form\Concerns\HasCustomProperties;
@@ -37,11 +38,19 @@ class JsonMediaGallery extends BaseFileUpload
         return $this;
     }
 
-    public function replaceNameByTitle(bool | Closure $hasAltToName = true): JsonMediaGallery
+    public function replaceTitleByAlt(bool | Closure $hasAltToName = true): static
     {
         $this->hasAltToName = $hasAltToName;
 
         return $this;
+    }
+
+    /**
+     * @deprecated use replaceTitleByAlt instead
+     */
+    public function replaceNameByTitle(bool | Closure $hasAltToName = true): JsonMediaGallery
+    {
+        return $this->replaceTitleByAlt($hasAltToName);
     }
 
     public function hasNameReplaceByTitle(): bool
@@ -74,8 +83,13 @@ class JsonMediaGallery extends BaseFileUpload
 
         $this->diskName = config('gallery-json-media.disk');
 
-        $this->action($this->editCustomPropertiesAction());
-
+        $this->registerActions(
+            actions: [
+                static function (JsonMediaGallery $component): ?Action {
+                    return $component->editCustomPropertiesAction();
+                },
+            ]
+        );
         $this->afterStateHydrated(static function (JsonMediaGallery $component, ?array $state): void {
             if (blank($state)) {
                 $component->state([]);
