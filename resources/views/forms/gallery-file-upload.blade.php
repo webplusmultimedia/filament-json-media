@@ -11,6 +11,7 @@
     :component="$getFieldWrapperView()"
     :field="$field"
     :label-sr-only="$isLabelHidden()"
+    class="bg-gray-100 dark:bg-gray-800 p-2 rounded-lg"
 >
 
     <div
@@ -115,7 +116,7 @@
             </div>
         </div>
 
-        <div class="gallery-file-upload-wrapper bg-gray-100 dark:bg-gray-800 p-2 rounded-lg"
+        <div class="gallery-file-upload-wrapper"
              x-ref="galleryImages"
              x-bind="onScrolling"
         >
