@@ -71,7 +71,7 @@ trait HasCustomProperties
             $action = Action::make($this->getCustomPropertiesActionName())
                 ->fillForm(static function (array $arguments, JsonMediaGallery $component, Action $action): array {
                     $key = $arguments['key'];
-                    $state = $component->getState();
+                    $state = $component->getRawState();
                     if (! isset($state[$key])) {
                         $action->cancel();
                     }
@@ -82,12 +82,12 @@ trait HasCustomProperties
                 ->schema(fn (array $arguments) => $this->getMinimumFieldForCustomEditField($arguments))
                 ->action(function (array $arguments, array $data, Schema $schema, JsonMediaGallery $component) {
                     $key = $arguments['key'];
-                    $state = $component->getState();
+                    $state = $component->getRawState();
                     if (! isset($state[$key])) {
                         return;
                     }
                     $state[$key]['customProperties'] = $data;
-                    $component->state($state);
+                    $component->rawState($state);
                 })
                 ->iconButton()
                 ->icon('heroicon-o-bars-3-center-left')
@@ -107,7 +107,7 @@ trait HasCustomProperties
     private function getMinimumFieldForCustomEditField(array $arguments): array
     {
         $key = $arguments['key'];
-        $state = $this->getState();
+        $state = $this->getRawState();
         $mimeType = $state[$key]['mime_type'];
         $label = $this->isImageFile($mimeType) ?
             trans('gallery-json-media::gallery-json-media.form.alt.label.media')

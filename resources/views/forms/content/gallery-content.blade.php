@@ -94,7 +94,7 @@
                                                     'pointer-events-auto' : !startUpload && file.is_success && !indexBeingDragged,
                                                     'pointer-events-none cursor-not-allowed' : startUpload || !file.is_success
                                                 }"
-                                x-on:click="isFire = true;await $wire.mountAction(customPropertyActionName, {key : file.filekey});isFire = false;"
+                                x-on:click="isFire = true;await $wire.mountAction(customPropertyActionName, {key : file.filekey},{ schemaComponent: '{{$key}}' });isFire = false;"
                                 wire:loading.attr="disabled"
                                 :disabled="isFire"
                         >
