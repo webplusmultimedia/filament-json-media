@@ -8,7 +8,6 @@ use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\BaseFileUpload;
 use Filament\Support\Components\Attributes\ExposedLivewireMethod;
-use GalleryJsonMedia\Form\Concerns\HasCustomProperties;
 use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
 use GalleryJsonMedia\Support\Concerns\HasThumbProperties;
 use Illuminate\Support\Arr;
@@ -21,7 +20,8 @@ use Throwable;
 
 class JsonMediaGallery extends BaseFileUpload
 {
-    use HasCustomProperties;
+    use Concerns\CanHorizontalMouseScrolling;
+    use Concerns\HasCustomProperties;
     use HasThumbProperties;
 
     protected string $view = 'gallery-json-media::forms.gallery-file-upload';

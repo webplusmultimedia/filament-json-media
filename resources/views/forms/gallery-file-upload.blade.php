@@ -33,6 +33,8 @@
                      isDisabled: @js($isDisabled),
                      isDownloadable: @js($isDownloadable()),
                      hasCustomPropertiesAction : @js($hasCustomPropertiesAction()) ,
+                     hasHorizontalMouseScroll : @js($hasHorizontalMouseScrolling()) ,
+
                      isMultiple : @js($isMultiple()),
                      acceptedFileTypes : @js($getAcceptedFileTypes()),
                      uploadingMessage: @js($getUploadingMessage()),
