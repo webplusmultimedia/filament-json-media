@@ -1,15 +1,16 @@
-
 .gallery-file-upload-wrapper {
 
     --gallery-file-green: #2a2929,
     linear-gradient(127deg, rgba(0, 255, 0, .8), rgba(0, 255, 0, 0) 70.71%),
-    linear-gradient(336deg, rgba(1, 123, 230, 0.8), rgba(0, 0, 255, 0) 70.71%);;
+    linear-gradient(336deg, rgba(1, 123, 230, 0.8), rgba(0, 0, 255, 0) 70.71%);
     --gallery-file-radiux-lg: 2rem;
     --gallery-item-radiux: 1.0rem;
     --gallery-file-radiux-sm: 0.5rem;
     --gallery-file-snap-x: proximity;
     --gallery-file-btn-delete-color: #ff1a1a;
     --gallery-file-btn-edit-color: #7ceb54;
+    --gallery-image-file-width: 280px;
+    --gallery-image-file-height: 180px;
     --wm-progress : 0;
 
     display: flex;
@@ -24,8 +25,8 @@
     .image-file {
         scroll-snap-align: center;
         background: var(--gallery-file-green);
-        width: 280px;
-        height: 180px;
+        width: var( --gallery-image-file-width);
+        height: var(--gallery-image-file-height);
         position: relative;
         border-radius: var(--gallery-item-radiux);
         overflow: hidden;

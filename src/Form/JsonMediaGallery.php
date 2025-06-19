@@ -30,6 +30,14 @@ class JsonMediaGallery extends BaseFileUpload
 
     protected Closure | bool $hasAltToName = false;
 
+    public function image(): static
+    {
+        $this->acceptedFileTypes = config('gallery-json-media.form.default.image_accepted_file_type');
+        $this->acceptedFileText = config('gallery-json-media.form.default.image_accepted_text');
+
+        return $this;
+    }
+
     public function document(): static
     {
         $this->acceptedFileTypes = config('gallery-json-media.form.default.document_accepted_file_type');
@@ -56,14 +64,6 @@ class JsonMediaGallery extends BaseFileUpload
     public function hasNameReplaceByTitle(): bool
     {
         return $this->evaluate($this->hasAltToName);
-    }
-
-    public function image(): static
-    {
-        $this->acceptedFileTypes = config('gallery-json-media.form.default.image_accepted_file_type');
-        $this->acceptedFileText = config('gallery-json-media.form.default.image_accepted_text');
-
-        return $this;
     }
 
     public function getAcceptFileText(): string
