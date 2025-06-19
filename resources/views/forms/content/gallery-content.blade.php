@@ -1,3 +1,4 @@
+@php use GalleryJsonMedia\Enums\GalleryType; @endphp
 <template x-for="(file, fileIndex) in uploadFiles" :key="fileIndex">
     <li class="image-file" role="listitem"
         x-data="{startGrabbing: false}"
@@ -8,6 +9,7 @@
         @dragover="updateListOrder($event)"
         draggable="false"
         :class="{ 'opacity-25': indexBeingDragged === fileIndex }"
+        @style(['--gallery-image-file-width: 200px;--gallery-image-file-height: 150px;'=> $galleryType() === GalleryType::Document ])
     >
         <div class="flex w-full max-h-fit"
              :class="{'pointer-events-none': indexBeingDragged}"
