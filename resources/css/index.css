@@ -20,8 +20,6 @@
     overflow: hidden;
     transition: all 0.2s ease-in-out;
 
-
-
     .image-file {
         scroll-snap-align: center;
         background: var(--gallery-file-green);

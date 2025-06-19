@@ -8,6 +8,7 @@ use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\BaseFileUpload;
 use Filament\Support\Components\Attributes\ExposedLivewireMethod;
+use GalleryJsonMedia\Enums\GalleryType;
 use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
 use GalleryJsonMedia\Support\Concerns\HasThumbProperties;
 use Illuminate\Support\Arr;
@@ -30,8 +31,11 @@ class JsonMediaGallery extends BaseFileUpload
 
     protected Closure | bool $hasAltToName = false;
 
+    protected GalleryType $galleryType = GalleryType::Image;
+
     public function image(): static
     {
+        $this->galleryType = GalleryType::Image;
         $this->acceptedFileTypes = config('gallery-json-media.form.default.image_accepted_file_type');
         $this->acceptedFileText = config('gallery-json-media.form.default.image_accepted_text');
 
@@ -40,10 +44,16 @@ class JsonMediaGallery extends BaseFileUpload
 
     public function document(): static
     {
+        $this->galleryType = GalleryType::Document;
         $this->acceptedFileTypes = config('gallery-json-media.form.default.document_accepted_file_type');
         $this->acceptedFileText = config('gallery-json-media.form.default.document_accepted_text');
 
         return $this;
+    }
+
+    public function galleryType(): GalleryType
+    {
+        return $this->galleryType;
     }
 
     public function replaceTitleByAlt(bool | Closure $hasAltToName = true): static
