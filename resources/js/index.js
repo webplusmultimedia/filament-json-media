@@ -43,7 +43,7 @@ export function galleryFileUpload(
         startUpload: false,
         fileKeyIndex: {},
         progress: 0,
-        _startSwipeX: 0,
+        _startSwipeX: false,
         stopDragging: true,
         getHumanSize(size) {
             return humanFileSize(size)
@@ -181,7 +181,7 @@ export function galleryFileUpload(
                         /** @var {HTMLElement} ulWrapper */
                         ulWrapper = this.$refs.ulGalleryWrapper
 
-                    if ((nbFiles * 320) > wrapper.clientWidth) {
+                    if ((nbFiles * 280) > wrapper.clientWidth) {
 
                         let delta = e.deltaY < 0 ? -280 : 280
 
