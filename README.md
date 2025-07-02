@@ -37,6 +37,15 @@ You can publish the config file with:
 php artisan vendor:publish --tag="gallery-json-media-config"
 ```
 
+### CSS configuration
+1. You need to [create a theme for your panel](https://filamentphp.com/docs/4.x/styling/overview#creating-a-custom-theme) if you don't have one already,
+2. and then add the following to your `theme.css` file:
+
+```css
+@import '../../../../vendor/webplusm/gallery-json-media/resources/css/json-media.css';
+```
+
+
 Optionally, you can publish the views using
 
 ```bash
