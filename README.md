@@ -15,8 +15,7 @@ It is a simple and easy way to manage media in your Laravel application using Fi
 - **Filament V3.x**: A simple and easy way to manage media in your Laravel application using Filament.
 - **Fluent API**: A fluent API for managing media in your Laravel application.
 - **Blade Components**: Blade components for displaying media in your Laravel application.
-- **Custom Properties**: Custom properties for media, allowing you to add additional information to your media.
-- 
+- **Custom Properties**: Custom properties for media, allowing you to add additional informations to your media.
 
 [![json-media.webp](https://i.postimg.cc/8Cn6Zttf/json-media.webp)](https://postimg.cc/wtLMvcK9)
 
