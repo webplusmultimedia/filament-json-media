@@ -11,7 +11,7 @@
     :component="$getFieldWrapperView()"
     :field="$field"
     :label-sr-only="$isLabelHidden()"
-    class="bg-gray-100 dark:bg-gray-800 p-2 rounded-lg"
+    class="bg-gray-100/80 dark:bg-gray-800 p-2 rounded-lg"
 >
 
     <div
@@ -83,8 +83,7 @@
                accept="{{  implode(',',Arr::wrap($getAcceptedFileTypes())) }}"
         >
         <div @class([
-            "wm-json-media-dropzone flex items-center justify-center w-full py-3 border border-dashed rounded-lg border-gray-300  text-gray-400 transition
-    hover:border-primary-400 dark:border-gray-400/50 dark:bg-gray-800 dark:hover:border-primary-600 dark:text-white/80",
+            "wm-json-media-dropzone flex items-center justify-center w-full py-3 border border-dashed rounded-lg border-gray-300  text-gray-400 transition hover:border-primary-400 dark:border-gray-400/50 dark:bg-gray-800 dark:hover:border-primary-600 dark:text-white/80 group",
         ])
              :class="{'pointer-events-none opacity-40' : startUpload}"
              role="button"
@@ -93,8 +92,8 @@
              x-bind="dropZone"
              x-show="canUpload"
         >
-            <div class="flex gap-3 pointer-events-none" x-ref="ladroptitle">
-                @svg(name: 'heroicon-o-document-arrow-up',class:"w-10 h-auto text-slate-500" )
+            <div class="flex gap-3 pointer-events-none text-gray-400 dark:text-gray-500 group-hover:text-primary-600 dark:group-hover:text-primary-500 transition-all duration-200" x-ref="ladroptitle">
+                @svg(name: 'heroicon-o-document-arrow-up',class:"w-10 h-auto" )
                 <div class="flex flex-col x-space-y-2">
                     <span>{{ trans('gallery-json-media::gallery-json-media.Drag&Drop') }}</span>
                     <span x-text="@js($getAcceptFileText())"></span>
