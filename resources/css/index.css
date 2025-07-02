@@ -11,6 +11,7 @@
     --gallery-file-btn-edit-color: #7ceb54;
     --gallery-image-file-width: 280px;
     --gallery-image-file-height: 180px;
+    --wp-gallery-icon-wrapper-padding: 0.2rem;
     --wm-progress : 0;
 
     display: flex;
@@ -90,7 +91,7 @@
                 width: fit-content;
                 background-color: rgba(26, 26, 26, 0.72);
                 transition: all 0.2s ease-in-out;
-                padding-inline: 0.53rem;
+                padding-inline: var(--wp-gallery-icon-wrapper-padding);
                 z-index: 1;
 
                 &.reorder {
@@ -112,7 +113,7 @@
 
                     border-radius: var(--gallery-file-radiux-lg);
                     /* border-top-right-radius: var(--gallery-file-radiux-lg);*/
-                    padding-block: 0.53rem;
+                    padding-block: var(--wp-gallery-icon-wrapper-padding);
                     margin-block-end: 0.2rem;
                     --gallery-file-btn-edit-color: rgba(85, 206, 42, 1);
                     color: var(--gallery-file-btn-edit-color);
@@ -128,7 +129,7 @@
 
                 &.delete {
                     border-radius: var(--gallery-file-radiux-lg);
-                    padding-block: 0.53rem;
+                    padding-block: var(--wp-gallery-icon-wrapper-padding);
                     margin-block-end: 0.2rem;
                     color: var(--gallery-file-btn-delete-color);
                     --gallery-file-btn-delete-color: rgba(249, 56, 76, 0.62);
