@@ -100,6 +100,7 @@ class JsonMediaGallery extends BaseFileUpload
                 },
             ]
         );
+
         $this->afterStateHydrated(static function (JsonMediaGallery $component, ?array $state): void {
             if (blank($state)) {
                 $component->state([]);
