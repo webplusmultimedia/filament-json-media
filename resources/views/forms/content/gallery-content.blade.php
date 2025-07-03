@@ -77,12 +77,12 @@
                         >
                             <x-filament::icon
                                 :icon="Heroicon::OutlinedXCircle"
-                                :size="IconSize::Small"
+                                :size="IconSize::Medium"
                                 x-show="!isFire"
                                 aria-hidden="true"
                                 data-slot="icon"
                             />
-                            {!! generate_loading_indicator_html($attributes->merge(['x-show'=>"isFire"]),IconSize::Small) !!}
+                            {!! generate_loading_indicator_html($attributes->merge(['x-show'=>"isFire"]),IconSize::Medium) !!}
                         </button>
                     @endif
                     @if($hasCustomPropertiesAction())
@@ -99,12 +99,12 @@
                         >
                             <x-filament::icon
                                 :icon="Heroicon::OutlinedPlusCircle"
-                                :size="IconSize::Small"
+                                :size="IconSize::Medium"
                                 x-show="!isFire"
                                 aria-hidden="true"
                                 data-slot="icon"
                             />
-                            {!! generate_loading_indicator_html($attributes->merge(['x-show'=>"isFire"]),IconSize::Small) !!}
+                            {!! generate_loading_indicator_html($attributes->merge(['x-show'=>"isFire"]),IconSize::Medium) !!}
                         </button>
                     @endif
                 </div>
