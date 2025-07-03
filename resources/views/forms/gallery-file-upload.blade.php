@@ -32,7 +32,7 @@
                      isDeletable: @js($isDeletable()),
                      isDisabled: @js($isDisabled),
                      isDownloadable: @js($isDownloadable()),
-                     hasCustomPropertiesAction : @js($hasCustomPropertiesAction()) ,
+                     hasCustomPropertiesAction : @js($canEditCustomProperties()) ,
                      hasHorizontalMouseScroll : @js($hasHorizontalMouseScrolling()) ,
 
                      isMultiple : @js($isMultiple()),
