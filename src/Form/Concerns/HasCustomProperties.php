@@ -25,11 +25,13 @@ trait HasCustomProperties
 {
     protected string $customPropertiesActionName = 'edit-custom-properties';
 
-    protected null | array | Closure $customPropertiesSchema = null;
+    protected array | Closure $customPropertiesSchema = [];
 
     protected bool | Closure $editCustomPropertiesOnSlideOver = false;
 
     protected null | string | Closure $editCustomPropertiesTitle = null;
+
+    protected bool | Closure $canEditCustomProperties = false;
 
     public function withCustomProperties(
         array | Closure $customPropertiesSchema,
@@ -43,7 +45,7 @@ trait HasCustomProperties
         return $this;
     }
 
-    public function getCustomPropertiesSchema(): ?array
+    public function getCustomPropertiesSchema(): array
     {
         return $this->evaluate($this->customPropertiesSchema);
     }
@@ -55,19 +57,26 @@ trait HasCustomProperties
         return $this;
     }
 
+    public function editableCustomProperties(bool | Closure $canEditCustomProperties = true): static
+    {
+        $this->canEditCustomProperties = $canEditCustomProperties;
+
+        return $this;
+    }
+
+    public function canEditCustomProperties(): bool
+    {
+        return $this->evaluate($this->canEditCustomProperties);
+    }
+
     public function getCustomPropertiesActionName(): string
     {
         return $this->customPropertiesActionName;
     }
 
-    public function hasCustomPropertiesAction(): bool
-    {
-        return $this->getCustomPropertiesSchema() !== null;
-    }
-
     public function editCustomPropertiesAction(): ?Action
     {
-        if ($this->hasCustomPropertiesAction()) {
+        if ($this->canEditCustomProperties()) {
             $action = Action::make($this->getCustomPropertiesActionName())
                 ->fillForm(static function (array $arguments, JsonMediaGallery $component, Action $action): array {
                     $key = $arguments['key'];
@@ -113,7 +122,10 @@ trait HasCustomProperties
             trans('gallery-json-media::gallery-json-media.form.alt.label.media')
             : trans('gallery-json-media::gallery-json-media.form.alt.label.document');
 
-        return array_merge([TextInput::make('alt')->label($label)->required()], $this->getCustomPropertiesSchema());
+        return array_merge(
+            [TextInput::make('alt')->label($label)->maxLength(255)->required()],
+            $this->getCustomPropertiesSchema()
+        );
     }
 
     private function isImageFile(string $mimeType): bool

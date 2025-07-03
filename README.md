@@ -103,7 +103,9 @@ JsonMediaGallery::make('images')
             ...some form fields here
         ],
        editCustomPropertiesOnSlideOver: true,
-       editCustomPropertiesTitle: "Edit customs properties")
+       editCustomPropertiesTitle: "Edit customs properties"
+    )
+    ->editableCustomProperties(bool|Closure) // if you want to enable/disable the custom properties edition ;
 ```
 
 ### In Filament Tables

@@ -86,7 +86,7 @@
                             {!! generate_loading_indicator_html($attributes->merge(['x-show'=>"isFire"]),IconSize::Medium) !!}
                         </button>
                     @endif
-                    @if($hasCustomPropertiesAction())
+                    @if($canEditCustomProperties())
                         <button x-data="{ isFire : false }" type="button"
                                 @dragover.stop.prevent
                                 class="gallery-icon edit"
