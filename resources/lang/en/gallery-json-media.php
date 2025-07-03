@@ -6,6 +6,7 @@ declare(strict_types=1);
 return [
     'Drag&Drop' => 'Drag & Drop or Click Here',
     'tooltip.edit-button-custom-property' => 'Edit custom properties',
+    'tooltip.delete-media-button' => 'Delete media',
     'title.edit-modal-form-for-customs-properties' => 'Edit custom properties',
     'infoList.document.nothing-to-show' => 'Nothing to show',
     'form.alt.label.media' => 'Alt',

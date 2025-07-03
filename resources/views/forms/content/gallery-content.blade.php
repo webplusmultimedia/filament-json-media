@@ -70,10 +70,11 @@
                                 x-on:click.stop="isFire = true;file.is_new?await removeUploadFile(file.filekey,fileIndex):await deleteUploadFile(file.filekey,fileIndex);isFire = false;"
                                 x-data="{ isFire : false }"
                                 :class="{
-                                                    'pointer-events-auto' : !startUpload && file.is_success && !indexBeingDragged,
-                                                    'pointer-events-none cursor-not-allowed' : startUpload || !file.is_success
-                                                }"
+                                            'pointer-events-auto' : !startUpload && file.is_success && !indexBeingDragged,
+                                            'pointer-events-none cursor-not-allowed' : startUpload || !file.is_success
+                                        }"
                                 :disabled="isFire"
+                                x-tooltip="'{{ __('gallery-json-media::gallery-json-media.tooltip.delete-media-button') }}'"
                         >
                             <x-filament::icon
                                 :icon="Heroicon::OutlinedXCircle"
@@ -90,12 +91,13 @@
                                 @dragover.stop.prevent
                                 class="gallery-icon edit"
                                 :class="{
-                                                    'pointer-events-auto' : !startUpload && file.is_success && !indexBeingDragged,
-                                                    'pointer-events-none cursor-not-allowed' : startUpload || !file.is_success
-                                                }"
+                                            'pointer-events-auto' : !startUpload && file.is_success && !indexBeingDragged,
+                                            'pointer-events-none cursor-not-allowed' : startUpload || !file.is_success
+                                        }"
                                 x-on:click="isFire = true;await $wire.mountAction(customPropertyActionName, {key : file.filekey},{ schemaComponent: '{{$key}}' });isFire = false;"
                                 wire:loading.attr="disabled"
                                 :disabled="isFire"
+                                x-tooltip="'{{ __('gallery-json-media::gallery-json-media.tooltip.edit-button-custom-property') }}'"
                         >
                             <x-filament::icon
                                 :icon="Heroicon::OutlinedPlusCircle"
