@@ -1,7 +1,9 @@
 @php
     use Filament\Support\Enums\IconSize;
- use Filament\Support\Icons\Heroicon;use GalleryJsonMedia\Enums\GalleryType;
- use function Filament\Support\generate_loading_indicator_html;
+     use Filament\Support\Icons\Heroicon;
+     use GalleryJsonMedia\Enums\GalleryType;
+     use function Filament\Support\generate_icon_html;
+     use function Filament\Support\generate_loading_indicator_html;
 @endphp
 <template x-for="(file, fileIndex) in uploadFiles" :key="fileIndex">
     <li class="image-file" role="listitem"
@@ -76,13 +78,11 @@
                                 :disabled="isFire"
                                 x-tooltip="'{{ __('gallery-json-media::gallery-json-media.tooltip.delete-media-button') }}'"
                         >
-                            <x-filament::icon
-                                :icon="Heroicon::OutlinedXCircle"
-                                :size="IconSize::Medium"
-                                x-show="!isFire"
-                                aria-hidden="true"
-                                data-slot="icon"
-                            />
+                            {!! generate_icon_html(
+                                  Heroicon::OutlinedXCircle,
+                                  size: IconSize::Medium,
+                                  attributes: $attributes->merge(["x-show"=>"!isFire"])
+                                  )->toHtml() !!}
                             {!! generate_loading_indicator_html($attributes->merge(['x-show'=>"isFire"]),IconSize::Medium) !!}
                         </button>
                     @endif
@@ -99,13 +99,11 @@
                                 :disabled="isFire"
                                 x-tooltip="'{{ __('gallery-json-media::gallery-json-media.tooltip.edit-button-custom-property') }}'"
                         >
-                            <x-filament::icon
-                                :icon="Heroicon::OutlinedPlusCircle"
-                                :size="IconSize::Medium"
-                                x-show="!isFire"
-                                aria-hidden="true"
-                                data-slot="icon"
-                            />
+                            {!! generate_icon_html(
+                                  Heroicon::OutlinedPlusCircle,
+                                  size: IconSize::Medium,
+                                  attributes: $attributes->merge(["x-show"=>"!isFire"])
+                                  )->toHtml() !!}
                             {!! generate_loading_indicator_html($attributes->merge(['x-show'=>"isFire"]),IconSize::Medium) !!}
                         </button>
                     @endif
