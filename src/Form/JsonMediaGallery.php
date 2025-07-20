@@ -101,7 +101,7 @@ class JsonMediaGallery extends BaseFileUpload
             ]
         );
 
-        $this->afterStateHydrated(static function (JsonMediaGallery $component, ?array $state): void {
+        $this->afterStateHydrated(static function (JsonMediaGallery $component, ?array $state, ?array $rawState): void {
             if (blank($state)) {
                 $component->state([]);
 
@@ -114,6 +114,7 @@ class JsonMediaGallery extends BaseFileUpload
             if (is_string(array_key_first($keys))) { // @phpstan-ignore  function.impossibleType
                 return;
             }
+
             $files = collect($state)
                 ->map(static function (array $file) {
                     $file['deleted'] = false;
@@ -123,15 +124,14 @@ class JsonMediaGallery extends BaseFileUpload
 
             $component->state($files->collapse()
                 ->all());
-
         });
 
-        $this->afterStateUpdated(static function (JsonMediaGallery $component, ?array $state) {
+        $this->afterStateUpdated(static function (JsonMediaGallery $component, ?array $state, ?array $rawState): void {
             if (blank($state)) {
                 return;
             }
 
-            $newState = collect($state)
+            $newState = collect($rawState)
                 ->map(static function ($file, $key) use ($component) {
                     if ($file instanceof TemporaryUploadedFile) {
                         $file = ['file' => $file,
@@ -150,7 +150,8 @@ class JsonMediaGallery extends BaseFileUpload
                     return [$key => $file];
                 })->collapse()
                 ->all();
-            $component->state($newState);
+
+            $component->rawState($newState);
         });
 
     }
@@ -200,6 +201,7 @@ class JsonMediaGallery extends BaseFileUpload
     public function saveUploadedFiles(): void
     {
         $storage = $this->getDisk();
+
         if (blank($this->getRawState())) {
             $this->rawState([]);
 
