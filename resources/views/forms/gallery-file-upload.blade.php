@@ -42,7 +42,7 @@
                      removeUploadedFileUsing: async (fileKey) => {
                         return await $wire.callSchemaComponentMethod(
                             @js($key),
-                            'removeFormUploadedFile',
+                            'removeUploadedFile',
                             { fileKey },
                         )
                     },
