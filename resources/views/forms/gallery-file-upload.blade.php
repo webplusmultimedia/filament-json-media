@@ -11,7 +11,7 @@
     :component="$getFieldWrapperView()"
     :field="$field"
     :label-sr-only="$isLabelHidden()"
-    {{--class="bg-gray-100/80 dark:bg-gray-800 p-2 rounded-lg"--}}
+    @class(["bg-gray-100/80 dark:bg-gray-800 p-2 rounded-lg" => $isSecondary()])
 >
 
     <div

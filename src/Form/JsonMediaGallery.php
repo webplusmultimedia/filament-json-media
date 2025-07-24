@@ -7,6 +7,7 @@ namespace GalleryJsonMedia\Form;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\BaseFileUpload;
+use Filament\Schemas\Components\Concerns\CanBeSecondary;
 use Filament\Support\Components\Attributes\ExposedLivewireMethod;
 use GalleryJsonMedia\Enums\GalleryType;
 use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
@@ -21,6 +22,7 @@ use Throwable;
 
 class JsonMediaGallery extends BaseFileUpload
 {
+    use CanBeSecondary;
     use Concerns\CanHorizontalMouseScrolling;
     use Concerns\HasCustomProperties;
     use HasThumbProperties;
