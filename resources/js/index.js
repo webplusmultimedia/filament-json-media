@@ -45,6 +45,12 @@ export function galleryFileUpload(
         progress: 0,
         _startSwipeX: false,
         stopDragging: true,
+        get PROCESS_FINISHED() {
+          return 'form-processing-finished'
+        },
+        get PROCESS_STARTED() {
+          return 'form-processing-started'
+        },
         getHumanSize(size) {
             return humanFileSize(size)
         },
@@ -86,12 +92,13 @@ export function galleryFileUpload(
         saveFilesUsing(filesList) {
             /**@type {HTMLElement} */
             const wrapper = this.$refs.galleryImages
-            const stopUploading = function(component) {
+            const stopUploading = /**@param {galleryFileUpload} component */
+                function(component) {
                 let rest = component.uploadFiles.filter(f => f.is_success === false).length,
                     numberErrors = component.uploadFiles.filter(f => f.error === true).length
 
                 if ((rest - numberErrors) === 0) {
-                    component.dispatchFormEvent('form-processing-finished')
+                    component.dispatchFormEvent(component.PROCESS_FINISHED)
                     if (numberErrors) {
                         // Removed thumbnails with no upload
                         component.uploadFiles = component.uploadFiles
@@ -127,7 +134,7 @@ export function galleryFileUpload(
                     return
                 }
                 if (!this.startUpload) {
-                    this.dispatchFormEvent('form-processing-started', {
+                    this.dispatchFormEvent(this.PROCESS_STARTED, {
                         message: uploadingMessage,
                     })
                 }
@@ -159,7 +166,7 @@ export function galleryFileUpload(
                 }, 30)
                 if (filesUpload === 0) {
                     this.startUpload = false // prevent blocking drag & drop + click on area
-                    this.dispatchFormEvent('form-processing-finished')
+                    this.dispatchFormEvent(this.PROCESS_FINISHED)
                 }
             }
 
@@ -320,6 +327,9 @@ export function galleryFileUpload(
                     detail,
                 }),
             )
+            if (name === this.PROCESS_FINISHED) {
+                this.$refs.laFileInput.value = null
+            }
         },
         canUpload: function() {
             if (!maxFiles) {
