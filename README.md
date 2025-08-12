@@ -10,16 +10,16 @@ This package add a json field media for images/documents to filament V3.x and fl
 
 It is a simple and easy way to manage media in your Laravel application using Filament.
 
-//put some features here
+[V3x doc](https://github.com/webplusmultimedia/filament-json-media/tree/3.x) => **Filament V3.x**
+
 ## Features
-- **Filament V3.x**: A simple and easy way to manage media in your Laravel application using Filament.
 - **Fluent API**: A fluent API for managing media in your Laravel application.
 - **Blade Components**: Blade components for displaying media in your Laravel application.
 - **Custom Properties**: Custom properties for media, allowing you to add additional informations to your media.
 
 [![json-media.webp](https://i.postimg.cc/8Cn6Zttf/json-media.webp)](https://postimg.cc/wtLMvcK9)
 
-V2.x Use now spatie/image package (^PHP 8.2 need)
+## Requirements
 
 V4.x => **Filament V4.x**  (^PHP 8.2 need)
 
