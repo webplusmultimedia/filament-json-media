@@ -12,8 +12,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest]
-        php: [ 8.2,8.3]
+        os: [ubuntu-22.04]
+        php: [8.2, 8.3]
         laravel: [11.*, 12.*]
         stability: [prefer-stable]
         include:
@@ -37,15 +37,26 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
           coverage: none
 
-      - name: Setup problem matchers
-        run: |
-          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
-          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ matrix.php }}-${{ matrix.laravel }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: composer-
 
       - name: Install dependencies
         run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "nesbot/carbon:${{ matrix.carbon }}" --no-interaction --no-update
-          composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+          composer require \
+            "laravel/framework:${{ matrix.laravel }}" \
+            "orchestra/testbench:${{ matrix.testbench }}" \
+            "nesbot/carbon:${{ matrix.carbon }}" \
+            --${{ matrix.stability }} \
+            --prefer-dist \
+            --no-interaction
 
       - name: List Installed Dependencies
         run: composer show -D
