@@ -46,17 +46,13 @@ class JsonImageController extends Controller
         $storage = Storage::disk(config('gallery-json-media.disk'));
         /**@todo : for non local file Soon */
         // Create the image file
-        $croppa = (new Croppa(filesystem: $storage, filePath: $path, width: $width, height: $height));
+        $croppa = (new Croppa(storage: $storage, filePath: $path, width: $width, height: $height));
         $croppa->render();
-        if ($storage->getAdapter() instanceof LocalFilesystemAdapter) {
+
+        if (! $storage->getAdapter() instanceof LocalFilesystemAdapter) {
             return redirect(url($requestPath));
         }
 
-        $absolutePath = $storage->path($requestPath);
-
-        return new BinaryFileResponse($absolutePath, 200, [
-            'Content-Type' => $storage->mimeType($requestPath),
-        ]);
-
+        return redirect(url($requestPath)); // response()->file($croppa->getFullPathForThumb());
     }
 }

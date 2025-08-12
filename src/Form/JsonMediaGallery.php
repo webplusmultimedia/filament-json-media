@@ -191,7 +191,7 @@ class JsonMediaGallery extends BaseFileUpload
                 'alt' => data_get($file, 'customProperties.alt'),
                 'mime_type' => $mimeType,
                 'url' => ($this->isImageFile($mimeType) and ! $this->isSvgFile($mimeType))
-                    ? (new Croppa(filesystem: $storage, filePath: $fileName, width: $this->getThumbWidth(), height: $this->getThumbHeight()))
+                    ? (new Croppa(storage: $storage, filePath: $fileName, width: $this->getThumbWidth(), height: $this->getThumbHeight()))
                         ->url()
                     : $storage->url($fileName),
             ];
