@@ -56,7 +56,7 @@ final class Media implements CanDeleteMedia, Htmlable, Stringable
         return null;
     }
 
-    public function getCropUrl(?int $width = null, ?int $height = null, ?array $options = null): string
+    public function getCropUrl(?int $width = null, ?int $height = null, ?array $options = null, bool $withoutToken = false): string
     {
         if ($this->isSvgFile()) {
             return $this->getUrl();
@@ -69,7 +69,7 @@ final class Media implements CanDeleteMedia, Htmlable, Stringable
                 $height
             );
 
-            return $croppa->url();
+            return $croppa->url($withoutToken);
         }
 
         return '';

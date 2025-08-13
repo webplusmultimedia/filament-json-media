@@ -17,17 +17,20 @@ final class Croppa
 {
     public function __construct(protected Filesystem $storage, private string $filePath, private ?int $width = null, private ?int $height = null) {}
 
-    public function url(): string
+    public function url(bool $withoutToken = false): string
     {
         $url = $this->storage->url($this->getPathNameForThumbs());
-        $url .= '?_token=' . UrlParser::make()->signingToken($url);
+        if ($withoutToken) {
+            // auto-generate thumb if not exist / can be used for lazy rendering
+            if (! $this->storage->exists($this->getPathNameForThumbs())) {
+                defer(function () {
+                    $this->render();
+                });
+            }
 
-        // can be used for lazy rendering
-        /*if (! $this->storage->exists($this->getPathNameForThumbs())) {
-            defer(function () {
-                $this->render();
-            });
-        }*/
+            return $url;
+        }
+        $url .= '?_token=' . UrlParser::make()->signingToken($url);
 
         return $url;
     }

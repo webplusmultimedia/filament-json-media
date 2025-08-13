@@ -91,13 +91,13 @@ trait InteractWithMedia
         return null;
     }
 
-    public function getFirstMediaCropUrl(string $fieldName, ?int $width = null, ?int $height = null, ?array $options = null): ?string
+    public function getFirstMediaCropUrl(string $fieldName, ?int $width = null, ?int $height = null, ?array $options = null, bool $withoutToken = false): ?string
     {
         if (! $firstMedia = $this->getFirstMedia($fieldName)) {
             return null;
         }
 
-        return $firstMedia->getCropUrl($width, $height, $options);
+        return $firstMedia->getCropUrl($width, $height, $options, $withoutToken);
     }
 
     protected function getFieldsToDeleteMedia(): array
