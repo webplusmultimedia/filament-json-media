@@ -10,10 +10,7 @@
         x-data="{startGrabbing: false}"
         :data-id="file.filekey"
         :x-ref="fileIndex"
-        @dragstart="dragstart($event)"
-        @dragend="$event.target.setAttribute('draggable', false);stopDragging = true"
-        @dragover="updateListOrder($event)"
-        draggable="false"
+        :x-sortable-item="file.filekey"
         :class="{ 'opacity-25': indexBeingDragged === fileIndex }"
         @style(['--gallery-image-file-width: 200px;--gallery-image-file-height: 150px;'=> $galleryType() === GalleryType::Document ])
     >
@@ -48,9 +45,10 @@
                                                     'pointer-events-auto' : !startUpload && file.is_success && !indexBeingDragged,
                                                     'pointer-events-none cursor-not-allowed' : startUpload || !file.is_success || indexBeingDragged
                                                 }"
-                                x-on:mousedown.stop="startGrabbing = true;stopDragging = false;setParentDraggable($event)"
+                                x-on:mousedown.stop="startGrabbing = true;stopDragging = false;"
                                 x-on:mouseup.stop="stopDragging = true;startGrabbing = false"
-                                @dragover.stop
+                                x-sortable-handle
+                               {{-- @dragover.stop--}}
                                 x-show="!itemDrag && !indexBeingDragged && isReorderable"
                                 wire:loading.attr="disabled"
                         >
@@ -100,7 +98,7 @@
                                 x-tooltip="'{{ __('gallery-json-media::gallery-json-media.tooltip.edit-button-custom-property') }}'"
                         >
                             {!! generate_icon_html(
-                                  Heroicon::OutlinedPlusCircle,
+                                  Heroicon::OutlinedPencilSquare,
                                   size: IconSize::Medium,
                                   attributes: $attributes->merge(["x-show"=>"!isFire"])
                                   )->toHtml() !!}
