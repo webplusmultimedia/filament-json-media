@@ -71,7 +71,7 @@ export function galleryFileUpload(
                 },
             )
         },
-        /**@param {Object : { name : string,alt : string}} file */
+        /**@param {Object : { name : string,alt : string,filekey: string}} file */
         getFileName: function(file) {
             if (file.name.startsWith('blob:') || file.name.startsWith('livewire:')) {
                 return file.name
@@ -360,16 +360,31 @@ export function galleryFileUpload(
                 }
 
                 this.lastState = JSON.stringify(this.getUpdateFileEntries())
-                this.uploadFiles = await this.getFiles()
+                //recharge the uploadFiles
+                const uploadFiles = await this.getFiles()
+                /* if the file is new internally, when save this must be change * */
+                if (uploadFiles.length){
+                    uploadFiles.forEach((file) => {
+                        let image = this.uploadFiles.find(f => f.filekey === file.filekey)
+                        if (image) {
+                            if(image.is_new){
+                                image.is_new = false
+                                image.name = file.name
+                                image.alt = file.alt
+                            }
+                        }
+                    })
+                }
             })
 
-            this.$watch('sortKeys', async () => {
-                await reorderUploadedFilesUsing(this.sortKeys)
-            })
             this.$nextTick(async () => {
                 this.uploadFiles = await this.getFiles()
             })
+        },
 
+        reorderUsing: async function(sortKeys) {
+            /** @todo: need to check if you can reorder */
+            await reorderUploadedFilesUsing(sortKeys)
         },
         /* Drag & Drop Reorder part*/
         dropcheck: 0,
@@ -379,70 +394,5 @@ export function galleryFileUpload(
         indexBeingDraggedOver: null,
         preDragOrder: null,
         sortKeys: null,
-        dragstart(event) {
-            // Store a copy for when we drag out of range
-            this.preDragOrder = [...this.uploadFiles]
-            // The index is continuously updated to reorder live and also keep a placeholder
-            this.indexBeingDragged = event.target.getAttribute('x-ref')
-            // The original is needed for then the drag leaves the container
-            this.originalIndexBeingDragged = event.target.getAttribute('x-ref')
-            // Not entirely sure this is needed but moz recommended it (?)
-            event.dataTransfer.dropEffect = 'copy'
-        },
-        updateListOrder(event) {
-            // This fires every time you drag over another list item
-            // It reorders the items array but maintains the placeholder
-            if (this.indexBeingDragged) {
-                this.indexBeingDraggedOver = event.target.getAttribute('x-ref')
-                let from = this.indexBeingDragged
-                let to = this.indexBeingDraggedOver
-                if (this.indexBeingDragged === to) return
-                if (from === to) return
-
-                this.move(from, to)
-                this.indexBeingDragged = to
-            }
-        },
-        // These are needed for the handle effect
-        setParentDraggable(event) {
-            event.target.closest('li').setAttribute('draggable', true)
-        },
-        setParentNotDraggable(event) {
-            event.target.closest('li').setAttribute('draggable', false)
-        },
-        resetState() {
-            this.dropcheck = 0
-            this.indexBeingDragged = null
-            this.preDragOrder = [...this.uploadFiles]
-            this.indexBeingDraggedOver = null
-            this.originalIndexBeingDragged = null
-        },
-        // This acts as a cancelled event, when the item is dropped outside the container
-        revertState() {
-            this.uploadFiles = this.preDragOrder.length ? this.preDragOrder : this.uploadFiles
-            this.resetState()
-        },
-        // Just repositions the placeholder when we move out of range of the container
-        rePositionPlaceholder() {
-            this.uploadFiles = [...this.preDragOrder]
-            this.indexBeingDragged = this.originalIndexBeingDragged
-        },
-        move(from, to) {
-            let items = this.uploadFiles
-            if (to >= items.length) {
-                let k = to - items.length + 1
-                while (k--) {
-                    items.push(undefined)
-                }
-            }
-            items.splice(to, 0, items.splice(from, 1)[0])
-            this.uploadFiles = items
-        },
-        getSort() {
-            if (this.indexBeingDragged === this.originalIndexBeingDragged) {
-                return null
-            }
-            this.sortKeys = this.uploadFiles.map(file => file.filekey)
-        },
     }
 }
