@@ -14,9 +14,4 @@ class JsonMediaEntry extends Entry
     use HasThumbProperties;
 
     protected string $view = 'gallery-json-media::infolist.json-media';
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
 }

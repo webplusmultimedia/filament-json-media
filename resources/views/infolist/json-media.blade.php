@@ -1,3 +1,6 @@
-<x-filament-infolists::entry-wrapper :label="$getLabel()">
+<x-dynamic-component
+    :component="$getEntryWrapperView()"
+    :entry="$entry"
+>
     @include('gallery-json-media::table.gallery-column')
-</x-filament-infolists::entry-wrapper>
+</x-dynamic-component>

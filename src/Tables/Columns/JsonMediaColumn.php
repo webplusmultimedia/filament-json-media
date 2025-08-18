@@ -28,17 +28,23 @@ class JsonMediaColumn extends Column implements HasEmbeddedView
         if (! $record instanceof HasMedia) {
             return '<span class="text-xs text-warning-500">HasMedia interface not implemented on the record model.</span>';
         }
+        $attributes = $this->getExtraAttributeBag()
+            ->class([
+                'wm-image ring-white dark:ring-gray-900 inline-block rounded-full object-cover',
+                "{$this->getRing()}",
+            ]);
         ob_start(); ?>
         <div class="flex gap-x-1 items-center max-w-max">
             <?php if (! $record->hasDocuments($this->getName())) { ?>
                 <?php if (! $this->hasAvatars()) {
                     $record->getFirstMedia($this->getName())?->withImageProperties($this->getThumbWidth(), $this->getThumbHeight());
                 } else { ?>
-                <div class="flex  -space-x-5 p-2 overflow-hidden" style="max-height: <?= $this->getThumbHeight() + 16 ?>px">
+                <div class="flex -space-x-5 overflow-hidden" style="max-height: <?= $this->getThumbHeight() + 16 ?>px">
                     <?php foreach (collect($record->getMedias($this->getName()))->take($this->getMaxAvatars())->all() as $media) { ?>
-                        <img class="inline-block rounded-full ring-2 ring-gray-100 dark:ring-gray-100 object-cover"
+                        <img <?= $attributes->toHtml() ?>
                              src="<?= $media->getCropUrl($this->getThumbWidth(), $this->getThumbHeight()) ?>"
-                             alt="<?= $media->getCustomProperty('alt') ?>" width="<?= $this->getThumbWidth() ?>"
+                             alt="<?= $media->getCustomProperty('alt') ?>"
+                             width="<?= $this->getThumbWidth() ?>"
                              height="<?= $this->getThumbHeight() ?>"
                              loading="lazy"
                         />
