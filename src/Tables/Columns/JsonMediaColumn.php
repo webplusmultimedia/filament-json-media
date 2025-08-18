@@ -35,7 +35,7 @@ class JsonMediaColumn extends Column implements HasEmbeddedView
         $attributes = $this->getExtraAttributeBag()
             ->class([
                 'wm-image ring-white dark:ring-gray-900 inline-block rounded-full object-cover',
-                "{$this->getRing()}",
+                $this->getRing(),
             ]);
         ob_start(); ?>
         <div class="flex gap-x-1 items-center max-w-max">
