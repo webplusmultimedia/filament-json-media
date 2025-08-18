@@ -11,4 +11,7 @@ return [
     'infoList.document.nothing-to-show' => 'Pas de document',
     'form.alt.label.media' => 'Alt',
     'form.alt.label.document' => 'Titre du Document',
+    'errors' => [
+        'model_interface_missing' => 'Interface HasMedia non implémentée sur le Model (:model)',
+    ],
 ];

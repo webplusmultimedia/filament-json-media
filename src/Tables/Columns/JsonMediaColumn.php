@@ -28,7 +28,9 @@ class JsonMediaColumn extends Column implements HasEmbeddedView
     {
         $record = $this->getRecord();
         if (! $record instanceof HasMedia) {
-            return '<span class="text-xs text-warning-500">HasMedia interface not implemented on the record model.</span>';
+            return '<span class="text-xs text-danger-500 dark:text-danger-600">' .
+                    trans('gallery-json-media::gallery-json-media.errors.model_interface_missing', ['model' => get_class($record)]) .
+                    '</span>';
         }
         $attributes = $this->getExtraAttributeBag()
             ->class([
