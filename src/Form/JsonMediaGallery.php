@@ -355,9 +355,7 @@ class JsonMediaGallery extends BaseFileUpload
         return $this;
     }
 
-    /** This method is disabled for now
-     * refer to
-     */
+    /** This method is disabled for now */
     public function disk(Closure | string | null $name): static
     {
         return $this;
