@@ -2,7 +2,7 @@
     use GalleryJsonMedia\JsonMedia\Contracts\HasMedia;
     use function Filament\Support\prepare_inherited_attributes;
         /** @var HasMedia $record */
-        $record = $getRecord();
+
         $direction = 'column';
 @endphp
 <div x-data="{}"
@@ -21,7 +21,9 @@
                 <a href="{{ $document->getUrl() }}" target="_blank"
                    class="inline-flex items-center gap-x-1 text-xs text-primary-600 hover:text-primary-500"
                 >
-                    @svg('heroicon-o-document','h-6 w-6') <span class="flex-1">{{ $document->getCustomProperty('alt') }}</span>
+                    @svg('heroicon-o-document','h-6 w-6') <span class="flex-1">
+                        {{ $document->getCustomProperty('alt') }}
+                    </span>
                 </a>
             @endforeach
         </div>
