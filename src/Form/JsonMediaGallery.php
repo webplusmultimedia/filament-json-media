@@ -49,6 +49,8 @@ class JsonMediaGallery extends BaseFileUpload
         $this->galleryType = GalleryType::Document;
         $this->acceptedFileTypes = config('gallery-json-media.form.default.document_accepted_file_type');
         $this->acceptedFileText = config('gallery-json-media.form.default.document_accepted_text');
+        /** Why not just show alt against filename */
+        $this->replaceTitleByAlt();
 
         return $this;
     }
@@ -58,6 +60,9 @@ class JsonMediaGallery extends BaseFileUpload
         return $this->galleryType;
     }
 
+    /**
+     * Replace the title in a gallery by alt against filename
+     */
     public function replaceTitleByAlt(bool | Closure $hasAltToName = true): static
     {
         $this->hasAltToName = $hasAltToName;
@@ -347,6 +352,14 @@ class JsonMediaGallery extends BaseFileUpload
             'file' => $file,
         ]);
 
+        return $this;
+    }
+
+    /** This method is disabled for now
+     * refer to
+     */
+    public function disk(Closure | string | null $name): static
+    {
         return $this;
     }
 }
