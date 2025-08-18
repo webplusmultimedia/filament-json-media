@@ -19,7 +19,9 @@
                 />
             @endforeach
             @if(($nb = ($record->mediasCount($getName()) - collect($record->getMedias($getName()))->take($getMaxAvatars())->count())) > 0)
-                    <x-filament::badge color="info" size="xs">+ {{ $nb }}</x-filament::badge>
+                    <div class="pl-5">
+                        <x-filament::badge color="info" size="xs">+ {{ $nb }}</x-filament::badge>
+                    </div>
             @endif
         @endif
     @endif

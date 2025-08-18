@@ -6,6 +6,7 @@ namespace GalleryJsonMedia\Tables\Columns;
 
 use Filament\Support\Components\Contracts\HasEmbeddedView;
 use Filament\Tables\Columns\Column;
+use GalleryJsonMedia\Form\Concerns\HasRing;
 use GalleryJsonMedia\JsonMedia\Contracts\HasMedia;
 use GalleryJsonMedia\Support\Concerns\HasAvatars;
 use GalleryJsonMedia\Support\Concerns\HasThumbProperties;
@@ -13,6 +14,7 @@ use GalleryJsonMedia\Support\Concerns\HasThumbProperties;
 class JsonMediaColumn extends Column implements HasEmbeddedView
 {
     use HasAvatars;
+    use HasRing;
     use HasThumbProperties;
 
     protected function setUp(): void

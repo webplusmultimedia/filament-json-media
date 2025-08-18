@@ -1,7 +1,7 @@
 @source '../views/**/*.blade.php';
 @source '../../src/**/*.php';
-@layer components; {
-.wm-json-media-dropzone.wm-dropzone{
+@layer components {
+.wm-json-media-dropzone .wm-dropzone{
     @apply border-primary-600 text-primary-600 dark:border-primary-600 dark:text-primary-600;
 }
 .wm-btn{
