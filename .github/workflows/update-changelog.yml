@@ -1,31 +1,40 @@
-name: "Update Changelog"
+name: Update Changelog
 
 on:
-  release:
-    types: [released]
-
-permissions:
-  contents: write
+  workflow_dispatch:   # tu peux aussi ajouter "schedule" ou "push"
 
 jobs:
-  update:
+  update-changelog:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          ref: main
+      - uses: actions/checkout@v4
 
-      - name: Update Changelog
-        uses: stefanzweifel/changelog-updater-action@v1
-        with:
-          latest-version: ${{ github.event.release.name }}
-          release-notes: ${{ github.event.release.body }}
-
-      - name: Commit updated CHANGELOG
+      - name: Auto-commit CHANGELOG.md
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          branch: main
-          commit_message: Update CHANGELOG
           file_pattern: CHANGELOG.md
+          commit_message: "Update CHANGELOG"
+          branch: changelog-update   # 👉 branche temporaire pour les changements
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: changelog-update
+          base: main
+          title: "Update CHANGELOG"
+          body: "This PR updates the CHANGELOG automatically."
+          labels: automated-pr
+          draft: false
+
+      - name: Auto-merge Pull Request
+        if: steps.cpr.outputs.pull-request-url != ''
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: squash
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
