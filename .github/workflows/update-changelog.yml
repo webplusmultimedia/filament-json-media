@@ -1,7 +1,8 @@
-name: Update Changelog
+name: Update Changelog on Release
 
 on:
-  workflow_dispatch:   # tu peux aussi ajouter "schedule" ou "push"
+  release:
+    types: [published]
 
 jobs:
   update-changelog:
@@ -11,14 +12,47 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # ⚠️ nécessaire pour récupérer tous les tags
 
-      - name: Auto-commit CHANGELOG.md
+      - name: Get previous tag
+        id: previoustag
+        run: |
+          previous_tag=$(git describe --tags --abbrev=0 "${GITHUB_SHA}^" || echo "")
+          echo "previous_tag=$previous_tag" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog section
+        id: changelog
+        run: |
+          new_tag="${{ github.event.release.tag_name }}"
+          prev_tag="${{ steps.previoustag.outputs.previous_tag }}"
+
+          echo "## $new_tag ($(date +'%Y-%m-%d'))" > new_changes.md
+
+          if [ -n "$prev_tag" ]; then
+            echo "" >> new_changes.md
+            git log $prev_tag..HEAD --pretty=format:"- %s (%h)" >> new_changes.md
+          else
+            echo "" >> new_changes.md
+            git log --pretty=format:"- %s (%h)" >> new_changes.md
+          fi
+
+          echo "" >> new_changes.md
+          echo "---" >> new_changes.md
+
+      - name: Update CHANGELOG.md
+        run: |
+          cat new_changes.md CHANGELOG.md > tmp.md
+          mv tmp.md CHANGELOG.md
+
+      - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           file_pattern: CHANGELOG.md
-          commit_message: "Update CHANGELOG"
-          branch: changelog-update   # 👉 branche temporaire pour les changements
+          commit_message: "chore: update CHANGELOG for release ${{ github.event.release.tag_name }}"
+          branch: changelog-update
 
       - name: Create Pull Request
         id: cpr
@@ -26,10 +60,9 @@ jobs:
         with:
           branch: changelog-update
           base: main
-          title: "Update CHANGELOG"
-          body: "This PR updates the CHANGELOG automatically."
+          title: "chore: update CHANGELOG for release ${{ github.event.release.tag_name }}"
+          body: "This PR updates the CHANGELOG with commits since the previous release."
           labels: automated-pr
-          draft: false
 
       - name: Auto-merge Pull Request
         if: steps.cpr.outputs.pull-request-url != ''
