@@ -370,8 +370,8 @@ export function galleryFileUpload(
                             if(image.is_new){
                                 image.is_new = false
                                 image.name = file.name
-                                image.alt = file.alt
                             }
+                            image.alt = file.alt
                         }
                     })
                 }
