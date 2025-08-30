@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 // config for WebplusMultimedia\GalleryJsonMedia
 
+use Spatie\Image\Enums\ImageDriver;
+
 return [
     'disk' => 'public',
     'root_directory' => 'web_attachments',
     'images' => [
         'path' => 'storage/(.*)$',
         'signing_key' => 'app.key',
-        'driver' => 'imagick', // gd or imagick
+        'driver' => ImageDriver::Imagick, // gd or imagick
         'quality' => 70,
         'thumbnails-crop-method' => null,
         'thumbnails-saved-format' => [],
