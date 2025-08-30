@@ -31,10 +31,29 @@ You can install the package via composer:
 composer require webplusm/gallery-json-media
 ```
 
-You can publish the config file with:
+## Configuration
+Publish the config file with:
 
 ```bash
 php artisan vendor:publish --tag="gallery-json-media-config"
+```
+You can change the driver for cropping :
+
+```php
+use Spatie\Image\Enums\ImageDriver;
+return [
+    ...
+    'images' => [
+        'driver' => ImageDriver::Gd, // or ImageDriver::Imagick
+    ],
+    ...
+]
+```
+
+### Translations
+You can publish the translations :
+```bash
+php artisan vendor:publish --tag="gallery-json-media-translations"
 ```
 
 ### CSS configuration
@@ -46,7 +65,7 @@ php artisan vendor:publish --tag="gallery-json-media-config"
 ```
 
 
-Optionally, you can publish the views using
+Optionally, you can publish the views using, but please if you don't know what it is, don't do it.
 
 ```bash
 php artisan vendor:publish --tag="gallery-json-media-views"
@@ -85,14 +104,13 @@ class Page extends Model implements HasMedia
 use GalleryJsonMedia\Form\JsonMediaGallery;
 JsonMediaGallery::make('images')
     ->directory('page')
-    ->reorderable()
-    ->preserveFilenames()
+    ->reorderable() 
     ->acceptedFileTypes()
     ->visibility() // only public for now - NO S3
     ->maxSize(4 * 1024)
     ->minSize()
-    ->maxFiles()
-    ->minFiles()
+    ->maxFiles(2)
+    ->minFiles(1)
     ->replaceTitleByAlt() // If you want to show alt customProperties  against file name
     ->image() // only images by default , u need to choose one method (image or document)
     ->document() // only documents (eg: pdf, doc, xls,...)
