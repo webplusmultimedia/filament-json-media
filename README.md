@@ -85,14 +85,13 @@ class Page extends Model implements HasMedia
 use GalleryJsonMedia\Form\JsonMediaGallery;
 JsonMediaGallery::make('images')
     ->directory('page')
-    ->reorderable()
-    ->preserveFilenames()
+    ->reorderable() 
     ->acceptedFileTypes()
     ->visibility() // only public for now - NO S3
     ->maxSize(4 * 1024)
     ->minSize()
-    ->maxFiles()
-    ->minFiles()
+    ->maxFiles(2)
+    ->minFiles(1)
     ->replaceTitleByAlt() // If you want to show alt customProperties  against file name
     ->image() // only images by default , u need to choose one method (image or document)
     ->document() // only documents (eg: pdf, doc, xls,...)
