@@ -43,7 +43,12 @@
             <div class="gallery-footer" x-data="{ itemDrag : false }">
                 <div class="flex">
                     @if($isReorderable())
-                        <button type="button" class="gallery-icon reorder justify-self-start hidden @xs:block"
+                        <button type="button"
+                                @class([
+                                    "gallery-icon reorder justify-self-start hidden",
+                                    "@xs:block" => DisplayOnEnum::GRID === $getDisplayOn(),
+                                    "sm:block" => DisplayOnEnum::LIST === $getDisplayOn(),
+                                ])
                                 :class="{
                                                     'grabbing-cursor' : startGrabbing,
                                                     'grab-cursor' : !startGrabbing,

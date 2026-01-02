@@ -136,17 +136,7 @@
                 ])
                 x-sortable
                 @dragend="reorderUsing($el.sortable.toArray())"
-                {{-- @drop.stop.prevent="resetState()"--}}
                 x-ref="ulGalleryWrapper"
-
-                {{-- @keydown.window.tab="usedKeyboard = true"
-                 @dragenter.stop.prevent="dropcheck++"
-                 @dragleave="dropcheck--;dropcheck || rePositionPlaceholder()"
-                 @dragover.stop.prevent
-                 @dragend="revertState()"
-                 @drop.stop.prevent="getSort();resetState()"--}}
-
-                {{--:class="{'flex-wrap' : !stopDragging }"--}}
             >
                 @include('gallery-json-media::forms.content.gallery-content')
             </ul>
