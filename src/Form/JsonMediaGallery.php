@@ -95,7 +95,7 @@ class JsonMediaGallery extends BaseFileUpload
         if (! $this->getAcceptedFileTypes()) {
             $this->image();
         }
-
+        $this->displayOnList();
         $this->multiple();
 
         $this->diskName = config('gallery-json-media.disk');

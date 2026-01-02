@@ -125,6 +125,16 @@ JsonMediaGallery::make('images')
     )
     ->editableCustomProperties(bool|Closure) // if you want to enable/disable the custom properties edition ;
 ```
+### Show your media in a grid way
+
+You can now view your medias in **grid** list like this :
+![img.png](img.png)
+```php
+use GalleryJsonMedia\Tables\Columns\JsonMediaColumn;
+JsonMediaGallery::make('images')
+    ...
+    ->displayOnGrid()
+```
 
 ### In Filament Tables
 ![table-filament-json-media.png](https://raw.githubusercontent.com/webplusmultimedia/filament-json-media/main/table-filament-json-media.png)

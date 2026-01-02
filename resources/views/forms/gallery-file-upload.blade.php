@@ -1,7 +1,7 @@
 @php
     use Filament\Support\Facades\FilamentAsset;
     use Filament\Support\Facades\FilamentView;
-    use Illuminate\Support\Arr;
+    use GalleryJsonMedia\Enums\DisplayOnEnum;use Illuminate\Support\Arr;
     $editPropertiesAction = $getAction($getCustomPropertiesActionName()) ;
      $key = $getKey();
 
@@ -92,7 +92,9 @@
              x-bind="dropZone"
              x-show="canUpload"
         >
-            <div class="flex gap-3 pointer-events-none text-gray-400 dark:text-gray-500 group-hover:text-primary-600 dark:group-hover:text-primary-500 transition-all duration-200" x-ref="ladroptitle">
+            <div
+                class="flex gap-3 pointer-events-none text-gray-400 dark:text-gray-500 group-hover:text-primary-600 dark:group-hover:text-primary-500 transition-all duration-200"
+                x-ref="ladroptitle">
                 @svg(name: 'heroicon-o-document-arrow-up',class:"w-10 h-auto" )
                 <div class="flex flex-col x-space-y-2">
                     <span>{{ trans('gallery-json-media::gallery-json-media.Drag&Drop') }}</span>
@@ -100,40 +102,49 @@
                 </div>
             </div>
         </div>
-        <div class="flex justify-self-end space-y-2"
-             x-show="uploadFiles.length"
-        >
-            <div class="flex gap-x-4 mt-2">
-                <button type="button" x-bind="leftArrow"
-                        class="wm-btn"
-                >
-                    @svg(name: 'heroicon-c-chevron-left',class: 'w-5 h-5')
-                </button>
-                <button type="button" x-bind="rightArrow"
-                        class="wm-btn"
-                >
-                    @svg(name: 'heroicon-c-chevron-right',class: 'w-5 h-5')
-                </button>
+        @if($getDisplayOn() === DisplayOnEnum::LIST)
+            <div class="flex justify-self-end space-y-2"
+                 x-show="uploadFiles.length"
+            >
+                <div class="flex gap-x-4 mt-2">
+                    <button type="button" x-bind="leftArrow"
+                            class="wm-btn"
+                    >
+                        @svg(name: 'heroicon-c-chevron-left',class: 'w-5 h-5')
+                    </button>
+                    <button type="button" x-bind="rightArrow"
+                            class="wm-btn"
+                    >
+                        @svg(name: 'heroicon-c-chevron-right',class: 'w-5 h-5')
+                    </button>
+                </div>
             </div>
-        </div>
+        @endif
 
-        <div class="gallery-file-upload-wrapper"
+        <div @class([
+                "gallery-file-upload-wrapper my-4",
+                "@container" => $getDisplayOn() === DisplayOnEnum::GRID
+             ])
              x-ref="galleryImages"
              x-bind="onScrolling"
         >
             <ul role="list"
-                class="flex gap-2 transition-all duration-200"
+
+                @class([
+                  "flex gap-2 transition-all duration-200" => $getDisplayOn() === DisplayOnEnum::LIST,
+                  "grid gap-4 w-full grid-cols-1 @lg:grid-cols-2 @2xl:grid-cols-3 @4xl:grid-cols-4 @5xl:grid-cols-5 @7xl:grid-cols-6  transition-all duration-200" => $getDisplayOn() === DisplayOnEnum::GRID
+                ])
                 x-sortable
                 @dragend="reorderUsing($el.sortable.toArray())"
-               {{-- @drop.stop.prevent="resetState()"--}}
+                {{-- @drop.stop.prevent="resetState()"--}}
                 x-ref="ulGalleryWrapper"
 
-               {{-- @keydown.window.tab="usedKeyboard = true"
-                @dragenter.stop.prevent="dropcheck++"
-                @dragleave="dropcheck--;dropcheck || rePositionPlaceholder()"
-                @dragover.stop.prevent
-                @dragend="revertState()"
-                @drop.stop.prevent="getSort();resetState()"--}}
+                {{-- @keydown.window.tab="usedKeyboard = true"
+                 @dragenter.stop.prevent="dropcheck++"
+                 @dragleave="dropcheck--;dropcheck || rePositionPlaceholder()"
+                 @dragover.stop.prevent
+                 @dragend="revertState()"
+                 @drop.stop.prevent="getSort();resetState()"--}}
 
                 {{--:class="{'flex-wrap' : !stopDragging }"--}}
             >

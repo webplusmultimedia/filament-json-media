@@ -15,12 +15,15 @@ declare(strict_types=1);
 namespace GalleryJsonMedia\Support\Concerns;
 
 use Closure;
+use GalleryJsonMedia\Enums\DisplayOnEnum;
 
 trait HasThumbProperties
 {
     protected int | Closure $thumbWidth = 300;
 
     protected int | Closure $thumbHeight = 230;
+
+    protected DisplayOnEnum | Closure $displayOn = DisplayOnEnum::LIST;
 
     public function thumbWidth(int | Closure $thumbWidth): static
     {
@@ -44,5 +47,27 @@ trait HasThumbProperties
     public function getThumbHeight(): int
     {
         return $this->evaluate($this->thumbHeight);
+    }
+
+    public function getDisplayOn(): DisplayOnEnum
+    {
+        return $this->evaluate($this->displayOn);
+    }
+
+    public function displayOnGrid(): static
+    {
+        return $this->displayOn(DisplayOnEnum::GRID);
+    }
+
+    public function displayOnList(): static
+    {
+        return $this->displayOn(DisplayOnEnum::LIST);
+    }
+
+    public function displayOn(DisplayOnEnum | Closure $displayOn): static
+    {
+        $this->displayOn = $displayOn;
+
+        return $this;
     }
 }

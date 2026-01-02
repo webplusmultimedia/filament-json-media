@@ -1,18 +1,23 @@
 @php
     use Filament\Support\Enums\IconSize;
      use Filament\Support\Icons\Heroicon;
-     use GalleryJsonMedia\Enums\GalleryType;
+     use GalleryJsonMedia\Enums\DisplayOnEnum;use GalleryJsonMedia\Enums\GalleryType;
      use function Filament\Support\generate_icon_html;
      use function Filament\Support\generate_loading_indicator_html;
 @endphp
 <template x-for="(file, fileIndex) in uploadFiles" :key="fileIndex">
-    <li class="image-file" role="listitem"
+    <li
+        @class([
+          "image-file h-[180px]",
+          "w-[280px]" => $getDisplayOn() === DisplayOnEnum::LIST,
+          "w-[200px] h-[150px]" => $galleryType() === GalleryType::Document,
+        ])
+        role="listitem"
         x-data="{startGrabbing: false}"
         :data-id="file.filekey"
         :x-ref="fileIndex"
         :x-sortable-item="file.filekey"
         :class="{ 'opacity-25': indexBeingDragged === fileIndex }"
-        @style(['--gallery-image-file-width: 200px;--gallery-image-file-height: 150px;'=> $galleryType() === GalleryType::Document ])
     >
         <div class="flex w-full max-h-fit"
              :class="{'pointer-events-none': indexBeingDragged}"
@@ -38,7 +43,7 @@
             <div class="gallery-footer" x-data="{ itemDrag : false }">
                 <div class="flex">
                     @if($isReorderable())
-                        <button type="button" class="gallery-icon reorder justify-self-start hidden sm:block"
+                        <button type="button" class="gallery-icon reorder justify-self-start hidden @xs:block"
                                 :class="{
                                                     'grabbing-cursor' : startGrabbing,
                                                     'grab-cursor' : !startGrabbing,

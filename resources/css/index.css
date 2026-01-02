@@ -14,9 +14,8 @@
     --wp-gallery-icon-wrapper-padding: 0.2rem;
     --wm-progress : 0;
 
+    /* Flex Context */
     display: flex;
-    gap: 1rem;
-    margin-block-end: 1rem;
     scroll-snap-type: x var(--gallery-file-snap-x);
     overflow: hidden;
     transition: all 0.2s ease-in-out;
@@ -24,8 +23,6 @@
     .image-file {
         scroll-snap-align: center;
         background: var(--gallery-file-green);
-        width: var( --gallery-image-file-width);
-        height: var(--gallery-image-file-height);
         position: relative;
         border-radius: var(--gallery-item-radiux);
         overflow: hidden;
@@ -33,7 +30,7 @@
         flex-shrink: 0;
         align-items: stretch;
         font-size: 11px;
-        box-sizing: border-box;
+        /*box-sizing: border-box;*/
         outline: 1px solid rgba(190, 189, 189, 0.46);
         outline-offset: -1px;
 
