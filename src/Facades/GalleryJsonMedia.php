@@ -8,7 +8,7 @@ use GalleryJsonMedia\Form\JsonMediaGallery;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \GalleryJsonMedia\Form\JsonMediaGallery
+ * @see JsonMediaGallery
  */
 class GalleryJsonMedia extends Facade
 {
