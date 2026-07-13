@@ -16,6 +16,21 @@ updates:
     commit-message:
       prefix: 'chore(ci)'
 
+  # Requis : package-lock.json est versionné, donc npm compte comme un
+  # écosystème que le dépôt maintient réellement.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      npm-dependencies:
+        patterns:
+          - '*'
+    commit-message:
+      prefix: chore
+
   - package-ecosystem: composer
     directory: /
     schedule:
