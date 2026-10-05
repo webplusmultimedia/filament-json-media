@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use GalleryJsonMedia\JsonMedia\Controllers\JsonImageController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 it('generates the requested thumbnail and redirects to it', function () {
@@ -28,9 +31,12 @@ it('returns 404 and generates nothing when the token is invalid', function (?str
     'token of another size' => ['116354d576564cedd30c850f6a2f2dee'],
 ]);
 
-it('returns 404 for a path without dimensions', function () {
-    Storage::fake('public');
-    storedImage('web_attachments/page/photo.jpg');
+it('does not route a path without dimensions to the thumbnail controller', function () {
+    // Laravel may answer itself on /storage (its served local disk), so only the matched route is the package contract
+    $route = rescue(
+        fn () => Route::getRoutes()->match(Request::create('/storage/web_attachments/page/photo.jpg')),
+        report: false,
+    );
 
-    $this->get('/storage/web_attachments/page/photo.jpg')->assertNotFound();
+    expect($route?->getActionName())->not->toBe(JsonImageController::class . '@handle');
 });
