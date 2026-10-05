@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use GalleryJsonMedia\JsonMedia\Media;
 use Illuminate\Support\Facades\Exceptions;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 
 it('generates the missing thumbnail and redirects to its public url', function () {
@@ -80,4 +81,15 @@ it('reports the failure and redirects to the original image when the thumbnail c
 
     Exceptions::assertReportedCount(1);
     $disk->assertMissing('page/photo-200x150.jpg');
+});
+
+it('serves itself the thumbnail of a private image stored on a local disk', function () {
+    // Laravel serves the local disk on /storage, where the token route of the public thumbnails would catch a redirection
+    Storage::fake('local');
+    $url = Media::make(storedImage('page/photo.jpg', 800, 600, disk: 'local', visibility: 'private'))->getCropUrl(200, 150);
+
+    $response = $this->get($url);
+
+    $response->assertOk()->assertHeader('Content-Type', 'image/jpeg');
+    expect(array_slice(getimagesizefromstring($response->streamedContent()), 0, 2))->toBe([200, 150]);
 });

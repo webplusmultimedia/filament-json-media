@@ -7,10 +7,12 @@ namespace GalleryJsonMedia\JsonMedia\Controllers;
 use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
 use GalleryJsonMedia\JsonMedia\UrlParser;
 use GalleryJsonMedia\Support\Disk;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 /**
@@ -19,7 +21,7 @@ use Throwable;
  */
 class RemoteThumbnailController extends Controller
 {
-    public function __invoke(Request $request, string $disk, string $path): RedirectResponse
+    public function __invoke(Request $request, string $disk, string $path): Response
     {
         $thumbnail = UrlParser::make()->parseThumbnailPath($path);
         abort_if($thumbnail === false, 404);
@@ -37,10 +39,21 @@ class RemoteThumbnailController extends Controller
                 report($exception);
 
                 // The original image is better than a broken one
-                return redirect()->away(Disk::url($storage, $thumbnail['path'], $visibility));
+                return $this->respondWith($storage, $thumbnail['path'], $visibility);
             }
         }
 
-        return redirect()->away(Disk::url($storage, $croppa->getPathNameForThumbs(), $visibility));
+        return $this->respondWith($storage, $croppa->getPathNameForThumbs(), $visibility);
+    }
+
+    private function respondWith(Filesystem $storage, string $path, string $visibility): Response
+    {
+        // Laravel serves a local disk on /storage, where the token route of the public thumbnails would catch the redirection
+        if (Disk::isLocal($storage)) {
+            /** @var FilesystemAdapter $storage */
+            return $storage->response($path);
+        }
+
+        return redirect()->away(Disk::url($storage, $path, $visibility));
     }
 }
