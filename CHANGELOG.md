@@ -2,6 +2,26 @@
 
 All notable changes to `filament-json-media` will be documented in this file.
 
+## v5.2.0 - 2026-10-05
+* Store medias on any disk (S3 and compatible), publicly or privately
+* New `visibility` config and `->visibility()` support on `JsonMediaGallery`
+* Private files are linked with temporary urls (`images.temporary_url_ttl`)
+* Thumbnails of remote or private images are generated through a signed route
+* Fix thumbnails of private images stored on a local disk
+* Form previews only show the files of the record
+* Full Changelog: [v5.1.0...v5.2.0](https://github.com/webplusmultimedia/filament-json-media/compare/v5.1.0...v5.2.0)
+
+## v5.1.0 - 2026-10-05
+* Security: validate the accepted file types and sizes of uploaded files on the server
+* Security: only accept and delete the files the record already has (crafted requests could delete any file of the disk)
+* Security: escape the `alt` and `src` attributes of `JsonMediaColumn` avatars
+* Fix: keep the files of a soft deleted model until it is force deleted
+* Fix: `Document::delete()` crashed, so deleting a model with documents threw an error
+* Fix: `Croppa::reset()` could delete other images sharing the same name prefix
+* Require Laravel 11.28+ (Filament 5) and `spatie/image` 3
+* Test suite with Pest 4, CI on PHP 8.3 to 8.5 and Laravel 11 to 13 in [#34](https://github.com/webplusmultimedia/filament-json-media/pull/34)
+* Full Changelog: [v5.0.1...v5.1.0](https://github.com/webplusmultimedia/filament-json-media/compare/v5.0.1...v5.1.0)
+
 ## v2.2.0 - 2024-04-25
 * Feature by @webplusmultimedia in  https://github.com/webplusmultimedia/filament-json-media/pull/11
 * Full Changelog: [v2.1.2...v2.2.0](https://github.com/webplusmultimedia/filament-json-media/compare/v2.1.2...v2.2.0)
