@@ -13,19 +13,22 @@ use GalleryJsonMedia\Form\JsonMediaGallery;
 use GalleryJsonMedia\Tests\Fixtures\Models\Page;
 use Livewire\Component;
 
+/**
+ * Edits the given page, or creates one when no page is given.
+ */
 class PageForm extends Component implements HasActions, HasSchemas
 {
     use InteractsWithActions;
     use InteractsWithSchemas;
 
-    public Page $record;
+    public ?Page $record = null;
 
     public ?array $data = [];
 
-    public function mount(Page $record): void
+    public function mount(?Page $record = null): void
     {
         $this->record = $record;
-        $this->form->fill($record->attributesToArray());
+        $this->form->fill($record?->attributesToArray() ?? []);
     }
 
     public function form(Schema $schema): Schema
@@ -39,12 +42,18 @@ class PageForm extends Component implements HasActions, HasSchemas
                     ->editableCustomProperties(),
             ])
             ->statePath('data')
-            ->model($this->record);
+            ->model($this->record ?? Page::class);
     }
 
     public function save(): void
     {
-        $this->record->update($this->form->getState());
+        if ($this->record) {
+            $this->record->update($this->form->getState());
+
+            return;
+        }
+
+        $this->record = Page::create($this->form->getState());
     }
 
     public function render(): string

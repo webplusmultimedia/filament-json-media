@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Filament\Actions\Testing\TestAction;
+use GalleryJsonMedia\Tests\Fixtures\Models\CollectionCastPage;
 use GalleryJsonMedia\Tests\Fixtures\Models\Page;
 use GalleryJsonMedia\Tests\Fixtures\PageForm;
 use Illuminate\Http\UploadedFile;
@@ -174,4 +175,103 @@ it('saves the custom properties edited for a file', function () {
         ->call('save');
 
     expect($page->refresh()->images[array_key_first($page->images)]['customProperties'])->toBe(['alt' => 'New alt']);
+});
+
+it('rejects a removal request for a file that does not belong to the record and keeps that file', function () {
+    Storage::fake('public');
+    Storage::disk('public')->put('private/other-user/secret.pdf', 'secret');
+    $page = Page::create(['images' => [storedImage('web_attachments/page/photo.jpg')]]);
+
+    $component = Livewire::test(PageForm::class, ['record' => $page])
+        ->set('data.images.injected', [
+            'file' => 'private/other-user/secret.pdf',
+            'disk' => 'public',
+            'mime_type' => 'image/jpeg',
+            'size' => 6,
+            'deleted' => true,
+            'customProperties' => ['alt' => 'Injected'],
+        ])
+        ->call('save');
+
+    expect($component->errors()->get('data.images'))
+        ->toBe(['The images field contains a file path that is not permitted.']);
+    Storage::disk('public')->assertExists('private/other-user/secret.pdf');
+    expect(array_column($page->refresh()->images, 'file'))->toBe(['web_attachments/page/photo.jpg']);
+});
+
+it('rejects a file of another record', function () {
+    Storage::fake('public');
+    $other = Page::create(['images' => [storedImage('web_attachments/page/other.jpg')]]);
+    $page = Page::create(['images' => [storedImage('web_attachments/page/photo.jpg')]]);
+
+    Livewire::test(PageForm::class, ['record' => $page])
+        ->set('data.images.injected', $other->images[0])
+        ->call('save')
+        ->assertHasFormErrors(['images']);
+
+    expect(array_column($page->refresh()->images, 'file'))->toBe(['web_attachments/page/photo.jpg']);
+});
+
+it('rejects any stored file when creating a record', function () {
+    Storage::fake('public');
+    $other = Page::create(['images' => [storedImage('web_attachments/page/other.jpg')]]);
+
+    Livewire::test(PageForm::class)
+        ->set('data.images.injected', $other->images[0])
+        ->call('save')
+        ->assertHasFormErrors(['images']);
+
+    expect(Page::count())->toBe(1);
+});
+
+it('neither keeps nor deletes an unknown file when the uploaded files are saved without validation', function () {
+    Storage::fake('public');
+    Storage::disk('public')->put('private/other-user/secret.pdf', 'secret');
+    $page = Page::create(['images' => [storedImage('web_attachments/page/photo.jpg')]]);
+    $component = Livewire::test(PageForm::class, ['record' => $page])
+        ->set('data.images.injected', [
+            'file' => 'private/other-user/secret.pdf',
+            'disk' => 'public',
+            'mime_type' => 'image/jpeg',
+            'size' => 6,
+            'deleted' => true,
+            'customProperties' => ['alt' => 'Injected'],
+        ]);
+    $field = $component->instance()->getSchemaComponent('form.images');
+
+    $field->saveUploadedFiles();
+
+    Storage::disk('public')->assertExists('private/other-user/secret.pdf');
+    expect(array_column($field->getRawState(), 'file'))->toBe(['web_attachments/page/photo.jpg']);
+});
+
+it('keeps the stored metadata of a file and only saves its edited custom properties', function () {
+    Storage::fake('public');
+    $photo = storedImage('web_attachments/page/photo.jpg', alt: 'Old alt');
+    $page = Page::create(['images' => [$photo]]);
+    $component = Livewire::test(PageForm::class, ['record' => $page]);
+    $key = fileKeyOf($component, 'web_attachments/page/photo.jpg');
+
+    $component
+        ->set("data.images.{$key}.disk", 'local')
+        ->set("data.images.{$key}.mime_type", 'image/svg+xml')
+        ->set("data.images.{$key}.size", 1)
+        ->set("data.images.{$key}.customProperties.alt", 'New alt')
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(array_values($page->refresh()->images))->toBe([
+        [...$photo, 'customProperties' => ['alt' => 'New alt', 'title' => null]],
+    ]);
+});
+
+it('accepts the stored files of a record whose field is cast to a collection', function () {
+    Storage::fake('public');
+    $page = CollectionCastPage::create(['images' => [storedImage('web_attachments/page/photo.jpg')]]);
+
+    Livewire::test(PageForm::class, ['record' => $page])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($page->refresh()->images->pluck('file')->all())->toBe(['web_attachments/page/photo.jpg']);
 });
