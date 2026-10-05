@@ -11,6 +11,7 @@ use Filament\FilamentServiceProvider;
 use Filament\Forms\FormsServiceProvider;
 use Filament\Infolists\InfolistsServiceProvider;
 use Filament\Notifications\NotificationsServiceProvider;
+use Filament\Schemas\SchemasServiceProvider;
 use Filament\SpatieLaravelSettingsPluginServiceProvider;
 use Filament\SpatieLaravelTranslatablePluginServiceProvider;
 use Filament\Support\SupportServiceProvider;
@@ -43,6 +44,7 @@ class TestCase extends Orchestra
             InfolistsServiceProvider::class,
             LivewireServiceProvider::class,
             NotificationsServiceProvider::class,
+            SchemasServiceProvider::class,
             // SpatieLaravelSettingsPluginServiceProvider::class,
             // SpatieLaravelTranslatablePluginServiceProvider::class,
             SupportServiceProvider::class,
@@ -55,10 +57,12 @@ class TestCase extends Orchestra
     public function getEnvironmentSetUp($app)
     {
         config()->set('database.default', 'testing');
+        // A fixed key keeps the thumbnail signing tokens predictable
+        config()->set('app.key', 'base64:Z2FsbGVyeS1qc29uLW1lZGlhLXRlc3Qta2V5LTAwMDE=');
+    }
 
-        /*
-        $migration = include __DIR__.'/../database/migrations/create_filament-json-media_table.php.stub';
-        $migration->up();
-        */
+    protected function defineDatabaseMigrations(): void
+    {
+        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
     }
 }

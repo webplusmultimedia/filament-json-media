@@ -7,11 +7,13 @@ namespace GalleryJsonMedia\Form;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\BaseFileUpload;
+use Filament\Forms\Components\Field;
 use Filament\Schemas\Components\Concerns\CanBeSecondary;
 use Filament\Support\Components\Attributes\ExposedLivewireMethod;
 use GalleryJsonMedia\Enums\GalleryType;
 use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
 use GalleryJsonMedia\Support\Concerns\HasThumbProperties;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -38,7 +40,7 @@ class JsonMediaGallery extends BaseFileUpload
     public function image(): static
     {
         $this->galleryType = GalleryType::Image;
-        $this->acceptedFileTypes = config('gallery-json-media.form.default.image_accepted_file_type');
+        $this->acceptedFileTypes(config('gallery-json-media.form.default.image_accepted_file_type'));
         $this->acceptedFileText = config('gallery-json-media.form.default.image_accepted_text');
 
         return $this;
@@ -47,7 +49,7 @@ class JsonMediaGallery extends BaseFileUpload
     public function document(): static
     {
         $this->galleryType = GalleryType::Document;
-        $this->acceptedFileTypes = config('gallery-json-media.form.default.document_accepted_file_type');
+        $this->acceptedFileTypes(config('gallery-json-media.form.default.document_accepted_file_type'));
         $this->acceptedFileText = config('gallery-json-media.form.default.document_accepted_text');
         /** Why not just show alt against filename */
         $this->replaceTitleByAlt();
@@ -218,21 +220,33 @@ class JsonMediaGallery extends BaseFileUpload
         if (! $this->shouldStoreFiles()) {
             return;
         }
-        $rawState = array_filter(array_map(function (array $file) use ($storage) {
-            if (isset($file['deleted']) and $file['deleted']) {
-                try {
-                    (new Croppa($storage, $file['file']))->reset(); // remove all thumbs
-                } catch (Throwable) {
-                    // never mind if file doesn't exist
+        $originalEntries = $this->getOriginalEntries();
+        $rawState = array_filter(array_map(function (array $file) use ($storage, $originalEntries) {
+            if (! $file['file'] instanceof TemporaryUploadedFile) {
+                $original = is_string($file['file']) ? ($originalEntries[$file['file']] ?? null) : null;
+
+                // The state can be tampered with : a path the record did not have is neither kept nor deleted
+                if ($original === null) {
+                    return null;
                 }
 
-                $storage->delete($file['file']);
+                if (isset($file['deleted']) and $file['deleted']) {
+                    try {
+                        (new Croppa($storage, $original['file']))->reset(); // remove all thumbs
+                    } catch (Throwable) {
+                        // never mind if file doesn't exist
+                    }
 
-                return null;
-            }
+                    $storage->delete($original['file']);
 
-            if (! $file['file'] instanceof TemporaryUploadedFile) {
-                return $file;
+                    return null;
+                }
+
+                // Only the custom properties are editable, the file metadata stay the stored ones
+                return [
+                    ...$original,
+                    'customProperties' => $file['customProperties'] ?? $original['customProperties'] ?? [],
+                ];
             }
 
             $callback = $this->saveUploadedFileUsing;
@@ -267,6 +281,34 @@ class JsonMediaGallery extends BaseFileUpload
         $this->rawState($rawState);
     }
 
+    /**
+     * The entries the record has in database, keyed by their file path.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    protected function getOriginalEntries(): array
+    {
+        $record = $this->getRecord();
+
+        if (! $record instanceof Model) {
+            return [];
+        }
+
+        // collect() also reads the AsCollection and AsArrayObject casts
+        return collect($record->getOriginal($this->getName()))
+            ->filter(fn (mixed $entry): bool => is_array($entry) && is_string($entry['file'] ?? null) && filled($entry['file']))
+            ->keyBy('file')
+            ->all();
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function getOriginalFilePaths(): array
+    {
+        return array_keys($this->getOriginalEntries());
+    }
+
     public function getDirectory(): ?string
     {
         return config('gallery-json-media.root_directory', 'web-attachments') . '/' . parent::getDirectory();
@@ -287,16 +329,59 @@ class JsonMediaGallery extends BaseFileUpload
             $rules[] = "min:{$count}";
         }
 
-        $rules[] = function (string $attribute, array $value, Closure $fail): void {
+        $arrayRules = [];
+        $fileRules = [];
 
-            $files = array_filter($value, fn (array $file): bool => $file['file'] instanceof TemporaryUploadedFile);
+        // Same split as BaseFileUpload, but from the field rules : the parent ones are built for a list of paths
+        foreach (Field::getValidationRules() as $rule) {
+            if ($this->isArrayValidationRule($rule)) {
+                $arrayRules[] = $rule;
+            } else {
+                $fileRules[] = $rule;
+            }
+        }
 
-            $files = collect($files)->map(fn ($val) => $val['file'])->toArray();
+        $rules = [
+            ...$rules,
+            ...$arrayRules,
+        ];
+
+        // Always on, unlike preventFilePathTampering() : this field deletes the files removed from its state
+        $rules[] = function (string $attribute, mixed $value, Closure $fail): void {
+            $originalPaths = $this->getOriginalFilePaths();
+
+            foreach (Arr::wrap($value) as $entry) {
+                $file = is_array($entry) ? ($entry['file'] ?? null) : $entry;
+
+                if ($file instanceof TemporaryUploadedFile) {
+                    continue;
+                }
+
+                if (is_string($file) && in_array($file, $originalPaths, strict: true)) {
+                    continue;
+                }
+
+                $fail(__($this->getValidationMessages()['tampered'] ?? 'filament-forms::validation.tampered_file_path', [
+                    'attribute' => $this->getValidationAttribute(),
+                ]));
+
+                return;
+            }
+        };
+
+        $rules[] = function (string $attribute, array $value, Closure $fail) use ($fileRules): void {
+            $files = collect($value)
+                ->pluck('file')
+                ->filter(fn (mixed $file): bool => $file instanceof TemporaryUploadedFile)
+                ->values()
+                ->all();
+
             $name = $this->getName();
+            $validationMessages = $this->getValidationMessages();
             $validator = Validator::make(
                 [$name => $files],
-                ["{$name}.*.file" => ['file', ...parent::getValidationRules()]],
-                [],
+                ["{$name}.*" => ['file', ...$fileRules]],
+                $validationMessages ? ["{$name}.*" => $validationMessages] : [],
                 ["{$name}.*" => $this->getValidationAttribute()],
             );
             if (! $validator->fails()) {

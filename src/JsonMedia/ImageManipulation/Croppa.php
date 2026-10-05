@@ -109,8 +109,13 @@ final class Croppa
     public function reset(): void
     {
         $search = $this->storage->path($this->getBaseNameForTumbs() . '-*.*');
+        ['filename' => $filename, 'extension' => $extension] = $this->getFileInfo();
+        // The glob also matches other originals (photo-2.jpg for photo.jpg), so keep only "{name}-{width}x{height}.{ext}"
+        $thumbPattern = '/^' . preg_quote($filename, '/') . '-[0-9_]+x[0-9_]+\.' . preg_quote($extension, '/') . '$/';
         foreach (glob($search) as $file) {
-            unlink($file);
+            if (preg_match($thumbPattern, basename($file))) {
+                unlink($file);
+            }
         }
     }
 

@@ -24,7 +24,7 @@ trait HasFile
     protected function getFileName(): ?string
     {
         if ($fileName = $this->getContentKeyValue('file')) {
-            if ($this->storage->exists($fileName)) {
+            if ($this->getDisk()->exists($fileName)) {
                 return $fileName;
             }
         }
