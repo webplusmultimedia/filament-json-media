@@ -37,8 +37,10 @@ class JsonImageController extends Controller
         }
         ['path' => $path, 'width' => $width, 'height' => $height, 'options' => $options] = $params;
 
+        // The signed url gives the disk of the image, which may not be the default one (an older image on a local disk)
         /** @var FilesystemAdapter $storage */
-        $storage = Storage::disk(config('gallery-json-media.disk'));
+        $storage = Storage::disk(request()->query('disk', config('gallery-json-media.disk')));
+        abort_unless($storage->exists($path), 404);
         /**@todo : for non local file Soon */
         // Create the image file
         $croppa = (new Croppa(storage: $storage, filePath: $path, width: $width, height: $height));

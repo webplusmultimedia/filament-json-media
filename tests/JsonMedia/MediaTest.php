@@ -29,7 +29,7 @@ it('returns a signed thumbnail url for a bitmap image', function () {
     Storage::fake('public');
     $media = Media::make(storedImage('page/photo.jpg'));
 
-    expect($media->getCropUrl(200, 150))->toStartWith('/storage/page/photo-200x150.jpg?signature=');
+    expect($media->getCropUrl(200, 150))->toStartWith('/storage/page/photo-200x150.jpg?disk=public&signature=');
 });
 
 it('returns the original url instead of a thumbnail for an svg image', function () {
@@ -47,7 +47,7 @@ it('renders an image with the thumbnail url, the alt text and the requested size
     $html = $media->withImageProperties(width: 300, height: 230, imgClass: 'rounded')->toHtml();
 
     expect($html)
-        ->toContain('src="/storage/page/photo-300x230.jpg?signature=')
+        ->toContain('src="/storage/page/photo-300x230.jpg?disk=public&amp;signature=')
         ->toContain('alt="Sunset"')
         ->toContain('width="300"')
         ->toContain('height="230"')

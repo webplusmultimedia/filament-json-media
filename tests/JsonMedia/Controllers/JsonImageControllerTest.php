@@ -27,9 +27,10 @@ it('returns 403 and generates nothing when the signature is not valid', function
 
     Storage::disk('public')->assertMissing(['web_attachments/page/photo-200x150.jpg', 'web_attachments/page/photo-300x150.jpg']);
 })->with([
-    'missing signature' => ['/\?signature=.*$/', ''],
+    'missing signature' => ['/&signature=.*$/', ''],
     'signature of another size' => ['/photo-200x150/', 'photo-300x150'],
-    'former md5 token' => ['/\?signature=.*$/', '?_token=5a309cfd8a927af6f2c418bcd131c487'],
+    'signature of another disk' => ['/disk=public/', 'disk=local'],
+    'former md5 token' => ['/\?.*$/', '?_token=5a309cfd8a927af6f2c418bcd131c487'],
 ]);
 
 it('does not route a path without dimensions to the thumbnail controller', function () {
@@ -40,4 +41,23 @@ it('does not route a path without dimensions to the thumbnail controller', funct
     );
 
     expect($route?->getActionName())->not->toBe(JsonImageController::class . '@handle');
+});
+
+it('generates the thumbnail on the disk of its image, whatever the default disk', function () {
+    fakeRemoteDisk();
+    config()->set('gallery-json-media.disk', 's3');
+    Storage::fake('public');
+    $url = Media::make(storedImage('web_attachments/page/photo.jpg', 800, 600))->getCropUrl(200, 150);
+
+    $this->get($url)->assertRedirect('/storage/web_attachments/page/photo-200x150.jpg');
+
+    Storage::disk('public')->assertExists('web_attachments/page/photo-200x150.jpg');
+});
+
+it('returns 404 when the image is missing from the disk', function () {
+    Storage::fake('public');
+    $url = Media::make(storedImage('web_attachments/page/photo.jpg'))->getCropUrl(200, 150);
+    Storage::disk('public')->delete('web_attachments/page/photo.jpg');
+
+    $this->get($url)->assertNotFound();
 });

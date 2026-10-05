@@ -132,7 +132,7 @@ it('lists the stored files with a thumbnail url for bitmaps and the original url
         'alt' => 'Photo',
         'mime_type' => 'image/jpeg',
     ]);
-    expect($photo['url'])->toStartWith('/storage/web_attachments/page/photo-300x230.jpg?signature=');
+    expect($photo['url'])->toStartWith('/storage/web_attachments/page/photo-300x230.jpg?disk=public&signature=');
     expect($logo)->toBe([
         'name' => 'web_attachments/page/logo.svg',
         'size' => 42,
