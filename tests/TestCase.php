@@ -57,7 +57,7 @@ class TestCase extends Orchestra
     public function getEnvironmentSetUp($app)
     {
         config()->set('database.default', 'testing');
-        // A fixed key keeps the thumbnail signing tokens predictable
+        // Laravel needs a key to sign the thumbnail urls and to encrypt
         config()->set('app.key', 'base64:Z2FsbGVyeS1qc29uLW1lZGlhLXRlc3Qta2V5LTAwMDE=');
     }
 

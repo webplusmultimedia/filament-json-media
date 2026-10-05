@@ -3,32 +3,33 @@
 declare(strict_types=1);
 
 use GalleryJsonMedia\JsonMedia\Controllers\JsonImageController;
+use GalleryJsonMedia\JsonMedia\Media;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 it('generates the requested thumbnail and redirects to it', function () {
     Storage::fake('public');
-    storedImage('web_attachments/page/photo.jpg', 800, 600);
+    $url = Media::make(storedImage('web_attachments/page/photo.jpg', 800, 600))->getCropUrl(200, 150);
 
-    $response = $this->get('/storage/web_attachments/page/photo-200x150.jpg?_token=5a309cfd8a927af6f2c418bcd131c487');
+    $response = $this->get($url);
 
     $response->assertRedirect('/storage/web_attachments/page/photo-200x150.jpg');
     expect(array_slice(getimagesize(Storage::disk('public')->path('web_attachments/page/photo-200x150.jpg')), 0, 2))
         ->toBe([200, 150]);
 });
 
-it('returns 404 and generates nothing when the token is invalid', function (?string $token) {
+it('returns 403 and generates nothing when the signature is not valid', function (string $pattern, string $replacement) {
     Storage::fake('public');
-    storedImage('web_attachments/page/photo.jpg');
+    $url = Media::make(storedImage('web_attachments/page/photo.jpg'))->getCropUrl(200, 150);
 
-    $response = $this->get('/storage/web_attachments/page/photo-200x150.jpg' . ($token === null ? '' : "?_token={$token}"));
+    $this->get(preg_replace($pattern, $replacement, $url))->assertForbidden();
 
-    $response->assertNotFound();
-    Storage::disk('public')->assertMissing('web_attachments/page/photo-200x150.jpg');
+    Storage::disk('public')->assertMissing(['web_attachments/page/photo-200x150.jpg', 'web_attachments/page/photo-300x150.jpg']);
 })->with([
-    'missing token' => [null],
-    'token of another size' => ['116354d576564cedd30c850f6a2f2dee'],
+    'missing signature' => ['/\?signature=.*$/', ''],
+    'signature of another size' => ['/photo-200x150/', 'photo-300x150'],
+    'former md5 token' => ['/\?signature=.*$/', '?_token=5a309cfd8a927af6f2c418bcd131c487'],
 ]);
 
 it('does not route a path without dimensions to the thumbnail controller', function () {

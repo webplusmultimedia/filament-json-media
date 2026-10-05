@@ -13,5 +13,9 @@ Route::get('gallery-json-media/thumbnails/{disk}/{path}', RemoteThumbnailControl
     ->middleware(ValidateSignature::class)
     ->name('gallery-json-media.thumbnail');
 
+// Reached only when the thumbnail file does not exist yet : the web server serves it otherwise.
+// The signature is relative, so that it does not depend on the domain (CDN, several domains)
 Route::get('{path}', [JsonImageController::class, 'handle'])
-    ->where('path', UrlParser::make()->routePattern());
+    ->where('path', UrlParser::make()->routePattern())
+    ->middleware(ValidateSignature::relative())
+    ->name('gallery-json-media.local-thumbnail');

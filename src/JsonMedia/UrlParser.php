@@ -31,21 +31,6 @@ final class UrlParser
      */
     public const PATTERN = '(.+)-([0-9_]+)x([0-9_]+)(-[0-9a-zA-Z(),\-._]+)*\.(jpg|jpeg|png|gif|webp|avif|JPG|JPEG|PNG|GIF|WEBP|AVIF)$';
 
-    /**
-     * Generate the signing token from a URL or path.
-     * Or, if no key was defined, return nothing.
-     */
-    public function signingToken(string $url): ?string
-    {
-        $signing_key = config('gallery-json-media.images.signing_key');
-        $key = config($signing_key);
-        if ($key) {
-            return md5($key . basename($url));
-        }
-
-        return null;
-    }
-
     public function routePattern(): string
     {
         return sprintf('(?=%s)(?=%s).+', config('gallery-json-media.images.path'), self::PATTERN);

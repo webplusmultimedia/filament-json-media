@@ -19,7 +19,7 @@ it('renders the first image as a thumbnail', function () {
     $html = JsonMediaColumn::make('images')->record($page)->toEmbeddedHtml();
 
     expect($html)
-        ->toContain('src="/storage/web_attachments/page/first-40x40.jpg?_token=')
+        ->toContain('src="/storage/web_attachments/page/first-40x40.jpg?signature=')
         ->toContain('alt="First"')
         ->not->toContain('Second');
 });

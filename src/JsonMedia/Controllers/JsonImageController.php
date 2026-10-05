@@ -22,21 +22,16 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class JsonImageController extends Controller
 {
     public function __construct(protected UrlParser $urlParser) {}
 
+    /**
+     * The signature is checked by the route middleware.
+     */
     public function handle(string $requestPath): BinaryFileResponse | RedirectResponse | null
     {
-        // Validate the signing token
-        $token = $this->urlParser->signingToken($requestPath);
-
-        if ($token !== request('_token')) {
-            throw new NotFoundHttpException('Token mismatch');
-        }
-
         if (! $params = $this->urlParser->parse($requestPath)) {
             return null;
         }

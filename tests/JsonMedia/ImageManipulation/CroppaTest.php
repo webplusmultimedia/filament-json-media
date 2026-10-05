@@ -29,13 +29,15 @@ it('keeps the ratio when only one dimension is given', function (?int $width, ?i
     'height only' => [null, 150, 'page/photo-_x150.jpg', [200, 150]],
 ]);
 
-it('returns a signed thumbnail url', function () {
+it('returns a thumbnail url signed by Laravel for its path', function () {
     Storage::fake('public');
     storedImage('page/photo.jpg');
 
     $url = (new Croppa(Storage::disk('public'), 'page/photo.jpg', 200, 150))->url();
 
-    expect($url)->toBe('/storage/page/photo-200x150.jpg?_token=5a309cfd8a927af6f2c418bcd131c487');
+    expect($url)
+        ->toStartWith('/storage/page/photo-200x150.jpg?signature=')
+        ->and(URL::hasValidSignature(Request::create($url), absolute: false))->toBeTrue();
 });
 
 it('generates the missing thumbnail when an unsigned url is requested', function () {

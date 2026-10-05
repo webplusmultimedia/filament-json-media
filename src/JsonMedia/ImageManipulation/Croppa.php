@@ -47,9 +47,10 @@ final class Croppa
 
             return $url;
         }
-        $url .= '?_token=' . UrlParser::make()->signingToken($url);
+        // The disk url keeps its domain (CDN...), the route only signs its path
+        $signedUrl = URL::signedRoute('gallery-json-media.local-thumbnail', ['path' => UrlParser::make()->toPath($url)], absolute: false);
 
-        return $url;
+        return $url . '?' . parse_url($signedUrl, PHP_URL_QUERY);
     }
 
     /**

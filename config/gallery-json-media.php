@@ -13,7 +13,6 @@ return [
     'root_directory' => 'web_attachments',
     'images' => [
         'path' => 'storage/(.*)$',
-        'signing_key' => 'app.key',
         'driver' => ImageDriver::Imagick, // gd or imagick
         'quality' => 70,
         'thumbnails-crop-method' => null,

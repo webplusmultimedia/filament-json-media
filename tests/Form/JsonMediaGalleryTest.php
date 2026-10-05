@@ -124,23 +124,21 @@ it('lists the stored files with a thumbnail url for bitmaps and the original url
     ]);
     $component = Livewire::test(PageForm::class, ['record' => $page]);
 
-    $files = $component->instance()->getSchemaComponent('form.images')->getUploadedFiles();
+    [$photo, $logo] = array_values($component->instance()->getSchemaComponent('form.images')->getUploadedFiles());
 
-    expect(array_values($files))->toBe([
-        [
-            'name' => 'web_attachments/page/photo.jpg',
-            'size' => $page->images[0]['size'],
-            'alt' => 'Photo',
-            'mime_type' => 'image/jpeg',
-            'url' => '/storage/web_attachments/page/photo-300x230.jpg?_token=116354d576564cedd30c850f6a2f2dee',
-        ],
-        [
-            'name' => 'web_attachments/page/logo.svg',
-            'size' => 42,
-            'alt' => 'Logo',
-            'mime_type' => 'image/svg+xml',
-            'url' => '/storage/web_attachments/page/logo.svg',
-        ],
+    expect($photo)->toMatchArray([
+        'name' => 'web_attachments/page/photo.jpg',
+        'size' => $page->images[0]['size'],
+        'alt' => 'Photo',
+        'mime_type' => 'image/jpeg',
+    ]);
+    expect($photo['url'])->toStartWith('/storage/web_attachments/page/photo-300x230.jpg?signature=');
+    expect($logo)->toBe([
+        'name' => 'web_attachments/page/logo.svg',
+        'size' => 42,
+        'alt' => 'Logo',
+        'mime_type' => 'image/svg+xml',
+        'url' => '/storage/web_attachments/page/logo.svg',
     ]);
 });
 
