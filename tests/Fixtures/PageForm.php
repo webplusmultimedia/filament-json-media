@@ -25,22 +25,36 @@ class PageForm extends Component implements HasActions, HasSchemas
 
     public ?array $data = [];
 
-    public function mount(?Page $record = null): void
+    public ?string $disk = null;
+
+    public ?string $visibility = null;
+
+    public function mount(?Page $record = null, ?string $disk = null, ?string $visibility = null): void
     {
         $this->record = $record;
+        $this->disk = $disk;
+        $this->visibility = $visibility;
         $this->form->fill($record?->attributesToArray() ?? []);
     }
 
     public function form(Schema $schema): Schema
     {
+        $gallery = JsonMediaGallery::make('images')
+            ->directory('page')
+            ->maxFiles(2)
+            ->maxSize(1024)
+            ->editableCustomProperties();
+
+        // Only when given, so that the package defaults apply otherwise
+        if ($this->disk !== null) {
+            $gallery->disk($this->disk);
+        }
+        if ($this->visibility !== null) {
+            $gallery->visibility($this->visibility);
+        }
+
         return $schema
-            ->components([
-                JsonMediaGallery::make('images')
-                    ->directory('page')
-                    ->maxFiles(2)
-                    ->maxSize(1024)
-                    ->editableCustomProperties(),
-            ])
+            ->components([$gallery])
             ->statePath('data')
             ->model($this->record ?? Page::class);
     }

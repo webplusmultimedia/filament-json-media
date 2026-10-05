@@ -6,8 +6,11 @@ namespace GalleryJsonMedia\JsonMedia\ImageManipulation;
 
 use Exception;
 use GalleryJsonMedia\JsonMedia\UrlParser;
+use GalleryJsonMedia\Support\Disk;
 use Illuminate\Contracts\Filesystem\Filesystem;
-use League\Flysystem\Local\LocalFilesystemAdapter;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
+use LogicException;
 use Spatie\Image\Enums\Fit;
 use Spatie\Image\Exceptions\InvalidImageDriver;
 use Spatie\Image\Exceptions\InvalidManipulation;
@@ -15,10 +18,24 @@ use Spatie\Image\Image;
 
 final class Croppa
 {
-    public function __construct(protected Filesystem $storage, private string $filePath, private ?int $width = null, private ?int $height = null) {}
+    /**
+     * The disk name is needed to build the thumbnail url of an image that is not public on a local disk.
+     */
+    public function __construct(
+        protected Filesystem $storage,
+        private string $filePath,
+        private ?int $width = null,
+        private ?int $height = null,
+        private ?string $diskName = null,
+        private string $visibility = 'public',
+    ) {}
 
     public function url(bool $withoutToken = false): string
     {
+        if (! $this->servesThumbnailsLocally()) {
+            return $this->signedRouteUrl();
+        }
+
         $url = $this->storage->url($this->getPathNameForThumbs());
         if ($withoutToken) {
             // auto-generate thumb if not exist / can be used for lazy rendering
@@ -41,31 +58,37 @@ final class Croppa
      */
     public function render(): void
     {
-        $image = Image::useImageDriver(config('gallery-json-media.images.driver'))
-            ->load($this->storage->path($this->filePath))
-            ->quality(config('gallery-json-media.images.quality'));
+        if (! $this->cropsAreRemote()) {
+            $this->renderImage($this->storage->path($this->filePath), $this->getFullPathForThumb());
+
+            return;
+        }
+
+        // spatie/image works on local paths : the remote image goes through temporary files
+        $extension = $this->getFileInfo()['extension'];
+        $source = $this->temporaryFilePath($extension);
+        $target = $this->temporaryFilePath($extension);
 
         try {
+            $sourceStream = $this->storage->readStream($this->filePath);
+            file_put_contents($source, $sourceStream);
+            fclose($sourceStream);
 
-            if ($this->width && $this->height) {
-                $image = $image->fit(
-                    Fit::Crop,
-                    desiredWidth: $this->width,
-                    desiredHeight: $this->height
-                );
-            } else {
-                if ($this->width) {
-                    $image->width($this->width);
-                }
-                if ($this->height) {
-                    $image->height($this->height);
+            $this->renderImage($source, $target);
+
+            $targetStream = fopen($target, 'r');
+            $this->storage->put($this->getPathNameForThumbs(), $targetStream);
+            fclose($targetStream);
+        } finally {
+            foreach ([$source, $target] as $file) {
+                if (is_file($file)) {
+                    unlink($file);
                 }
             }
-
-            $image->save($this->getFullPathForThumb());
-        } catch (InvalidManipulation $e) {
-            throw new Exception('Invalid manipulation or you are need php 8.2');
         }
+
+        // Buckets without ACL refuse to change the visibility, their policy decides
+        rescue(fn () => $this->storage->setVisibility($this->getPathNameForThumbs(), $this->visibility), report: false);
     }
 
     public function getFullPathForThumb(): string
@@ -103,19 +126,22 @@ final class Croppa
      */
     protected function getFileInfo(): array
     {
-        return pathinfo($this->storage->path($this->filePath));
+        return pathinfo($this->filePath);
     }
 
     public function reset(): void
     {
-        $search = $this->storage->path($this->getBaseNameForTumbs() . '-*.*');
-        ['filename' => $filename, 'extension' => $extension] = $this->getFileInfo();
-        // The glob also matches other originals (photo-2.jpg for photo.jpg), so keep only "{name}-{width}x{height}.{ext}"
+        ['dirname' => $directory, 'filename' => $filename, 'extension' => $extension] = $this->getFileInfo();
+        // Other images can share the name prefix (photo-2.jpg for photo.jpg), so keep only "{name}-{width}x{height}.{ext}"
         $thumbPattern = '/^' . preg_quote($filename, '/') . '-[0-9_]+x[0-9_]+\.' . preg_quote($extension, '/') . '$/';
-        foreach (glob($search) as $file) {
-            if (preg_match($thumbPattern, basename($file))) {
-                unlink($file);
-            }
+
+        $thumbnails = array_values(array_filter(
+            $this->storage->files($directory === '.' ? '' : $directory),
+            fn (string $file): bool => (bool) preg_match($thumbPattern, basename($file)),
+        ));
+
+        if ($thumbnails !== []) {
+            $this->storage->delete($thumbnails);
         }
     }
 
@@ -127,6 +153,72 @@ final class Croppa
 
     public function cropsAreRemote(): bool
     {
-        return ! $this->storage->getAdapter() instanceof LocalFilesystemAdapter;
+        return ! Disk::isLocal($this->storage);
+    }
+
+    /**
+     * Only a public image on a local disk is served by the web server, with the token fallback route.
+     */
+    private function servesThumbnailsLocally(): bool
+    {
+        return ! $this->cropsAreRemote() && $this->visibility === 'public';
+    }
+
+    private function signedRouteUrl(): string
+    {
+        if ($this->diskName === null) {
+            throw new LogicException('The disk name is needed to build the thumbnail url of a remote or private image.');
+        }
+
+        $parameters = [
+            'disk' => $this->diskName,
+            'path' => $this->getPathNameForThumbs(),
+            'visibility' => $this->visibility,
+        ];
+
+        // A link to a private file must not outlive its temporary url, even when it is cached in a page
+        if ($this->visibility === 'private') {
+            return URL::temporarySignedRoute('gallery-json-media.thumbnail', now()->addMinutes(Disk::temporaryUrlTtl()), $parameters);
+        }
+
+        return URL::signedRoute('gallery-json-media.thumbnail', $parameters);
+    }
+
+    /**
+     * @throws InvalidManipulation
+     * @throws InvalidImageDriver
+     */
+    private function renderImage(string $source, string $target): void
+    {
+        $image = Image::useImageDriver(config('gallery-json-media.images.driver'))
+            ->load($source)
+            ->quality(config('gallery-json-media.images.quality'));
+
+        try {
+
+            if ($this->width && $this->height) {
+                $image = $image->fit(
+                    Fit::Crop,
+                    desiredWidth: $this->width,
+                    desiredHeight: $this->height
+                );
+            } else {
+                if ($this->width) {
+                    $image->width($this->width);
+                }
+                if ($this->height) {
+                    $image->height($this->height);
+                }
+            }
+
+            $image->save($target);
+        } catch (InvalidManipulation $e) {
+            throw new Exception('Invalid manipulation or you are need php 8.2');
+        }
+    }
+
+    private function temporaryFilePath(string $extension): string
+    {
+        return sys_get_temp_dir() . '/gallery-json-media-' . Str::random(32) . '.' . $extension;
     }
 }

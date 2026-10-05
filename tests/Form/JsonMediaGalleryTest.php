@@ -30,6 +30,7 @@ it('stores an uploaded image in the gallery directory with its metadata', functi
     expect($images)->toHaveCount(1)
         ->and($images[0])->toMatchArray([
             'disk' => 'public',
+            'visibility' => 'public',
             'mime_type' => 'image/jpeg',
             'customProperties' => ['alt' => 'Mon super chat', 'title' => null],
         ])
@@ -274,4 +275,108 @@ it('accepts the stored files of a record whose field is cast to a collection', f
         ->assertHasNoFormErrors();
 
     expect($page->refresh()->images->pluck('file')->all())->toBe(['web_attachments/page/photo.jpg']);
+});
+
+it('stores an upload on the disk of the field with its visibility', function () {
+    $disk = fakeRemoteDisk();
+    $page = Page::create();
+
+    Livewire::test(PageForm::class, ['record' => $page, 'disk' => 's3', 'visibility' => 'private'])
+        ->set('data.images.new-photo', UploadedFile::fake()->image('photo.jpg'))
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    $image = array_values($page->refresh()->images)[0];
+    expect($image)->toMatchArray(['disk' => 's3', 'visibility' => 'private']);
+    $disk->assertExists($image['file']);
+});
+
+it('ignores a disk or a visibility changed by the client on a new upload', function () {
+    fakeRemoteDisk();
+    Storage::fake('public');
+    $page = Page::create();
+
+    Livewire::test(PageForm::class, ['record' => $page, 'disk' => 's3', 'visibility' => 'private'])
+        ->set('data.images.new-photo', UploadedFile::fake()->image('photo.jpg'))
+        ->set('data.images.new-photo.disk', 'public')
+        ->set('data.images.new-photo.visibility', 'public')
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(array_values($page->refresh()->images)[0])->toMatchArray(['disk' => 's3', 'visibility' => 'private']);
+});
+
+it('deletes a removed remote image and its thumbnails when the form is saved', function () {
+    $disk = fakeRemoteDisk();
+    $page = Page::create(['images' => [storedImage('web_attachments/page/photo.jpg', disk: 's3', visibility: 'private')]]);
+    $disk->put('web_attachments/page/photo-300x230.jpg', 'thumbnail');
+    $component = Livewire::test(PageForm::class, ['record' => $page, 'disk' => 's3', 'visibility' => 'private']);
+
+    $component
+        ->call('callSchemaComponentMethod', 'form.images', 'deleteUploadedFile', ['fileKey' => fileKeyOf($component, 'web_attachments/page/photo.jpg')])
+        ->call('save');
+
+    expect($page->refresh()->images)->toBe([]);
+    $disk->assertMissing(['web_attachments/page/photo.jpg', 'web_attachments/page/photo-300x230.jpg']);
+});
+
+it('previews remote images through the signed thumbnail route and documents through their temporary url', function () {
+    $this->travelTo('2026-01-01 00:00:00');
+    fakeRemoteDisk();
+    $page = Page::create([
+        'images' => [
+            storedImage('web_attachments/page/photo.jpg', disk: 's3', visibility: 'private'),
+            storedDocument('web_attachments/page/brochure.pdf', disk: 's3', visibility: 'private'),
+        ],
+    ]);
+    $component = Livewire::test(PageForm::class, ['record' => $page, 'disk' => 's3', 'visibility' => 'private']);
+
+    $urls = array_column($component->instance()->getSchemaComponent('form.images')->getUploadedFiles(), 'url');
+
+    expect($urls[0])->toStartWith('http://localhost/gallery-json-media/thumbnails/s3/web_attachments/page/photo-300x230.jpg?')
+        ->and($urls[1])->toBe('https://bucket.test/web_attachments/page/brochure.pdf?expires=1767225900');
+});
+
+it('does not preview a file that does not belong to the record', function () {
+    Storage::fake('public');
+    Storage::fake('local');
+    storedImage('secret/scan.jpg', disk: 'local', visibility: 'private');
+    storedDocument('secret/contract.pdf', disk: 'local', visibility: 'private');
+    $other = Page::create(['images' => [storedImage('web_attachments/page/other.jpg')]]);
+    $page = Page::create(['images' => [storedImage('web_attachments/page/photo.jpg')]]);
+    $component = Livewire::test(PageForm::class, ['record' => $page])
+        ->set('data.images.other-record', $other->images[0])
+        ->set('data.images.injected-image', ['file' => 'secret/scan.jpg', 'disk' => 'local', 'visibility' => 'private', 'mime_type' => 'image/jpeg'])
+        ->set('data.images.injected-document', ['file' => 'secret/contract.pdf', 'disk' => 'local', 'visibility' => 'private', 'mime_type' => 'application/pdf']);
+
+    $files = $component->instance()->getSchemaComponent('form.images')->getUploadedFiles();
+
+    expect(array_column($files, 'name'))->toBe(['web_attachments/page/photo.jpg']);
+});
+
+it('records the visibility of the package config when the field sets none', function () {
+    fakeRemoteDisk();
+    config()->set('gallery-json-media.disk', 's3');
+    config()->set('gallery-json-media.visibility', 'public');
+    $page = Page::create();
+
+    Livewire::test(PageForm::class, ['record' => $page])
+        ->set('data.images.new-photo', UploadedFile::fake()->image('photo.jpg'))
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(array_values($page->refresh()->images)[0])->toMatchArray(['disk' => 's3', 'visibility' => 'public']);
+});
+
+it('prefers the visibility of the field to the one of the package config', function () {
+    Storage::fake('public');
+    config()->set('gallery-json-media.visibility', 'public');
+    $page = Page::create();
+
+    Livewire::test(PageForm::class, ['record' => $page, 'visibility' => 'private'])
+        ->set('data.images.new-photo', UploadedFile::fake()->image('photo.jpg'))
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(array_values($page->refresh()->images)[0]['visibility'])->toBe('private');
 });

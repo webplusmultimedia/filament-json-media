@@ -74,6 +74,24 @@ final class UrlParser
     }
 
     /**
+     * Parse a thumbnail path relative to its disk, as used by the remote thumbnail route.
+     *
+     * @return array{path : string,width : int|null,height : int|null}|false
+     */
+    public function parseThumbnailPath(string $path): array | false
+    {
+        if (! preg_match('#^' . self::PATTERN . '#', $path, $matches)) {
+            return false;
+        }
+
+        return [
+            'path' => $matches[1] . '.' . $matches[5],
+            'width' => $matches[2] === '_' ? null : (int) $matches[2],
+            'height' => $matches[3] === '_' ? null : (int) $matches[3],
+        ];
+    }
+
+    /**
      * Extract the path from a URL and remove it's leading slash.
      */
     public function toPath(string $url): string

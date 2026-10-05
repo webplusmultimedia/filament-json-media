@@ -8,6 +8,8 @@ use Spatie\Image\Enums\ImageDriver;
 
 return [
     'disk' => 'public',
+    // 'public' or 'private' : default visibility of the uploaded files, a field can change it with ->visibility()
+    'visibility' => 'public',
     'root_directory' => 'web_attachments',
     'images' => [
         'path' => 'storage/(.*)$',
@@ -16,6 +18,8 @@ return [
         'quality' => 70,
         'thumbnails-crop-method' => null,
         'thumbnails-saved-format' => [],
+        // Lifetime in minutes of the links to private files (temporary urls)
+        'temporary_url_ttl' => 5,
 
     ],
     'form' => [

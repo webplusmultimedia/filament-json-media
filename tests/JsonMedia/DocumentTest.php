@@ -39,3 +39,11 @@ it('deletes the file from its disk', function () {
 
     Storage::disk('public')->assertMissing('web_attachments/page/brochure.pdf');
 });
+
+it('returns a temporary url for a private document', function () {
+    $this->travelTo('2026-01-01 00:00:00');
+    fakeRemoteDisk();
+    $document = Document::make(storedDocument('page/brochure.pdf', disk: 's3', visibility: 'private'));
+
+    expect($document->getUrl())->toBe('https://bucket.test/page/brochure.pdf?expires=1767225900');
+});

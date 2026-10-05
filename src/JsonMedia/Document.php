@@ -23,9 +23,8 @@ class Document implements CanDeleteMedia, Stringable
 
     public function getUrl(): ?string
     {
-        $disk = $this->getDisk();
         if ($fileName = $this->getFileName()) {
-            return $disk->url($fileName);
+            return $this->getFileUrl($fileName);
         }
 
         return null;

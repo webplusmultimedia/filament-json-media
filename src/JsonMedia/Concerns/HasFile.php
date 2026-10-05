@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace GalleryJsonMedia\JsonMedia\Concerns;
 
+use GalleryJsonMedia\Support\Disk;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 
@@ -24,12 +25,26 @@ trait HasFile
     protected function getFileName(): ?string
     {
         if ($fileName = $this->getContentKeyValue('file')) {
-            if ($this->getDisk()->exists($fileName)) {
+            // A remote disk is not queried on each rendering : the entry is trusted
+            if (! Disk::isLocal($this->getDisk()) || $this->getDisk()->exists($fileName)) {
                 return $fileName;
             }
         }
 
         return null;
+    }
+
+    /**
+     * Entries saved before the visibility was recorded are public.
+     */
+    public function getVisibility(): string
+    {
+        return $this->getContentKeyValue('visibility') === 'private' ? 'private' : 'public';
+    }
+
+    protected function getFileUrl(string $fileName): string
+    {
+        return Disk::url($this->getDisk(), $fileName, $this->getVisibility());
     }
 
     protected function getDisk(): Filesystem

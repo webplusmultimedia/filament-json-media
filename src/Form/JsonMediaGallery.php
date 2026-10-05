@@ -11,10 +11,13 @@ use Filament\Forms\Components\Field;
 use Filament\Schemas\Components\Concerns\CanBeSecondary;
 use Filament\Support\Components\Attributes\ExposedLivewireMethod;
 use GalleryJsonMedia\Enums\GalleryType;
+use GalleryJsonMedia\JsonMedia\Document;
 use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
+use GalleryJsonMedia\JsonMedia\Media;
 use GalleryJsonMedia\Support\Concerns\HasThumbProperties;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use League\Flysystem\UnableToCheckFileExistence;
@@ -101,6 +104,8 @@ class JsonMediaGallery extends BaseFileUpload
         $this->multiple();
 
         $this->diskName = config('gallery-json-media.disk');
+        // Set here so that Filament does not guess it from the disk name
+        $this->visibility = config('gallery-json-media.visibility', 'public');
 
         $this->registerActions(
             actions: [
@@ -146,6 +151,7 @@ class JsonMediaGallery extends BaseFileUpload
                         $file = ['file' => $file,
                             'size' => $file->getSize(),
                             'disk' => $component->getDiskName(),
+                            'visibility' => $component->getVisibility(),
                             'mime_type' => $file->getMimeType(),
                             'deleted' => false,
                             'customProperties' => ['alt' => str($file->getClientOriginalName())->beforeLast('.')
@@ -172,7 +178,7 @@ class JsonMediaGallery extends BaseFileUpload
     #[Renderless]
     public function getUploadedFiles(): array
     {
-        $storage = $this->getDisk();
+        $originalEntries = $this->getOriginalEntries();
         $url = [];
         foreach ($this->getRawState() ?? [] as $fileKey => $file) {
             if (! isset($file['deleted'])) {
@@ -182,25 +188,30 @@ class JsonMediaGallery extends BaseFileUpload
                 continue;
             }
 
+            // The state can be tampered with : only the files of the record get a preview url
+            $entry = is_string($file['file'] ?? null) ? ($originalEntries[$file['file']] ?? null) : null;
+            if ($entry === null) {
+                continue;
+            }
+            $entry['disk'] ??= $this->getDiskName();
+
             try {
-                if (! $storage->exists(data_get($file, 'file'))) {
+                if (! Storage::disk($entry['disk'])->exists($entry['file'])) {
                     continue;
                 }
             } catch (UnableToCheckFileExistence $exception) {
                 continue;
             }
 
-            $fileName = data_get($file, 'file');
-            $mimeType = data_get($file, 'mime_type');
+            $mimeType = (string) data_get($entry, 'mime_type');
             $url[$fileKey] = [
-                'name' => $fileName,
-                'size' => data_get($file, 'size'),
+                'name' => $entry['file'],
+                'size' => data_get($entry, 'size'),
                 'alt' => data_get($file, 'customProperties.alt'),
                 'mime_type' => $mimeType,
-                'url' => ($this->isImageFile($mimeType) and ! $this->isSvgFile($mimeType))
-                    ? (new Croppa(storage: $storage, filePath: $fileName, width: $this->getThumbWidth(), height: $this->getThumbHeight()))
-                        ->url()
-                    : $storage->url($fileName),
+                'url' => $this->isImageFile($mimeType)
+                    ? Media::make($entry)->getCropUrl($this->getThumbWidth(), $this->getThumbHeight())
+                    : (string) Document::make($entry)->getUrl(),
             ];
         }
 
@@ -209,8 +220,6 @@ class JsonMediaGallery extends BaseFileUpload
 
     public function saveUploadedFiles(): void
     {
-        $storage = $this->getDisk();
-
         if (blank($this->getRawState())) {
             $this->rawState([]);
 
@@ -221,7 +230,7 @@ class JsonMediaGallery extends BaseFileUpload
             return;
         }
         $originalEntries = $this->getOriginalEntries();
-        $rawState = array_filter(array_map(function (array $file) use ($storage, $originalEntries) {
+        $rawState = array_filter(array_map(function (array $file) use ($originalEntries) {
             if (! $file['file'] instanceof TemporaryUploadedFile) {
                 $original = is_string($file['file']) ? ($originalEntries[$file['file']] ?? null) : null;
 
@@ -231,6 +240,8 @@ class JsonMediaGallery extends BaseFileUpload
                 }
 
                 if (isset($file['deleted']) and $file['deleted']) {
+                    $storage = Storage::disk($original['disk'] ?? $this->getDiskName());
+
                     try {
                         (new Croppa($storage, $original['file']))->reset(); // remove all thumbs
                     } catch (Throwable) {
@@ -248,6 +259,15 @@ class JsonMediaGallery extends BaseFileUpload
                     'customProperties' => $file['customProperties'] ?? $original['customProperties'] ?? [],
                 ];
             }
+
+            // The client can also change the state of a new upload : its metadata come from the server
+            $file = [
+                ...$file,
+                'size' => $file['file']->getSize(),
+                'disk' => $this->getDiskName(),
+                'visibility' => $this->getVisibility(),
+                'mime_type' => $file['file']->getMimeType(),
+            ];
 
             $callback = $this->saveUploadedFileUsing;
 
@@ -437,12 +457,6 @@ class JsonMediaGallery extends BaseFileUpload
             'file' => $file,
         ]);
 
-        return $this;
-    }
-
-    /** This method is disabled for now */
-    public function disk(Closure | string | null $name): static
-    {
         return $this;
     }
 }

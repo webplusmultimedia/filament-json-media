@@ -132,3 +132,20 @@ it('deletes the files when a soft deletable model is force deleted', function ()
         'web_attachments/page/brochure.pdf',
     ]);
 });
+
+it('deletes the files and the thumbnails stored on a remote disk when the model is deleted', function () {
+    $disk = fakeRemoteDisk();
+    $page = Page::create([
+        'images' => [storedImage('web_attachments/page/photo.jpg', disk: 's3', visibility: 'private')],
+        'documents' => [storedDocument('web_attachments/page/brochure.pdf', disk: 's3', visibility: 'private')],
+    ]);
+    $disk->put('web_attachments/page/photo-200x150.jpg', 'thumbnail');
+
+    $page->delete();
+
+    $disk->assertMissing([
+        'web_attachments/page/photo.jpg',
+        'web_attachments/page/photo-200x150.jpg',
+        'web_attachments/page/brochure.pdf',
+    ]);
+});

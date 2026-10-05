@@ -39,19 +39,10 @@ final class Media implements CanDeleteMedia, Htmlable, Stringable
         return str($mimeType)->startsWith('image');
     }
 
-    protected function getPath(): ?string
-    {
-        if ($fileName = $this->getFileName()) {
-            return $this->storage->path($fileName);
-        }
-
-        return null;
-    }
-
     public function getUrl(): ?string
     {
         if ($fileName = $this->getFileName()) {
-            return $this->storage->url($fileName);
+            return $this->getFileUrl($fileName);
         }
 
         return null;
@@ -62,18 +53,23 @@ final class Media implements CanDeleteMedia, Htmlable, Stringable
         if ($this->isSvgFile()) {
             return $this->getUrl();
         }
-        if ($path = $this->getPath()) {
-            $croppa = new Croppa(
-                $this->getDisk(),
-                $this->getContentKeyValue('file'),
-                $width,
-                $height
-            );
-
-            return $croppa->url($withoutToken);
+        if ($fileName = $this->getFileName()) {
+            return $this->getCroppa($fileName, $width, $height)->url($withoutToken);
         }
 
         return '';
+    }
+
+    private function getCroppa(string $fileName, ?int $width = null, ?int $height = null): Croppa
+    {
+        return new Croppa(
+            $this->getDisk(),
+            $fileName,
+            $width,
+            $height,
+            $this->getContentKeyValue('disk'),
+            $this->getVisibility(),
+        );
     }
 
     public function isSvgFile(): bool
@@ -97,8 +93,8 @@ final class Media implements CanDeleteMedia, Htmlable, Stringable
 
     public function delete(): void
     {
-        if ($this->getFileName()) {
-            (new Croppa($this->getDisk(), $this->getFileName()))->delete();
+        if ($fileName = $this->getFileName()) {
+            $this->getCroppa($fileName)->delete();
         }
     }
 

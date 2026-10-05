@@ -85,3 +85,29 @@ it('deletes the original and its thumbnails', function () {
 
     Storage::disk('public')->assertMissing(['page/photo.jpg', 'page/photo-200x150.jpg']);
 });
+
+it('returns the direct url of a public image on a remote disk', function (?string $visibility) {
+    fakeRemoteDisk();
+    $media = Media::make(storedImage('page/photo.jpg', disk: 's3', visibility: $visibility));
+
+    expect($media->getUrl())->toBe('https://bucket.test/page/photo.jpg');
+})->with([
+    'visibility not recorded' => [null],
+    'public visibility' => ['public'],
+]);
+
+it('returns a temporary url for a private image', function () {
+    $this->travelTo('2026-01-01 00:00:00');
+    fakeRemoteDisk();
+    $media = Media::make(storedImage('page/photo.jpg', disk: 's3', visibility: 'private'));
+
+    expect($media->getUrl())->toBe('https://bucket.test/page/photo.jpg?expires=1767225900');
+});
+
+it('returns the url of a remote image without checking that it exists', function () {
+    $disk = fakeRemoteDisk();
+    $entry = storedImage('page/photo.jpg', disk: 's3');
+    $disk->delete('page/photo.jpg');
+
+    expect(Media::make($entry)->getUrl())->toBe('https://bucket.test/page/photo.jpg');
+});

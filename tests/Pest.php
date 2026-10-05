@@ -3,24 +3,28 @@
 declare(strict_types=1);
 
 use GalleryJsonMedia\Tests\TestCase;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use League\Flysystem\Filesystem;
+use League\Flysystem\InMemory\InMemoryFilesystemAdapter;
 
 uses(TestCase::class)->in(__DIR__);
 
 /**
- * Store a real image on the public disk and return its json media entry.
+ * Store a real image on a disk and return its json media entry.
  *
- * @return array{file: string, disk: string, mime_type: string, size: int, customProperties: array{alt: string, title: null}}
+ * @return array<string, mixed>
  */
-function storedImage(string $path, int $width = 800, int $height = 600, string $alt = 'A photo'): array
+function storedImage(string $path, int $width = 800, int $height = 600, string $alt = 'A photo', string $disk = 'public', ?string $visibility = null): array
 {
     $image = UploadedFile::fake()->image(basename($path), $width, $height);
-    Storage::disk('public')->putFileAs(dirname($path), $image, basename($path));
+    Storage::disk($disk)->putFileAs(dirname($path), $image, basename($path));
 
     return [
         'file' => $path,
-        'disk' => 'public',
+        'disk' => $disk,
+        ...($visibility === null ? [] : ['visibility' => $visibility]),
         'mime_type' => $image->getMimeType(),
         'size' => $image->getSize(),
         'customProperties' => ['alt' => $alt, 'title' => null],
@@ -28,19 +32,46 @@ function storedImage(string $path, int $width = 800, int $height = 600, string $
 }
 
 /**
- * Store a document on the public disk and return its json media entry.
+ * Store a document on a disk and return its json media entry.
  *
- * @return array{file: string, disk: string, mime_type: string, size: int, customProperties: array{alt: string, title: null}}
+ * @return array<string, mixed>
  */
-function storedDocument(string $path, string $alt = 'A document'): array
+function storedDocument(string $path, string $alt = 'A document', string $disk = 'public', ?string $visibility = null): array
 {
-    Storage::disk('public')->put($path, '%PDF-1.4');
+    Storage::disk($disk)->put($path, '%PDF-1.4');
 
     return [
         'file' => $path,
-        'disk' => 'public',
+        'disk' => $disk,
+        ...($visibility === null ? [] : ['visibility' => $visibility]),
         'mime_type' => 'application/pdf',
         'size' => 8,
         'customProperties' => ['alt' => $alt, 'title' => null],
     ];
+}
+
+/**
+ * Register an in memory disk that behaves like a remote one (S3) : no local path,
+ * public urls on https://bucket.test and temporary urls carrying their expiration.
+ */
+function fakeRemoteDisk(string $name = 's3'): FilesystemAdapter
+{
+    // Laravel reads the urls from the adapter, as it does for the S3 one
+    $adapter = new class extends InMemoryFilesystemAdapter
+    {
+        public function getUrl(string $path): string
+        {
+            return "https://bucket.test/{$path}";
+        }
+
+        public function getTemporaryUrl(string $path, DateTimeInterface $expiration, array $options = []): string
+        {
+            return "https://bucket.test/{$path}?expires={$expiration->getTimestamp()}";
+        }
+    };
+    $disk = new FilesystemAdapter(new Filesystem($adapter), $adapter);
+
+    Storage::set($name, $disk);
+
+    return $disk;
 }
