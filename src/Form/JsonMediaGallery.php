@@ -7,6 +7,7 @@ namespace GalleryJsonMedia\Form;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\BaseFileUpload;
+use Filament\Forms\Components\Field;
 use Filament\Schemas\Components\Concerns\CanBeSecondary;
 use Filament\Support\Components\Attributes\ExposedLivewireMethod;
 use GalleryJsonMedia\Enums\GalleryType;
@@ -38,7 +39,7 @@ class JsonMediaGallery extends BaseFileUpload
     public function image(): static
     {
         $this->galleryType = GalleryType::Image;
-        $this->acceptedFileTypes = config('gallery-json-media.form.default.image_accepted_file_type');
+        $this->acceptedFileTypes(config('gallery-json-media.form.default.image_accepted_file_type'));
         $this->acceptedFileText = config('gallery-json-media.form.default.image_accepted_text');
 
         return $this;
@@ -47,7 +48,7 @@ class JsonMediaGallery extends BaseFileUpload
     public function document(): static
     {
         $this->galleryType = GalleryType::Document;
-        $this->acceptedFileTypes = config('gallery-json-media.form.default.document_accepted_file_type');
+        $this->acceptedFileTypes(config('gallery-json-media.form.default.document_accepted_file_type'));
         $this->acceptedFileText = config('gallery-json-media.form.default.document_accepted_text');
         /** Why not just show alt against filename */
         $this->replaceTitleByAlt();
@@ -287,16 +288,36 @@ class JsonMediaGallery extends BaseFileUpload
             $rules[] = "min:{$count}";
         }
 
-        $rules[] = function (string $attribute, array $value, Closure $fail): void {
+        $arrayRules = [];
+        $fileRules = [];
 
-            $files = array_filter($value, fn (array $file): bool => $file['file'] instanceof TemporaryUploadedFile);
+        // Same split as BaseFileUpload, but from the field rules : the parent ones are built for a list of paths
+        foreach (Field::getValidationRules() as $rule) {
+            if ($this->isArrayValidationRule($rule)) {
+                $arrayRules[] = $rule;
+            } else {
+                $fileRules[] = $rule;
+            }
+        }
 
-            $files = collect($files)->map(fn ($val) => $val['file'])->toArray();
+        $rules = [
+            ...$rules,
+            ...$arrayRules,
+        ];
+
+        $rules[] = function (string $attribute, array $value, Closure $fail) use ($fileRules): void {
+            $files = collect($value)
+                ->pluck('file')
+                ->filter(fn (mixed $file): bool => $file instanceof TemporaryUploadedFile)
+                ->values()
+                ->all();
+
             $name = $this->getName();
+            $validationMessages = $this->getValidationMessages();
             $validator = Validator::make(
                 [$name => $files],
-                ["{$name}.*.file" => ['file', ...parent::getValidationRules()]],
-                [],
+                ["{$name}.*" => ['file', ...$fileRules]],
+                $validationMessages ? ["{$name}.*" => $validationMessages] : [],
                 ["{$name}.*" => $this->getValidationAttribute()],
             );
             if (! $validator->fails()) {

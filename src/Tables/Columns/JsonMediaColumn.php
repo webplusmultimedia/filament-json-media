@@ -49,8 +49,8 @@ class JsonMediaColumn extends Column implements HasEmbeddedView
                 <div class="flex -space-x-5 overflow-hidden" style="max-height: <?= $this->getThumbHeight() + 16 ?>px">
                     <?php foreach (collect($record->getMedias($this->getName()))->take($this->getMaxAvatars())->all() as $media) { ?>
                         <img <?= $attributes->toHtml() ?>
-                             src="<?= $media->getCropUrl($this->getThumbWidth(), $this->getThumbHeight()) ?>"
-                             alt="<?= $media->getCustomProperty('alt') ?>"
+                             src="<?= e($media->getCropUrl($this->getThumbWidth(), $this->getThumbHeight())) ?>"
+                             alt="<?= e($media->getCustomProperty('alt')) ?>"
                              width="<?= $this->getThumbWidth() ?>"
                              height="<?= $this->getThumbHeight() ?>"
                              loading="lazy"

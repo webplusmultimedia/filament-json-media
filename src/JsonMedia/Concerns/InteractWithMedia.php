@@ -9,6 +9,7 @@ use GalleryJsonMedia\JsonMedia\Contracts\CanDeleteMedia;
 use GalleryJsonMedia\JsonMedia\Contracts\HasMedia;
 use GalleryJsonMedia\JsonMedia\Document;
 use GalleryJsonMedia\JsonMedia\Media;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @method static deleting(Closure $param)
@@ -19,6 +20,11 @@ trait InteractWithMedia
     protected static function bootInteractWithMedia(): void
     {
         static::deleting(function (HasMedia $model) {
+            // A soft deleted model can be restored, so its files must be kept until it is force deleted
+            if (in_array(SoftDeletes::class, class_uses_recursive($model)) && ! $model->isForceDeleting()) {
+                return;
+            }
+
             foreach ($model->getFieldsToDeleteMedia() as $field) {
                 $model->deleteFilesFrom($field);
             }
