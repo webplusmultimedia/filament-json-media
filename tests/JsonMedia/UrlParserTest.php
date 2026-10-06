@@ -26,3 +26,16 @@ it('does not parse a path without dimensions', function () {
 it('rejects a thumbnail path outside of the configured storage path', function () {
     UrlParser::make()->parse('uploads/page/photo-200x150.jpg');
 })->throws(Exception::class, "uploads/page/photo.jpg doesn't match `storage/(.*)$`");
+
+it('parses the format of a converted thumbnail and keeps the path of its source image', function (string $request, string $path, ?string $format) {
+    expect(UrlParser::make()->parse($request))->toMatchArray(['path' => $path, 'width' => 200, 'height' => 150, 'format' => $format]);
+})->with([
+    'converted to webp' => ['storage/page/photo-200x150.jpg.webp', 'page/photo.jpg', 'webp'],
+    'converted to avif' => ['storage/page/photo-200x150.PNG.avif', 'page/photo.PNG', 'avif'],
+    'not converted' => ['storage/page/photo-200x150.webp', 'page/photo.webp', null],
+]);
+
+it('parses the format of a converted thumbnail path relative to its disk', function () {
+    expect(UrlParser::make()->parseThumbnailPath('page/photo-200x_.jpg.webp'))
+        ->toBe(['path' => 'page/photo.jpg', 'width' => 200, 'height' => null, 'format' => 'webp']);
+});

@@ -52,19 +52,45 @@ final class Media implements Arrayable, CanDeleteMedia, Htmlable, Stringable
         return null;
     }
 
-    public function getCropUrl(?int $width = null, ?int $height = null, ?array $options = null, bool $withoutToken = false): string
+    /**
+     * The format converts the thumbnail (webp, avif...).
+     */
+    public function getCropUrl(?int $width = null, ?int $height = null, ?array $options = null, bool $withoutToken = false, ?string $format = null): string
     {
         if ($this->isSvgFile()) {
             return $this->getUrl();
         }
         if ($fileName = $this->getFileName()) {
-            return $this->getCroppa($fileName, $width, $height)->url($withoutToken);
+            return $this->getCroppa($fileName, $width, $height, $format)->url($withoutToken);
         }
 
         return '';
     }
 
-    private function getCroppa(string $fileName, ?int $width = null, ?int $height = null): Croppa
+    /**
+     * The thumbnails of the image for a srcset : the configured widths up to twice the displayed one, for the high density screens.
+     * Each thumbnail is generated when a browser requests it.
+     */
+    public function getSrcset(int $width, ?int $height = null, ?string $format = null): string
+    {
+        if ($this->getFileName() === null) {
+            return '';
+        }
+
+        return collect(config('gallery-json-media.images.responsive.widths', [320, 640, 960, 1280, 1920]))
+            ->filter(fn (int $candidate): bool => $candidate < $width * 2)
+            ->push($width, $width * 2)
+            ->unique()
+            ->sort()
+            ->map(fn (int $candidate): string => $this->getCropUrl(
+                $candidate,
+                $height === null ? null : (int) round($candidate * $height / $width),
+                format: $format,
+            ) . " {$candidate}w")
+            ->implode(', ');
+    }
+
+    private function getCroppa(string $fileName, ?int $width = null, ?int $height = null, ?string $format = null): Croppa
     {
         return new Croppa(
             $this->getDisk(),
@@ -73,6 +99,7 @@ final class Media implements Arrayable, CanDeleteMedia, Htmlable, Stringable
             $height,
             $this->getContentKeyValue('disk'),
             $this->getVisibility(),
+            $format,
         );
     }
 

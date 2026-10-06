@@ -152,3 +152,57 @@ it('returns a signed app url for a private image on a local disk', function () {
 
     expect($url)->toStartWith('http://localhost/gallery-json-media/thumbnails/local/page/photo-200x150.jpg?');
 });
+
+it('converts the thumbnail to the requested format under the name of its source image', function () {
+    Storage::fake('public');
+    storedImage('page/photo.jpg', 800, 600);
+
+    (new Croppa(Storage::disk('public'), 'page/photo.jpg', 200, 150, format: 'webp'))->render();
+
+    $size = getimagesize(Storage::disk('public')->path('page/photo-200x150.jpg.webp'));
+    expect([$size[0], $size[1], $size['mime']])->toBe([200, 150, 'image/webp']);
+});
+
+it('keeps the name of a thumbnail requested in the format of its image', function () {
+    Storage::fake('public');
+    storedImage('page/photo.jpg');
+
+    $croppa = new Croppa(Storage::disk('public'), 'page/photo.jpg', 200, 150, format: 'jpg');
+
+    expect($croppa->getPathNameForThumbs())->toBe('page/photo-200x150.jpg');
+});
+
+it('converts the thumbnail of a remote image to the requested format', function () {
+    $disk = fakeRemoteDisk();
+    storedImage('page/photo.jpg', 800, 600, disk: 's3');
+
+    (new Croppa($disk, 'page/photo.jpg', 200, 150, diskName: 's3', format: 'webp'))->render();
+
+    expect(getimagesizefromstring($disk->get('page/photo-200x150.jpg.webp'))['mime'])->toBe('image/webp');
+});
+
+it('removes the converted thumbnails on reset', function () {
+    Storage::fake('public');
+    storedImage('page/photo.jpg');
+    (new Croppa(Storage::disk('public'), 'page/photo.jpg', 200, 150, format: 'webp'))->render();
+
+    (new Croppa(Storage::disk('public'), 'page/photo.jpg'))->reset();
+
+    Storage::disk('public')->assertMissing('page/photo-200x150.jpg.webp');
+    Storage::disk('public')->assertExists('page/photo.jpg');
+});
+
+it('keeps the converted thumbnails of the other images on reset', function () {
+    Storage::fake('public');
+    storedImage('page/chat.jpg');
+    storedImage('page/chat-noir.jpg');
+    storedImage('page/chat.png');
+    Storage::disk('public')->put('page/chat-200x150.jpg.webp', 'thumbnail');
+    Storage::disk('public')->put('page/chat-noir-200x150.jpg.webp', 'thumbnail of a neighbour');
+    Storage::disk('public')->put('page/chat-200x150.png.webp', 'thumbnail of another format');
+
+    (new Croppa(Storage::disk('public'), 'page/chat.jpg'))->reset();
+
+    Storage::disk('public')->assertMissing('page/chat-200x150.jpg.webp');
+    Storage::disk('public')->assertExists(['page/chat-noir-200x150.jpg.webp', 'page/chat-200x150.png.webp']);
+});

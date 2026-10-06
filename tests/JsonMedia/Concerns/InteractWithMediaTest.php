@@ -181,3 +181,13 @@ it('deletes the files of a field cast to json medias when the model is deleted',
 
     Storage::disk('public')->assertMissing(['web_attachments/page/photo.jpg', 'web_attachments/page/brochure.pdf']);
 });
+
+it('deletes the converted thumbnails of the declared fields when the model is deleted', function (string $disk) {
+    $storage = $disk === 's3' ? fakeRemoteDisk() : Storage::fake($disk);
+    $page = Page::create(['images' => [storedImage('web_attachments/page/photo.jpg', disk: $disk)]]);
+    $storage->put('web_attachments/page/photo-200x150.jpg.webp', 'converted thumbnail');
+
+    $page->delete();
+
+    $storage->assertMissing(['web_attachments/page/photo.jpg', 'web_attachments/page/photo-200x150.jpg.webp']);
+})->with(['local disk' => 'public', 'remote disk' => 's3']);

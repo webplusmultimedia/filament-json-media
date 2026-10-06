@@ -110,3 +110,39 @@ it('returns the url of a remote image without checking that it exists', function
 
     expect(Media::make($entry)->getUrl())->toBe('https://bucket.test/page/photo.jpg');
 });
+
+it('lists thumbnails of the same ratio up to twice the requested width for a srcset', function () {
+    Storage::fake('public');
+    config()->set('gallery-json-media.images.responsive.widths', [320, 640, 960, 1920]);
+    $media = Media::make(storedImage('page/photo.jpg'));
+
+    expect($media->getSrcset(600, 300))->toBe(implode(', ', [
+        $media->getCropUrl(320, 160) . ' 320w',
+        $media->getCropUrl(600, 300) . ' 600w',
+        $media->getCropUrl(640, 320) . ' 640w',
+        $media->getCropUrl(960, 480) . ' 960w',
+        $media->getCropUrl(1200, 600) . ' 1200w',
+    ]));
+});
+
+it('lists thumbnails without height for a srcset of a width only', function () {
+    Storage::fake('public');
+    config()->set('gallery-json-media.images.responsive.widths', [320]);
+    $media = Media::make(storedImage('page/photo.jpg'));
+
+    expect($media->getSrcset(200))->toBe(implode(', ', [
+        $media->getCropUrl(200) . ' 200w',
+        $media->getCropUrl(320) . ' 320w',
+        $media->getCropUrl(400) . ' 400w',
+    ]));
+});
+
+it('lists the thumbnails converted to a format for a srcset', function () {
+    Storage::fake('public');
+    config()->set('gallery-json-media.images.responsive.widths', []);
+    $media = Media::make(storedImage('page/photo.jpg'));
+
+    expect($media->getSrcset(200, 100, 'webp'))
+        ->toStartWith('/storage/page/photo-200x100.jpg.webp?')
+        ->toContain(', /storage/page/photo-400x200.jpg.webp?');
+});

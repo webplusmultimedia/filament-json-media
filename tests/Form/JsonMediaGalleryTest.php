@@ -265,6 +265,19 @@ it('keeps the stored metadata of a file and only saves its edited custom propert
     ]);
 });
 
+it('deletes the converted thumbnails of a removed image when the form is saved', function () {
+    Storage::fake('public');
+    $page = Page::create(['images' => [storedImage('web_attachments/page/photo.jpg')]]);
+    Storage::disk('public')->put('web_attachments/page/photo-300x230.jpg.webp', 'converted thumbnail');
+    $component = Livewire::test(PageForm::class, ['record' => $page]);
+
+    $component
+        ->call('callSchemaComponentMethod', 'form.images', 'deleteUploadedFile', ['fileKey' => fileKeyOf($component, 'web_attachments/page/photo.jpg')])
+        ->call('save');
+
+    Storage::disk('public')->assertMissing(['web_attachments/page/photo.jpg', 'web_attachments/page/photo-300x230.jpg.webp']);
+});
+
 it('accepts the stored files of a record whose field is cast to a collection', function () {
     Storage::fake('public');
     $page = CollectionCastPage::create(['images' => [storedImage('web_attachments/page/photo.jpg')]]);

@@ -35,7 +35,7 @@ class JsonImageController extends Controller
         if (! $params = $this->urlParser->parse($requestPath)) {
             return null;
         }
-        ['path' => $path, 'width' => $width, 'height' => $height, 'options' => $options] = $params;
+        ['path' => $path, 'width' => $width, 'height' => $height, 'format' => $format] = $params;
 
         // The signed url gives the disk of the image, which may not be the default one (an older image on a local disk)
         /** @var FilesystemAdapter $storage */
@@ -43,7 +43,7 @@ class JsonImageController extends Controller
         abort_unless($storage->exists($path), 404);
         /**@todo : for non local file Soon */
         // Create the image file
-        $croppa = (new Croppa(storage: $storage, filePath: $path, width: $width, height: $height));
+        $croppa = (new Croppa(storage: $storage, filePath: $path, width: $width, height: $height, format: $format));
         $croppa->render();
 
         if (! $storage->getAdapter() instanceof LocalFilesystemAdapter) {

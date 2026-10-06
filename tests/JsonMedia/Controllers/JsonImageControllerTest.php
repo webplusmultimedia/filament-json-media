@@ -61,3 +61,12 @@ it('returns 404 when the image is missing from the disk', function () {
 
     $this->get($url)->assertNotFound();
 });
+
+it('generates a thumbnail converted to the requested format and redirects to it', function () {
+    Storage::fake('public');
+    $url = Media::make(storedImage('web_attachments/page/photo.jpg', 800, 600))->getCropUrl(200, 150, format: 'webp');
+
+    $this->get($url)->assertRedirect('/storage/web_attachments/page/photo-200x150.jpg.webp');
+
+    expect(getimagesize(Storage::disk('public')->path('web_attachments/page/photo-200x150.jpg.webp'))['mime'])->toBe('image/webp');
+});

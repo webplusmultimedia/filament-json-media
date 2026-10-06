@@ -28,7 +28,9 @@ it('renders the original image without size when no size is given', function () 
     expect($html)
         ->toContain('src="/storage/page/photo.jpg"')
         ->not->toContain('width=')
-        ->not->toContain('height=');
+        ->not->toContain('height=')
+        ->not->toContain('srcset=')
+        ->not->toContain('<picture>');
 });
 
 it('adds the given attributes to the image and lets them replace the defaults', function () {
@@ -55,4 +57,25 @@ it('escapes the alt text of the media', function () {
 
     expect($html)->not->toContain('<script>')
         ->toContain('alt="&quot;&gt;&lt;script&gt;alert(1)&lt;/script&gt;"');
+});
+
+it('renders a single thumbnail without srcset nor picture when a width is given', function () {
+    Storage::fake('public');
+    $media = Media::make(storedImage('page/photo.jpg'));
+
+    $html = (string) $this->blade('<x-gallery-json-media::image :media="$media" :width="600" :height="300" />', ['media' => $media]);
+
+    expect($html)->not->toContain('srcset=')
+        ->not->toContain('<picture>');
+});
+
+it('renders the thumbnail converted to the given format', function () {
+    Storage::fake('public');
+    $media = Media::make(storedImage('page/photo.jpg'));
+
+    $html = (string) $this->blade('<x-gallery-json-media::image :media="$media" :width="400" :height="300" format="webp" />', ['media' => $media]);
+
+    expect($html)->toContain('src="' . e($media->getCropUrl(400, 300, format: 'webp')) . '"')
+        ->toContain('/storage/page/photo-400x300.jpg.webp?')
+        ->not->toContain('format=');
 });

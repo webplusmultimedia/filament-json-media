@@ -26,10 +26,13 @@ final class UrlParser
     /**
      * The pattern used to indetify a request path as a Croppa-style URL
      * https://github.com/BKWLD/croppa/wiki/Croppa-regex-pattern.
+     * A thumbnail converted to another format keeps the extension of its source image : photo-200x150.jpg.webp
      *
      * @return string
      */
-    public const PATTERN = '(.+)-([0-9_]+)x([0-9_]+)(-[0-9a-zA-Z(),\-._]+)*\.(jpg|jpeg|png|gif|webp|avif|JPG|JPEG|PNG|GIF|WEBP|AVIF)$';
+    public const PATTERN = '(.+)-([0-9_]+)x([0-9_]+)(-[0-9a-zA-Z(),\-._]+)*(?:\.(' . self::EXTENSIONS . '))?\.(' . self::EXTENSIONS . ')$';
+
+    public const EXTENSIONS = 'jpg|jpeg|png|gif|webp|avif|JPG|JPEG|PNG|GIF|WEBP|AVIF';
 
     public function routePattern(): string
     {
@@ -40,39 +43,54 @@ final class UrlParser
      * Parse a request path into Croppa instructions.
      *
      *
-     * @return array{path : string,width : int|null,height : int|null,options : null|string}|false
+     * @return array{path : string,width : int|null,height : int|null,options : null|string,format : null|string}|false
      *
      * @throws Exception
      */
     public function parse(string $request): array | false
     {
-        if (! preg_match('#' . self::PATTERN . '#', $request, $matches)) {
+        if (! $thumbnail = $this->matchThumbnail('#' . self::PATTERN . '#', $request)) {
             return false;
         }
 
         return [
-            'path' => $this->relativePath($matches[1] . '.' . $matches[5]), // Path
-            'width' => $matches[2] === '_' ? null : (int) $matches[2],    // Width
-            'height' => $matches[3] === '_' ? null : (int) $matches[3],    // Height
-            'options' => $matches[4],                      // Options
+            ...$thumbnail,
+            'path' => $this->relativePath($thumbnail['path']),
         ];
     }
 
     /**
      * Parse a thumbnail path relative to its disk, as used by the remote thumbnail route.
      *
-     * @return array{path : string,width : int|null,height : int|null}|false
+     * @return array{path : string,width : int|null,height : int|null,format : null|string}|false
      */
     public function parseThumbnailPath(string $path): array | false
     {
-        if (! preg_match('#^' . self::PATTERN . '#', $path, $matches)) {
+        if (! $thumbnail = $this->matchThumbnail('#^' . self::PATTERN . '#', $path)) {
             return false;
         }
+        unset($thumbnail['options']);
+
+        return $thumbnail;
+    }
+
+    /**
+     * @return array{path : string,width : int|null,height : int|null,options : null|string,format : null|string}|false
+     */
+    private function matchThumbnail(string $pattern, string $subject): array | false
+    {
+        if (! preg_match($pattern, $subject, $matches)) {
+            return false;
+        }
+        // Without a source extension, the thumbnail has the format of its image
+        $converted = $matches[5] !== '';
 
         return [
-            'path' => $matches[1] . '.' . $matches[5],
+            'path' => $matches[1] . '.' . ($converted ? $matches[5] : $matches[6]),
             'width' => $matches[2] === '_' ? null : (int) $matches[2],
             'height' => $matches[3] === '_' ? null : (int) $matches[3],
+            'options' => $matches[4],
+            'format' => $converted ? $matches[6] : null,
         ];
     }
 

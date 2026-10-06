@@ -19,6 +19,13 @@ return [
         'thumbnails-saved-format' => [],
         // Lifetime in minutes of the links to private files (temporary urls)
         'temporary_url_ttl' => 5,
+        // The responsive-image component offers the browser several sizes and formats of the thumbnails
+        'responsive' => [
+            // Widths of the srcset, up to twice the displayed width (high density screens)
+            'widths' => [320, 640, 960, 1280, 1920],
+            // Formats of the <picture> sources by order of preference, 'avif' needs a driver that supports it
+            'formats' => ['webp'],
+        ],
 
     ],
     'form' => [

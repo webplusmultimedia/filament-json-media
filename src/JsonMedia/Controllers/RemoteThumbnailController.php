@@ -30,7 +30,7 @@ class RemoteThumbnailController extends Controller
         $storage = Storage::disk($disk);
         abort_unless($storage->exists($thumbnail['path']), 404);
 
-        $croppa = new Croppa($storage, $thumbnail['path'], $thumbnail['width'], $thumbnail['height'], $disk, $visibility);
+        $croppa = new Croppa($storage, $thumbnail['path'], $thumbnail['width'], $thumbnail['height'], $disk, $visibility, $thumbnail['format']);
 
         if (! $storage->exists($croppa->getPathNameForThumbs())) {
             try {

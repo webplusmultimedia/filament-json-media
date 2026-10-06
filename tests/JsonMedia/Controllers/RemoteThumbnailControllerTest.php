@@ -93,3 +93,12 @@ it('serves itself the thumbnail of a private image stored on a local disk', func
     $response->assertOk()->assertHeader('Content-Type', 'image/jpeg');
     expect(array_slice(getimagesizefromstring($response->streamedContent()), 0, 2))->toBe([200, 150]);
 });
+
+it('generates a remote thumbnail converted to the requested format and redirects to it', function () {
+    $disk = fakeRemoteDisk();
+    $url = Media::make(storedImage('page/photo.jpg', 800, 600, disk: 's3'))->getCropUrl(200, 150, format: 'webp');
+
+    $this->get($url)->assertRedirect('https://bucket.test/page/photo-200x150.jpg.webp');
+
+    expect(getimagesizefromstring($disk->get('page/photo-200x150.jpg.webp'))['mime'])->toBe('image/webp');
+});

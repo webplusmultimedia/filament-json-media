@@ -209,6 +209,18 @@ The `image` component renders a lazy `<img>` with the thumbnail of the requested
     <x-gallery-json-media::image :media="$media" :width="400" :height="300" class="rounded" />
 @endforeach
 ```
+The `format` attribute converts the thumbnail (`format="webp"`). Without `<picture>`, there is no fallback for a browser that cannot read the format: keep it for `webp`, which every current browser reads.
+
+#### Responsive images
+The `responsive-image` component takes the same attributes and lets the browser choose the thumbnail it needs:
+- the `srcset` offers the thumbnails of the same ratio in the widths of the `images.responsive.widths` config, up to twice the displayed width for the high density screens;
+- the default `sizes` is `(max-width: 1200px) 100vw, 1200px`, give your own `sizes` attribute for your layout;
+- a `<picture>` offers the thumbnails converted to the `images.responsive.formats` config (`webp` by default), or to the `formats` of the component, by order of preference.
+
+```html
+<x-gallery-json-media::responsive-image :media="$media" :width="1200" :height="600" sizes="(min-width: 1024px) 50vw, 100vw" />
+```
+Each thumbnail is generated only when a browser requests it, so a format or a width that no visitor needs is never created. A converted thumbnail keeps the extension of its image: `photo-400x300.jpg.webp`. AVIF (`:formats="['avif', 'webp']"`) needs an image driver (GD or Imagick) built with AVIF support. Without a width, or for a svg, the component renders a single image like `image`.
 
 Or with the `InteractWithMedia` methods :
 ```html

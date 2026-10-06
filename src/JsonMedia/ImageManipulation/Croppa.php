@@ -20,6 +20,7 @@ final class Croppa
 {
     /**
      * The disk name is needed to build the thumbnail url of an image that is not public on a local disk.
+     * The format converts the thumbnail (webp, avif...), its name keeps the extension of the image : photo-200x150.jpg.webp
      */
     public function __construct(
         protected Filesystem $storage,
@@ -28,6 +29,7 @@ final class Croppa
         private ?int $height = null,
         private ?string $diskName = null,
         private string $visibility = 'public',
+        private ?string $format = null,
     ) {}
 
     public function url(bool $withoutToken = false): string
@@ -69,10 +71,9 @@ final class Croppa
             return;
         }
 
-        // spatie/image works on local paths : the remote image goes through temporary files
-        $extension = $this->getFileInfo()['extension'];
-        $source = $this->temporaryFilePath($extension);
-        $target = $this->temporaryFilePath($extension);
+        // spatie/image works on local paths : the remote image goes through temporary files, the target extension gives the format
+        $source = $this->temporaryFilePath($this->getFileInfo()['extension']);
+        $target = $this->temporaryFilePath(pathinfo($this->getPathNameForThumbs(), PATHINFO_EXTENSION));
 
         try {
             $sourceStream = $this->storage->readStream($this->filePath);
@@ -103,7 +104,10 @@ final class Croppa
 
     public function getPathNameForThumbs(): string
     {
-        return $this->getBaseNameForTumbs() . $this->getSuffix() . '.' . $this->getFileInfo()['extension'];
+        $extension = $this->getFileInfo()['extension'];
+        $path = $this->getBaseNameForTumbs() . $this->getSuffix() . '.' . $extension;
+
+        return $this->isConverted() ? $path . '.' . $this->format : $path;
     }
 
     protected function getBaseNameForTumbs(): string
@@ -137,8 +141,8 @@ final class Croppa
     public function reset(): void
     {
         ['dirname' => $directory, 'filename' => $filename, 'extension' => $extension] = $this->getFileInfo();
-        // Other images can share the name prefix (photo-2.jpg for photo.jpg), so keep only "{name}-{width}x{height}.{ext}"
-        $thumbPattern = '/^' . preg_quote($filename, '/') . '-[0-9_]+x[0-9_]+\.' . preg_quote($extension, '/') . '$/';
+        // Other images can share the name prefix (photo-2.jpg for photo.jpg), so keep only "{name}-{width}x{height}.{ext}(.{format})"
+        $thumbPattern = '/^' . preg_quote($filename, '/') . '-[0-9_]+x[0-9_]+\.' . preg_quote($extension, '/') . '(\.(' . UrlParser::EXTENSIONS . '))?$/';
 
         $thumbnails = array_values(array_filter(
             $this->storage->files($directory === '.' ? '' : $directory),
@@ -167,6 +171,14 @@ final class Croppa
     private function servesThumbnailsLocally(): bool
     {
         return ! $this->cropsAreRemote() && $this->visibility === 'public';
+    }
+
+    /**
+     * A format that is the one of the image does not convert it.
+     */
+    private function isConverted(): bool
+    {
+        return $this->format !== null && strcasecmp($this->format, $this->getFileInfo()['extension']) !== 0;
     }
 
     private function signedRouteUrl(): string
