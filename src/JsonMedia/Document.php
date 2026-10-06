@@ -6,9 +6,13 @@ namespace GalleryJsonMedia\JsonMedia;
 
 use GalleryJsonMedia\JsonMedia\Concerns\HasFile;
 use GalleryJsonMedia\JsonMedia\Contracts\CanDeleteMedia;
+use Illuminate\Contracts\Support\Arrayable;
 use Stringable;
 
-class Document implements CanDeleteMedia, Stringable
+/**
+ * @implements Arrayable<string, mixed>
+ */
+class Document implements Arrayable, CanDeleteMedia, Stringable
 {
     use HasFile;
 

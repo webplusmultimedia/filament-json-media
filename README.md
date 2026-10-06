@@ -124,6 +124,22 @@ class Page extends Model implements HasMedia
 }
 ```
 
+#### Cast to medias
+Cast a field with `AsJsonMedia` to read it as a collection of `Media` (images) and `Document` (other files). The json stored in the database does not change, and the Filament field and the `InteractWithMedia` methods keep working.
+```php
+use GalleryJsonMedia\JsonMedia\Casts\AsJsonMedia;
+
+protected $casts = [
+    'images' => AsJsonMedia::class,
+    'documents' => AsJsonMedia::class,
+];
+```
+```php
+$page->images; // Collection<Media|Document>
+$page->images->first()->getCropUrl(400, 300);
+```
+The medias are read-only: to change a field, assign it new entries (arrays, `Media` or `Document`).
+
 ### In Filament Forms
 ```php
 use GalleryJsonMedia\Form\JsonMediaGallery;
@@ -187,6 +203,14 @@ GalleryJsonMedia\Infolists\JsonDocumentsEntry::make('documents')
 ```
 
 ### In Blade Front-end
+The `image` component renders a lazy `<img>` with the thumbnail of the requested size and the `alt` of the media. Without a size, it shows the original image. Your attributes are added to the tag and replace the defaults (`alt`, `loading`).
+```html
+@foreach($page->images as $media)
+    <x-gallery-json-media::image :media="$media" :width="400" :height="300" class="rounded" />
+@endforeach
+```
+
+Or with the `InteractWithMedia` methods :
 ```html
 <!-- for media -->
 @foreach($page->getMedias('images') as $media)

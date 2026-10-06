@@ -9,6 +9,7 @@ use GalleryJsonMedia\JsonMedia\Contracts\CanDeleteMedia;
 use GalleryJsonMedia\JsonMedia\Contracts\HasMedia;
 use GalleryJsonMedia\JsonMedia\Document;
 use GalleryJsonMedia\JsonMedia\Media;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -37,10 +38,7 @@ trait InteractWithMedia
     public function getMedias(string $fieldName): array
     {
         $medias = [];
-        if (is_null($this->{$fieldName})) {
-            return $medias;
-        }
-        foreach ($this->{$fieldName} as $image) {
+        foreach ($this->getJsonMediaEntries($fieldName) as $image) {
             if (Media::isImage(data_get($image, 'mime_type', 'image/webp'))) {
                 $medias[] = Media::make($image);
             }
@@ -66,16 +64,25 @@ trait InteractWithMedia
     public function getDocuments(string $fieldName): array
     {
         $documents = [];
-        if (is_null($this->{$fieldName})) {
-            return [];
-        }
-        foreach ($this->{$fieldName} as $document) {
+        foreach ($this->getJsonMediaEntries($fieldName) as $document) {
             if (! Media::isImage(data_get($document, 'mime_type', 'image/webp'))) {
                 $documents[] = Document::make($document);
             }
         }
 
         return $documents;
+    }
+
+    /**
+     * The json entries of a field, whether it is cast to an array, a collection or json medias.
+     *
+     * @return array<array-key, mixed>
+     */
+    private function getJsonMediaEntries(string $fieldName): array
+    {
+        return collect($this->{$fieldName})
+            ->map(fn (mixed $entry): mixed => $entry instanceof Arrayable ? $entry->toArray() : $entry)
+            ->all();
     }
 
     public function hasDocuments(string $fieldName): bool

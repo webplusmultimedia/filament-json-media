@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use GalleryJsonMedia\JsonMedia\Document;
 use GalleryJsonMedia\JsonMedia\Media;
+use GalleryJsonMedia\Tests\Fixtures\Models\JsonMediaCastPage;
 use GalleryJsonMedia\Tests\Fixtures\Models\Page;
 use GalleryJsonMedia\Tests\Fixtures\Models\SoftDeletablePage;
 use Illuminate\Support\Facades\Storage;
@@ -148,4 +149,35 @@ it('deletes the files and the thumbnails stored on a remote disk when the model 
         'web_attachments/page/photo-200x150.jpg',
         'web_attachments/page/brochure.pdf',
     ]);
+});
+
+it('returns the medias and the documents of a field cast to json medias', function () {
+    Storage::fake('public');
+    $page = JsonMediaCastPage::create([
+        'images' => [
+            storedImage('web_attachments/page/photo.jpg', alt: 'Photo'),
+            storedDocument('web_attachments/page/brochure.pdf', alt: 'Brochure'),
+        ],
+    ]);
+
+    $medias = $page->refresh()->getMedias('images');
+    $documents = $page->getDocuments('images');
+
+    expect($medias)->toHaveCount(1)
+        ->and($medias[0]->getCustomProperty('alt'))->toBe('Photo')
+        ->and($documents)->toHaveCount(1)
+        ->and($documents[0]->getCustomProperty('alt'))->toBe('Brochure')
+        ->and($page->getFirstMediaUrl('images'))->toBe('/storage/web_attachments/page/photo.jpg');
+});
+
+it('deletes the files of a field cast to json medias when the model is deleted', function () {
+    Storage::fake('public');
+    $page = JsonMediaCastPage::create([
+        'images' => [storedImage('web_attachments/page/photo.jpg')],
+        'documents' => [storedDocument('web_attachments/page/brochure.pdf')],
+    ]);
+
+    $page->refresh()->delete();
+
+    Storage::disk('public')->assertMissing(['web_attachments/page/photo.jpg', 'web_attachments/page/brochure.pdf']);
 });

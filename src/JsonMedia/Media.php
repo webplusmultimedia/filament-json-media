@@ -7,12 +7,16 @@ namespace GalleryJsonMedia\JsonMedia;
 use GalleryJsonMedia\JsonMedia\Concerns\HasFile;
 use GalleryJsonMedia\JsonMedia\Contracts\CanDeleteMedia;
 use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\View\View;
 use Stringable;
 use Throwable;
 
-final class Media implements CanDeleteMedia, Htmlable, Stringable
+/**
+ * @implements Arrayable<string, mixed>
+ */
+final class Media implements Arrayable, CanDeleteMedia, Htmlable, Stringable
 {
     use HasFile;
 

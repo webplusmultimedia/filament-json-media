@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Filament\Actions\Testing\TestAction;
 use GalleryJsonMedia\Tests\Fixtures\Models\CollectionCastPage;
+use GalleryJsonMedia\Tests\Fixtures\Models\JsonMediaCastPage;
 use GalleryJsonMedia\Tests\Fixtures\Models\Page;
 use GalleryJsonMedia\Tests\Fixtures\PageForm;
 use Illuminate\Http\UploadedFile;
@@ -273,6 +274,31 @@ it('accepts the stored files of a record whose field is cast to a collection', f
         ->assertHasNoFormErrors();
 
     expect($page->refresh()->images->pluck('file')->all())->toBe(['web_attachments/page/photo.jpg']);
+});
+
+it('keeps the stored files of a record whose field is cast to json medias and adds the uploads', function () {
+    Storage::fake('public');
+    $page = JsonMediaCastPage::create(['images' => [storedImage('web_attachments/page/photo.jpg')]]);
+
+    Livewire::test(PageForm::class, ['record' => $page])
+        ->set('data.images.new-photo', UploadedFile::fake()->image('chat.jpg'))
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    $files = array_column($page->refresh()->images->toArray(), 'file');
+    expect($files)->toHaveCount(2)
+        ->and($files[0])->toBe('web_attachments/page/photo.jpg')
+        ->and($files[1])->toStartWith('web_attachments/page/');
+});
+
+it('previews the stored files of a record whose field is cast to json medias', function () {
+    Storage::fake('public');
+    $page = JsonMediaCastPage::create(['images' => [storedImage('web_attachments/page/photo.jpg')]]);
+    $component = Livewire::test(PageForm::class, ['record' => $page]);
+
+    $files = $component->instance()->getSchemaComponent('form.images')->getUploadedFiles();
+
+    expect(array_column($files, 'name'))->toBe(['web_attachments/page/photo.jpg']);
 });
 
 it('stores an upload on the disk of the field with its visibility', function () {

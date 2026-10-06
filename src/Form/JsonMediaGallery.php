@@ -15,6 +15,7 @@ use GalleryJsonMedia\JsonMedia\Document;
 use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
 use GalleryJsonMedia\JsonMedia\Media;
 use GalleryJsonMedia\Support\Concerns\HasThumbProperties;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
@@ -314,8 +315,9 @@ class JsonMediaGallery extends BaseFileUpload
             return [];
         }
 
-        // collect() also reads the AsCollection and AsArrayObject casts
+        // collect() also reads the AsCollection and AsArrayObject casts, toArray() the AsJsonMedia one
         return collect($record->getOriginal($this->getName()))
+            ->map(fn (mixed $entry): mixed => $entry instanceof Arrayable ? $entry->toArray() : $entry)
             ->filter(fn (mixed $entry): bool => is_array($entry) && is_string($entry['file'] ?? null) && filled($entry['file']))
             ->keyBy('file')
             ->all();

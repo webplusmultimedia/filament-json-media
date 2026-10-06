@@ -56,6 +56,16 @@ trait HasFile
         return $this->storage;
     }
 
+    /**
+     * The json entry of the file, as stored in the field.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
+    {
+        return $this->content;
+    }
+
     protected function getContentKeyValue(string $key): mixed
     {
         return data_get($this->content, $key);
