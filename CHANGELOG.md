@@ -2,6 +2,17 @@
 
 All notable changes to `filament-json-media` will be documented in this file.
 
+## v5.3.0 - 2026-10-06
+* New `AsJsonMedia` cast: a json media field is read as a collection of `Media` (images) and `Document` (other files), the json stored in the database does not change
+* New `<x-gallery-json-media::image>` Blade component: a lazy `<img>` with the thumbnail of the requested size, with an optional `format` (`format="webp"`)
+* New `<x-gallery-json-media::responsive-image>` Blade component: a `srcset` of thumbnails in several widths and a `<picture>` with WebP sources (AVIF optional)
+* New `images.responsive` config (`widths`, `formats`), `Media::getSrcset()` and a `format` argument for `Media::getCropUrl()`
+* Security: the thumbnail urls of local images are signed with Laravel signed urls instead of a md5 token, the `signing_key` config is removed
+* Fix: local thumbnails are generated on the disk of their image instead of the default disk of the package
+* CI on PHP 8.3 and 8.4 with Laravel 12 and 13
+* Upgrade: thumbnail urls with the former `_token` return 403, regenerate the pages you cache (HTML, CDN) to get the new signed urls
+* Full Changelog: [v5.2.0...v5.3.0](https://github.com/webplusmultimedia/filament-json-media/compare/v5.2.0...v5.3.0)
+
 ## v5.2.0 - 2026-10-05
 * Store medias on any disk (S3 and compatible), publicly or privately
 * New `visibility` config and `->visibility()` support on `JsonMediaGallery`
