@@ -8,7 +8,8 @@ use Filament\Support\Assets\AlpineComponent;
 use Filament\Support\Assets\Asset;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
-use GalleryJsonMedia\Commands\FilamentJsonMediaCommand;
+use GalleryJsonMedia\Commands\CleanCommand;
+use GalleryJsonMedia\Commands\RegenerateCommand;
 use GalleryJsonMedia\Testing\TestsFilamentJsonMedia;
 use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
@@ -97,7 +98,8 @@ class JsonMediaServiceProvider extends PackageServiceProvider
     protected function getCommands(): array
     {
         return [
-            FilamentJsonMediaCommand::class,
+            CleanCommand::class,
+            RegenerateCommand::class,
         ];
     }
 

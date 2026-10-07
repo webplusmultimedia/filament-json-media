@@ -269,6 +269,32 @@ You can also control the entire view to render the media by passing a blade file
 </figure>
 ```
 
+### Maintenance
+Both commands work on the disk of the package config, give other disks with `--disk=s3 --disk=public`. They never touch a file outside the `root_directory`.
+
+**Clean the orphan files**
+```bash
+php artisan gallery-json-media:clean --dry-run   # list the files to delete
+php artisan gallery-json-media:clean             # delete them, after confirmation
+php artisan gallery-json-media:clean --force     # without confirmation (cron, deployment)
+```
+It deletes the thumbnails whose image is missing. To also delete the files that no record uses, with their thumbnails, declare the json media fields of your models:
+```php
+// config/gallery-json-media.php
+'maintenance' => [
+    'models' => [
+        App\Models\Post::class => ['images', 'documents'],
+    ],
+],
+```
+Declare all of them: every other file of the `root_directory` is deleted, so the files of a forgotten field would be too. The soft deleted records keep their files.
+
+**Render the thumbnails again**
+```bash
+php artisan gallery-json-media:regenerate
+```
+It renders every existing thumbnail again from its image, with the same size and format: run it after a change of `quality` or of `driver`. The thumbnails are generated when a browser requests them, so the command only renders the ones that already exist.
+
 
 ## Testing
 

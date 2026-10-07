@@ -29,6 +29,14 @@ final class Disk
     }
 
     /**
+     * The directory of the uploaded files, out of which the maintenance commands never go.
+     */
+    public static function rootDirectory(): string
+    {
+        return (string) config('gallery-json-media.root_directory', 'web-attachments');
+    }
+
+    /**
      * Lifetime, in minutes, of the temporary urls of private files.
      */
     public static function temporaryUrlTtl(): int

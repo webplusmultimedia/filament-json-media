@@ -15,6 +15,7 @@ use GalleryJsonMedia\JsonMedia\Document;
 use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
 use GalleryJsonMedia\JsonMedia\Media;
 use GalleryJsonMedia\Support\Concerns\HasThumbProperties;
+use GalleryJsonMedia\Support\Disk;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -333,7 +334,7 @@ class JsonMediaGallery extends BaseFileUpload
 
     public function getDirectory(): ?string
     {
-        return config('gallery-json-media.root_directory', 'web-attachments') . '/' . parent::getDirectory();
+        return Disk::rootDirectory() . '/' . parent::getDirectory();
     }
 
     public function getValidationRules(): array

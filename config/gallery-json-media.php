@@ -28,6 +28,13 @@ return [
         ],
 
     ],
+    'maintenance' => [
+        // The json media fields of your models : gallery-json-media:clean keeps the files they use and deletes the
+        // other files of the root_directory. Declare all of them, the files of a forgotten field would be deleted.
+        'models' => [
+            // App\Models\Post::class => ['images', 'documents'],
+        ],
+    ],
     'form' => [
         'default' => [
             'image_accepted_text' => '.jpg, .svg, .png, .webp, .avif',
