@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace GalleryJsonMedia\JsonMedia\Concerns;
 
-use Closure;
 use GalleryJsonMedia\JsonMedia\Contracts\CanDeleteMedia;
 use GalleryJsonMedia\JsonMedia\Contracts\HasMedia;
 use GalleryJsonMedia\JsonMedia\Document;
 use GalleryJsonMedia\JsonMedia\Media;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
 
 /**
- * @method static deleting(Closure $param)
+ * @phpstan-require-extends Model
  */
 // @phpstan-ignore trait.unused
 trait InteractWithMedia
@@ -22,7 +21,7 @@ trait InteractWithMedia
     {
         static::deleting(function (HasMedia $model) {
             // A soft deleted model can be restored, so its files must be kept until it is force deleted
-            if (in_array(SoftDeletes::class, class_uses_recursive($model)) && ! $model->isForceDeleting()) {
+            if (method_exists($model, 'isForceDeleting') && ! $model->isForceDeleting()) {
                 return;
             }
 

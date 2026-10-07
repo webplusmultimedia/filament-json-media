@@ -2,6 +2,11 @@
 
 All notable changes to `filament-json-media` will be documented in this file.
 
+## v5.4.1 - 2026-10-07
+* Fix: PHPStan reported errors in the models using `InteractWithMedia`: a static call to an instance method for `deleting()`, because the `@method static deleting()` annotation was read as an instance method returning `static`, and an undefined `isForceDeleting()` method
+* The trait now declares `@phpstan-require-extends Model` instead of the `@method` annotation
+* Full Changelog: [v5.4.0...v5.4.1](https://github.com/webplusmultimedia/filament-json-media/compare/v5.4.0...v5.4.1)
+
 ## v5.4.0 - 2026-10-07
 * New `gallery-json-media:clean` command: deletes the thumbnails whose image is missing and, for the models declared in the new `maintenance.models` config, the files that no record uses, with their thumbnails
 * `--dry-run` lists the files to delete, `--force` deletes them without confirmation, `--disk` chooses the disks; the command never touches a file outside the `root_directory`, and the soft deleted records keep their files
