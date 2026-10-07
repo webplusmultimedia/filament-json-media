@@ -2,6 +2,15 @@
 
 All notable changes to `filament-json-media` will be documented in this file.
 
+## v5.4.0 - 2026-10-07
+* New `gallery-json-media:clean` command: deletes the thumbnails whose image is missing and, for the models declared in the new `maintenance.models` config, the files that no record uses, with their thumbnails
+* `--dry-run` lists the files to delete, `--force` deletes them without confirmation, `--disk` chooses the disks; the command never touches a file outside the `root_directory`, and the soft deleted records keep their files
+* New `gallery-json-media:regenerate` command: renders every existing thumbnail again from its image, with the same size and format, after a change of `quality` or of `driver`
+* The empty `filament-json-media` command is removed
+* The `update-changelog` workflow is removed, the CHANGELOG is now updated with each release
+* Upgrade: to clean the files no record uses, declare the json media fields of your models in `maintenance.models`. Declare all of them: the other files of the `root_directory` are deleted
+* Full Changelog: [v5.3.0...v5.4.0](https://github.com/webplusmultimedia/filament-json-media/compare/v5.3.0...v5.4.0)
+
 ## v5.3.0 - 2026-10-06
 * New `AsJsonMedia` cast: a json media field is read as a collection of `Media` (images) and `Document` (other files), the json stored in the database does not change
 * New `<x-gallery-json-media::image>` Blade component: a lazy `<img>` with the thumbnail of the requested size, with an optional `format` (`format="webp"`)
