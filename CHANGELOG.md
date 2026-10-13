@@ -2,6 +2,16 @@
 
 All notable changes to `filament-json-media` will be documented in this file.
 
+## v5.5.0 - 2026-10-13
+* Fix: a thumbnail larger than its image enlarged it, a smaller image now keeps its size, cropped to the requested ratio
+* Fix: the `srcset` of `responsive-image` offered widths larger than the image, it now stops at the width of the image when its size is recorded
+* Feat: the uploaded images are saved with their `width` and `height`, read from their header and turned by their exif orientation as their thumbnails are (a svg has none)
+* Feat: new `ImageDimensions` value object and `Media::getOriginalDimensions()`
+* Feat: `gallery-json-media:regenerate` also records the size of the images that the declared models saved without it, without their model events nor a new `updated_at`; it fails when an image is missing or its size cannot be read
+* Feat: new `--thumbnails-only` and `--dimensions-only` options of `gallery-json-media:regenerate`
+* Upgrade: run `php artisan gallery-json-media:regenerate` with your models declared in `maintenance.models`: the images uploaded before get their size, and the thumbnails that were enlarged are rendered again at the size of their image
+* Full Changelog: [v5.4.1...v5.5.0](https://github.com/webplusmultimedia/filament-json-media/compare/v5.4.1...v5.5.0)
+
 ## v5.4.1 - 2026-10-07
 * Fix: PHPStan reported errors in the models using `InteractWithMedia`: a static call to an instance method for `deleting()`, because the `@method static deleting()` annotation was read as an instance method returning `static`, and an undefined `isForceDeleting()` method
 * The trait now declares `@phpstan-require-extends Model` instead of the `@method` annotation
