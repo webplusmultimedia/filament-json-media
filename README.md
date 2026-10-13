@@ -137,6 +137,7 @@ protected $casts = [
 ```php
 $page->images; // Collection<Media|Document>
 $page->images->first()->getCropUrl(400, 300);
+$page->images->first()->getOriginalDimensions()?->width; // the size of the image, null when it is not recorded
 ```
 The medias are read-only: to change a field, assign it new entries (arrays, `Media` or `Document`).
 
@@ -167,6 +168,8 @@ JsonMediaGallery::make('images')
     )
     ->editableCustomProperties(bool|Closure) // if you want to enable/disable the custom properties edition ;
 ```
+Each uploaded file is saved with its `size`, `mime_type`, `disk` and `visibility`, and an image also with its `width` and `height` (a svg has none). Only the header of the image is read, and a photo turned by its exif orientation is measured as its thumbnails show it.
+
 ### Show your media in a grid way
 
 You can now view your medias in **grid** list like this :
@@ -203,7 +206,7 @@ GalleryJsonMedia\Infolists\JsonDocumentsEntry::make('documents')
 ```
 
 ### In Blade Front-end
-The `image` component renders a lazy `<img>` with the thumbnail of the requested size and the `alt` of the media. Without a size, it shows the original image. Your attributes are added to the tag and replace the defaults (`alt`, `loading`).
+The `image` component renders a lazy `<img>` with the thumbnail of the requested size and the `alt` of the media. Without a size, it shows the original image. A thumbnail is never larger than its image: a smaller image keeps its size, cropped to the requested ratio. Your attributes are added to the tag and replace the defaults (`alt`, `loading`).
 ```html
 @foreach($page->images as $media)
     <x-gallery-json-media::image :media="$media" :width="400" :height="300" class="rounded" />
@@ -213,7 +216,7 @@ The `format` attribute converts the thumbnail (`format="webp"`). Without `<pictu
 
 #### Responsive images
 The `responsive-image` component takes the same attributes and lets the browser choose the thumbnail it needs:
-- the `srcset` offers the thumbnails of the same ratio in the widths of the `images.responsive.widths` config, up to twice the displayed width for the high density screens;
+- the `srcset` offers the thumbnails of the same ratio in the widths of the `images.responsive.widths` config, up to twice the displayed width for the high density screens, and up to the width of the image: the size recorded on upload replaces the larger widths;
 - the default `sizes` is `(max-width: 1200px) 100vw, 1200px`, give your own `sizes` attribute for your layout;
 - a `<picture>` offers the thumbnails converted to the `images.responsive.formats` config (`webp` by default), or to the `formats` of the component, by order of preference.
 
@@ -289,11 +292,15 @@ It deletes the thumbnails whose image is missing. To also delete the files that 
 ```
 Declare all of them: every other file of the `root_directory` is deleted, so the files of a forgotten field would be too. The soft deleted records keep their files.
 
-**Render the thumbnails again**
+**Render the thumbnails again and record the size of the images**
 ```bash
-php artisan gallery-json-media:regenerate
+php artisan gallery-json-media:regenerate                     # both
+php artisan gallery-json-media:regenerate --thumbnails-only   # only render the thumbnails again
+php artisan gallery-json-media:regenerate --dimensions-only   # only record the size of the images
 ```
 It renders every existing thumbnail again from its image, with the same size and format: run it after a change of `quality` or of `driver`. The thumbnails are generated when a browser requests them, so the command only renders the ones that already exist.
+
+It also records the `width` and the `height` of the images that the declared models (`maintenance.models`, see above) saved without them, as the images uploaded before v5.5.0, so that their `srcset` stops at their size. Only the header of a local image is read, a remote one is downloaded. The records are written without their model events and keep their `updated_at`. An image that is missing or whose size cannot be read is listed, the command then fails.
 
 
 ## Testing

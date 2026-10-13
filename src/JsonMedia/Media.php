@@ -7,6 +7,7 @@ namespace GalleryJsonMedia\JsonMedia;
 use GalleryJsonMedia\JsonMedia\Concerns\HasFile;
 use GalleryJsonMedia\JsonMedia\Contracts\CanDeleteMedia;
 use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
+use GalleryJsonMedia\Support\ImageDimensions;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\View\View;
@@ -68,18 +69,29 @@ final class Media implements Arrayable, CanDeleteMedia, Htmlable, Stringable
     }
 
     /**
+     * The size of the original image, recorded on upload or by gallery-json-media:regenerate.
+     */
+    public function getOriginalDimensions(): ?ImageDimensions
+    {
+        return ImageDimensions::fromEntry($this->content);
+    }
+
+    /**
      * The thumbnails of the image for a srcset : the configured widths up to twice the displayed one, for the high density screens.
-     * Each thumbnail is generated when a browser requests it.
+     * Each thumbnail is generated when a browser requests it. None is larger than the image when its size is known.
      */
     public function getSrcset(int $width, ?int $height = null, ?string $format = null): string
     {
         if ($this->getFileName() === null) {
             return '';
         }
+        $maxWidth = $this->getOriginalDimensions()?->maxWidthFor($width, $height) ?? PHP_INT_MAX;
 
         return collect(config('gallery-json-media.images.responsive.widths', [320, 640, 960, 1280, 1920]))
             ->filter(fn (int $candidate): bool => $candidate < $width * 2)
             ->push($width, $width * 2)
+            // A larger width is replaced by the one of the image, which stays offered at its full size
+            ->map(fn (int $candidate): int => min($candidate, $maxWidth))
             ->unique()
             ->sort()
             ->map(fn (int $candidate): string => $this->getCropUrl(

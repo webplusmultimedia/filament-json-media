@@ -212,19 +212,27 @@ final class Croppa
             ->quality(config('gallery-json-media.images.quality'));
 
         try {
+            // A thumbnail is not larger than its image : a smaller image keeps its size, cropped to the requested ratio
+            $scale = min(
+                1,
+                $this->width ? $image->getWidth() / $this->width : 1,
+                $this->height ? $image->getHeight() / $this->height : 1,
+            );
+            $width = $this->width ? max(1, (int) round($this->width * $scale)) : null;
+            $height = $this->height ? max(1, (int) round($this->height * $scale)) : null;
 
-            if ($this->width && $this->height) {
+            if ($width && $height) {
                 $image = $image->fit(
                     Fit::Crop,
-                    desiredWidth: $this->width,
-                    desiredHeight: $this->height
+                    desiredWidth: $width,
+                    desiredHeight: $height
                 );
             } else {
-                if ($this->width) {
-                    $image->width($this->width);
+                if ($width) {
+                    $image->width($width);
                 }
-                if ($this->height) {
-                    $image->height($this->height);
+                if ($height) {
+                    $image->height($height);
                 }
             }
 
