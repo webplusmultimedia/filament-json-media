@@ -33,6 +33,8 @@ it('stores an uploaded image in the gallery directory with its metadata', functi
             'disk' => 'public',
             'visibility' => 'public',
             'mime_type' => 'image/jpeg',
+            'width' => 640,
+            'height' => 480,
             'customProperties' => ['alt' => 'Mon super chat', 'title' => null],
         ])
         ->and($images[0])->not->toHaveKey('deleted')
@@ -341,6 +343,34 @@ it('ignores a disk or a visibility changed by the client on a new upload', funct
         ->assertHasNoFormErrors();
 
     expect(array_values($page->refresh()->images)[0])->toMatchArray(['disk' => 's3', 'visibility' => 'private']);
+});
+
+it('records the size read from a new upload rather than the one changed by the client', function () {
+    Storage::fake('public');
+    $page = Page::create();
+
+    Livewire::test(PageForm::class, ['record' => $page])
+        ->set('data.images.new-photo', UploadedFile::fake()->image('photo.jpg', 640, 480))
+        ->set('data.images.new-photo.width', 5000)
+        ->set('data.images.new-photo.height', 5000)
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(array_values($page->refresh()->images)[0])->toMatchArray(['width' => 640, 'height' => 480]);
+});
+
+it('records no size for an uploaded svg', function () {
+    Storage::fake('public');
+    $page = Page::create();
+
+    Livewire::test(PageForm::class, ['record' => $page])
+        ->set('data.images.new-logo', UploadedFile::fake()->createWithContent('logo.svg', '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="100"/>'))
+        ->set('data.images.new-logo.width', 5000)
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(array_values($page->refresh()->images)[0])->toHaveKey('mime_type', 'image/svg+xml')
+        ->not->toHaveKeys(['width', 'height']);
 });
 
 it('deletes a removed remote image and its thumbnails when the form is saved', function () {

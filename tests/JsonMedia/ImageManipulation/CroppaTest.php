@@ -29,6 +29,20 @@ it('keeps the ratio when only one dimension is given', function (?int $width, ?i
     'height only' => [null, 150, 'page/photo-_x150.jpg', [200, 150]],
 ]);
 
+it('does not enlarge an image smaller than the thumbnail', function (?int $width, ?int $height, string $thumbnail, array $size) {
+    Storage::fake('public');
+    storedImage('page/photo.jpg', 800, 600);
+
+    (new Croppa(Storage::disk('public'), 'page/photo.jpg', $width, $height))->render();
+
+    expect(array_slice(getimagesize(Storage::disk('public')->path($thumbnail)), 0, 2))->toBe($size);
+})->with([
+    'width only' => [1200, null, 'page/photo-1200x_.jpg', [800, 600]],
+    'height only' => [null, 900, 'page/photo-_x900.jpg', [800, 600]],
+    'crop wider than the image' => [1600, 600, 'page/photo-1600x600.jpg', [800, 300]],
+    'crop taller than the image' => [1200, 1200, 'page/photo-1200x1200.jpg', [600, 600]],
+]);
+
 it('returns a thumbnail url signed by Laravel for its path', function () {
     Storage::fake('public');
     storedImage('page/photo.jpg');

@@ -146,3 +146,40 @@ it('lists the thumbnails converted to a format for a srcset', function () {
         ->toStartWith('/storage/page/photo-200x100.jpg.webp?')
         ->toContain(', /storage/page/photo-400x200.jpg.webp?');
 });
+
+it('returns the recorded size of the original image, null when it is unknown', function () {
+    Storage::fake('public');
+    $entry = storedImage('page/photo.jpg', 800, 600);
+
+    $recorded = Media::make([...$entry, 'width' => 800, 'height' => 600]);
+    $unknown = Media::make($entry);
+
+    expect($recorded->getOriginalDimensions()?->toArray())->toBe(['width' => 800, 'height' => 600])
+        ->and($unknown->getOriginalDimensions())->toBeNull();
+});
+
+it('offers the image at its own width rather than larger thumbnails in a srcset', function () {
+    Storage::fake('public');
+    config()->set('gallery-json-media.images.responsive.widths', [320, 640, 960]);
+    $media = Media::make([...storedImage('page/photo.jpg', 800, 600), 'width' => 800, 'height' => 600]);
+
+    expect($media->getSrcset(600))->toBe(implode(', ', [
+        $media->getCropUrl(320) . ' 320w',
+        $media->getCropUrl(600) . ' 600w',
+        $media->getCropUrl(640) . ' 640w',
+        $media->getCropUrl(800) . ' 800w',
+    ]));
+});
+
+it('keeps the height of the cropped thumbnails of a srcset within the image', function () {
+    Storage::fake('public');
+    config()->set('gallery-json-media.images.responsive.widths', [320]);
+    $media = Media::make([...storedImage('page/photo.jpg', 800, 600), 'width' => 800, 'height' => 600]);
+
+    // At the ratio 600x600, the image gives at most 600x600
+    expect($media->getSrcset(400, 400))->toBe(implode(', ', [
+        $media->getCropUrl(320, 320) . ' 320w',
+        $media->getCropUrl(400, 400) . ' 400w',
+        $media->getCropUrl(600, 600) . ' 600w',
+    ]));
+});

@@ -16,6 +16,7 @@ use GalleryJsonMedia\JsonMedia\ImageManipulation\Croppa;
 use GalleryJsonMedia\JsonMedia\Media;
 use GalleryJsonMedia\Support\Concerns\HasThumbProperties;
 use GalleryJsonMedia\Support\Disk;
+use GalleryJsonMedia\Support\ImageDimensions;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -263,12 +264,14 @@ class JsonMediaGallery extends BaseFileUpload
             }
 
             // The client can also change the state of a new upload : its metadata come from the server
+            $mimeType = $file['file']->getMimeType();
             $file = [
-                ...$file,
+                ...Arr::except($file, ['width', 'height']),
                 'size' => $file['file']->getSize(),
                 'disk' => $this->getDiskName(),
                 'visibility' => $this->getVisibility(),
-                'mime_type' => $file['file']->getMimeType(),
+                'mime_type' => $mimeType,
+                ...$this->getImageDimensions($file['file'], $mimeType),
             ];
 
             $callback = $this->saveUploadedFileUsing;
@@ -301,6 +304,21 @@ class JsonMediaGallery extends BaseFileUpload
             return $file;
         })->all();
         $this->rawState($rawState);
+    }
+
+    /**
+     * The size of an uploaded image keeps its thumbnails from being larger than it : a svg, never resized, needs none,
+     * an image whose size cannot be read is saved without it.
+     *
+     * @return array{width? : int, height? : int}
+     */
+    private function getImageDimensions(TemporaryUploadedFile $file, string $mimeType): array
+    {
+        if (! $this->isImageFile($mimeType) || $this->isSvgFile($mimeType)) {
+            return [];
+        }
+
+        return ImageDimensions::fromStream($file->readStream())?->toArray() ?? [];
     }
 
     /**
