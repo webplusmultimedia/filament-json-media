@@ -16,7 +16,7 @@
         "@tailwindcss/cli": "^4.3.3",
         "esbuild": "0.28.2",
         "npm-run-all": "^4.1.5",
-        "postcss": "^8.5.29",
+        "postcss": "^8.5.30",
         "tailwindcss": "^4.1.10"
     },
     "dependencies": {
